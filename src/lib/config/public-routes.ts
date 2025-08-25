@@ -1,0 +1,66 @@
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+
+interface RouteConfig {
+  methods?: HttpMethod[];
+  description?: string;
+  isDynamic?: boolean;
+}
+
+type PublicRoutesConfig = {
+  [key: string]: RouteConfig;
+};
+
+export const PUBLIC_ROUTES: PublicRoutesConfig = {
+  // Auth routes
+  '/api/auth/login': {
+    methods: ['POST'],
+    description: 'User login endpoint'
+  },
+
+  '/api/init': {
+    methods: ['POST'],
+    description: 'Application initialization'
+  },
+
+
+  '/api/auth/verify-email': {
+    methods: ['GET'],
+    description: 'Verify email endpoint'
+  },
+
+  // Payment routes
+  '/api/payments/[id]/proof': {
+    methods: ['POST'],
+    isDynamic: true
+  },
+
+  '/api/transactions/[id]': {
+    methods: ['GET'],
+    description: 'Payment endpoints',
+    isDynamic: true
+  },
+
+  // File access route
+  '/storage/files/[id]': {
+    methods: ['GET'],
+    description: 'Public file access',
+    isDynamic: true
+  }
+} as const;
+
+export function isPublicRoute(path: string, method: HttpMethod = 'GET'): boolean {
+  // Check if the path matches any public route pattern
+  for (const [publicPath, config] of Object.entries(PUBLIC_ROUTES)) {
+    const routePattern = config.isDynamic
+      ? publicPath.replace(/\[.*?\]/g, '[^/]+')
+      : publicPath;
+    const regex = new RegExp(`^${routePattern}$`);
+
+    if (regex.test(path)) {
+      // If no methods specified, only GET is allowed
+      const allowedMethods = config.methods || ['GET'];
+      return allowedMethods.includes(method);
+    }
+  }
+  return false;
+} 

@@ -1,0 +1,394 @@
+/* Custom font-face for TheYearofHandicrafts-SemiBold */
+@font-face {
+  font-family: 'TheYearofHandicrafts';
+  src: url('/fonts/TheYearofHandicrafts-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Apply custom font globally via class */
+.custom-handicraft-font {
+  font-family: 'TheYearofHandicrafts', sans-serif;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Arabic Portfolio Design System - Clean & Modern */
+
+@layer base {
+
+  /* Enhanced Color System with Dark Mode */
+  :root {
+    /* Light Theme */
+    --background: 0 0% 100%;
+    --foreground: 220 15% 15%;
+
+    /* Teal Accent System */
+    --primary: 180 60% 45%;
+    --primary-light: 180 60% 50%;
+    --primary-dark: 180 60% 30%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Card System */
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 15%;
+    --card-hover: 214 84% 97%;
+
+    /* Semantic Colors */
+    --secondary: 220 15% 96%;
+    --secondary-foreground: 220 15% 15%;
+
+    --muted: 220 15% 96%;
+    --muted-foreground: 220 10% 46%;
+
+    --accent: 180 60% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --border: 220 15% 90%;
+    --input: 220 15% 90%;
+    --ring: 180 60% 45%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(180 60% 45%), hsl(180 60% 50%));
+    --gradient-hero: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(180 60% 97%) 100%);
+    --gradient-contact: linear-gradient(135deg, hsl(180 60% 45%) 0%, hsl(180 60% 30%) 100%);
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px hsl(180 60% 45% / 0.1);
+    --shadow-hover: 0 8px 30px hsl(180 60% 45% / 0.15);
+    --shadow-card: 0 2px 10px hsl(220 15% 15% / 0.08);
+
+    /* Animation Timings */
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --radius: 0.75rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  /* Dark Theme */
+  .dark {
+    --background: 220 15% 8%;
+    --foreground: 0 0% 95%;
+
+    /* Teal Accent System - Adjusted for dark mode */
+    --primary: 180 60% 55%;
+    --primary-light: 180 60% 65%;
+    --primary-dark: 180 60% 40%;
+    --primary-foreground: 220 15% 8%;
+
+    /* Card System */
+    --card: 220 15% 12%;
+    --card-foreground: 0 0% 95%;
+    --card-hover: 220 15% 16%;
+
+    /* Semantic Colors */
+    --secondary: 220 15% 16%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 220 15% 16%;
+    --muted-foreground: 220 10% 60%;
+
+    --accent: 180 60% 55%;
+    --accent-foreground: 220 15% 8%;
+
+    --border: 220 15% 20%;
+    --input: 220 15% 20%;
+    --ring: 180 60% 55%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(180 60% 55%), hsl(180 60% 65%));
+    --gradient-hero: linear-gradient(180deg, hsl(220 15% 8%) 0%, hsl(220 15% 12%) 100%);
+    --gradient-contact: linear-gradient(135deg, hsl(180 60% 55%) 0%, hsl(180 60% 40%) 100%);
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px hsl(0 0% 0% / 0.3);
+    --shadow-hover: 0 8px 30px hsl(0 0% 0% / 0.4);
+    --shadow-card: 0 2px 10px hsl(0 0% 0% / 0.2);
+
+    --sidebar-background: 220 15% 10%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 240 5.9% 10%;
+    --sidebar-accent: 220 15% 16%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 220 15% 20%;
+    --sidebar-ring: 180 60% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans transition-colors duration-300;
+    font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    direction: rtl;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M8 4L4 8l4 4 4-4-4-4z' fill='%23008080'/%3E%3Cpath d='M12 12l4-4 4 4-4 4-4-4z' fill='%23008080' opacity='0.7'/%3E%3C/svg%3E") 16 16, auto;
+  }
+
+  /* LTR direction for English content */
+  body.ltr {
+    direction: ltr;
+  }
+
+  body.ltr .text-right {
+    text-align: left;
+  }
+
+  body.ltr .flex-row-reverse {
+    flex-direction: row;
+  }
+
+  /* Custom cursor for interactive elements */
+  a,
+  button,
+  [role="button"],
+  input[type="submit"],
+  input[type="button"] {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M8 4L4 8l8 8 8-8-4-4-6 6-6-6z' fill='%23008080'/%3E%3Cpath d='M16 16l8-8 4 4-8 8-4-4z' fill='%23008080' opacity='0.8'/%3E%3C/svg%3E") 16 16, pointer;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/50;
+  }
+
+  /* Firefox Scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary) / 0.3) hsl(var(--background));
+  }
+}
+
+@layer components {
+
+  /* Hero Components */
+  .hero-button {
+    @apply inline-flex items-center justify-center px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300 min-w-[160px];
+  }
+
+  .hero-button-primary {
+    @apply hero-button bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-light))] text-primary-foreground shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-hover)] hover:scale-105 active:scale-95;
+  }
+
+  .hero-button-secondary {
+    @apply hero-button border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-soft)] active:scale-95;
+  }
+
+  /* Mobile-optimized Card Components */
+  .flip-card {
+    @apply w-full h-52 cursor-pointer relative;
+  }
+
+  .flip-card-inner {
+    @apply relative w-full h-full transition-transform duration-700 transform-style-preserve-3d;
+  }
+
+  .flip-card.flipped .flip-card-inner {
+    @apply rotate-y-180;
+  }
+
+  /* Hover only on desktop */
+  @media (hover: hover) {
+    .flip-card:hover .flip-card-inner {
+      @apply rotate-y-180;
+    }
+  }
+
+  .flip-card-front,
+  .flip-card-back {
+    @apply absolute w-full h-full backface-hidden rounded-xl shadow-[var(--shadow-card)] flex items-center justify-center p-6 text-center;
+  }
+
+  .flip-card-front {
+    @apply bg-card text-card-foreground border border-border;
+  }
+
+  .flip-card-back {
+    @apply bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary-light))] text-primary-foreground rotate-y-180;
+  }
+
+  /* Enhanced Project Cards */
+  .project-card {
+    @apply bg-card rounded-2xl shadow-[var(--shadow-card)] overflow-hidden transition-all duration-300 hover:shadow-[var(--shadow-hover)] hover:scale-[1.02] active:scale-[0.98] border border-border/50;
+  }
+
+  .project-card-mobile {
+    @apply w-full max-w-sm mx-auto;
+  }
+
+  .project-card-desktop {
+    @apply min-w-[380px] max-w-[420px];
+  }
+
+  /* Achievement Badges */
+  .achievement-badge {
+    @apply bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary-light))] text-primary-foreground p-8 rounded-2xl text-center shadow-[var(--shadow-soft)] transition-all duration-500 hover:scale-105 active:scale-95 border border-white/20;
+  }
+
+  /* Contact Card */
+  .contact-card {
+    @apply bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary-dark))] text-primary-foreground rounded-2xl p-8 shadow-[var(--shadow-hover)] border border-white/10;
+  }
+
+  /* Skills Circle - Mobile Optimized */
+  .skill-item {
+    @apply w-20 h-20 md:w-24 md:h-24 rounded-2xl flex items-center justify-center cursor-pointer transition-all duration-300 transform hover:scale-110 active:scale-95;
+  }
+
+  .skill-item-active {
+    @apply bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary-light))] text-primary-foreground shadow-[var(--shadow-hover)];
+  }
+
+  .skill-item-inactive {
+    @apply bg-card text-card-foreground shadow-[var(--shadow-card)] border border-border/50;
+  }
+
+  /* Mobile Touch Indicators */
+  .mobile-tap-indicator {
+    @apply block md:hidden text-xs text-muted-foreground mt-2 opacity-75;
+  }
+
+  /* Enhanced Animations */
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-12px);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(40px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes pulse-glow {
+
+    0%,
+    100% {
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+    }
+
+    50% {
+      box-shadow: 0 0 40px hsl(var(--primary) / 0.6);
+    }
+  }
+
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.6s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.6s ease-out forwards;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+
+  /* Utility Classes */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .transform-style-preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+
+  /* Mobile Improvements */
+  @media (max-width: 768px) {
+    .hero-button {
+      @apply px-6 py-3 text-base min-w-[140px];
+    }
+
+    .achievement-badge {
+      @apply p-6;
+    }
+
+    .contact-card {
+      @apply p-6;
+    }
+  }
+}

@@ -1,0 +1,276 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Language {
+  EN
+  AR
+}
+
+enum ProjectStatus {
+  DRAFT
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+model File {
+  id        String   @id @default(cuid())
+  name      String
+  url       String
+  path      String
+  type      String
+  size      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations - Changed to one-to-many to allow file reuse
+  profileImages    PersonalInfo[] @relation("profileImage")
+  profileResumes   PersonalInfo[] @relation("profileResume")
+  heroProfileImgs  HeroContent[]  @relation("heroProfileImage")
+  projectImages    Project[]      @relation("projectImage")
+  achievementIcons Achievement[]  @relation("achievementIcon")
+
+  @@map("files")
+}
+
+// Authentication Models
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String
+  lastLogin DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("users")
+}
+
+// Core Content Models with Multi-language Support
+model PersonalInfo {
+  id          String   @id @default(cuid())
+  lang        Language
+  firstName   String
+  lastName    String
+  title       String
+  description String   @db.Text
+  bio         String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // relations
+  imageId String?
+  image   File?   @relation("profileImage", fields: [imageId], references: [id], onDelete: Cascade)
+
+  resumeId String?
+  resume   File?   @relation("profileResume", fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@unique([lang])
+  @@map("personal_info")
+}
+
+model HeroContent {
+  id           String   @id @default(cuid())
+  lang         Language
+  name         String
+  mainTitle    String
+  subTitle     String?
+  description  String   @db.Text
+  dynamicTexts String[] // Array of dynamic texts like "Web Developer", "Flutter Expert", etc.
+  ctaText      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // File relations
+  profileImageId String?
+  profileImage   File?   @relation("heroProfileImage", fields: [profileImageId], references: [id], onDelete: SetNull)
+
+  @@unique([lang])
+  @@map("hero_content")
+}
+
+model AboutCard {
+  id        String   @id @default(cuid())
+  lang      Language
+  title     String
+  icon      String?
+  question  String
+  answer    String   @db.Text
+  gradient  String? // CSS gradient class
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([lang, order])
+  @@map("about_cards")
+}
+
+model SkillCategory {
+  id           String   @id @default(cuid())
+  lang         Language
+  title        String
+  description  String   @db.Text
+  gradient     String?
+  experience   String? // e.g., "5+ years"
+  projectCount Int      @default(0)
+  order        Int      @default(0)
+  isActive     Boolean  @default(true)
+  icon         String? // Lucide icon name
+  skills       Skill[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([lang, order])
+  @@map("skill_categories")
+}
+
+model Skill {
+  id              String        @id @default(cuid())
+  lang            Language
+  name            String
+  level           SkillLevel    @default(INTERMEDIATE)
+  description     String?       @db.Text
+  yearsExperience Int?
+  projectCount    Int           @default(0)
+  order           Int           @default(0)
+  isActive        Boolean       @default(true)
+  icon            String? // Lucide icon name
+  skillCategoryId String
+  skillCategory   SkillCategory @relation(fields: [skillCategoryId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@unique([lang, skillCategoryId, order])
+  @@map("skills")
+}
+
+model Project {
+  id              String        @id @default(cuid())
+  lang            Language
+  title           String
+  description     String        @db.Text
+  longDescription String?       @db.Text
+  status          ProjectStatus @default(DRAFT)
+  category        String // e.g., "web", "mobile", "ai", "devops"
+  projectUrl      String?
+  githubUrl       String?
+  demoUrl         String?
+  duration        String? // e.g., "4 months"
+  teamSize        String? // e.g., "3 developers"
+  technologies    String[] // Array of technology tags
+  features        String[] // Array of key features
+  order           Int           @default(0)
+  isFeatured      Boolean       @default(false)
+  isActive        Boolean       @default(true)
+  startDate       DateTime?
+  endDate         DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // File relations
+  imageId String?
+  image   File?   @relation("projectImage", fields: [imageId], references: [id], onDelete: SetNull)
+
+  @@unique([lang, order])
+  @@map("projects")
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  lang        Language
+  title       String
+  subtitle    String?
+  description String   @db.Text
+  value       String? // The main achievement value (e.g., "+20", "98%")
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // File relations
+  iconId String?
+  icon   File?   @relation("achievementIcon", fields: [iconId], references: [id], onDelete: SetNull)
+
+  @@unique([lang, order])
+  @@map("achievements")
+}
+
+model ContactInfo {
+  id        String   @id @default(cuid())
+  lang      Language
+  type      String // e.g., "email", "phone", "whatsapp", "linkedin", "github", "location"
+  label     String
+  value     String
+  link      String?
+  icon      String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([lang, type])
+  @@map("contact_info")
+}
+
+model SocialLink {
+  id        String   @id @default(cuid())
+  lang      Language
+  name      String
+  url       String
+  icon      String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([lang, name])
+  @@map("social_links")
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  lang        Language
+  name        String
+  description String?  @db.Text
+  icon        String?
+  price       String?
+  duration    String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([lang, order])
+  @@map("services")
+}
+
+model QuickLink {
+  id        String   @id @default(cuid())
+  lang      Language
+  name      String
+  href      String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([lang, order])
+  @@map("quick_links")
+}

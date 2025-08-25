@@ -1,0 +1,69 @@
+import { BackendBaseService } from '@/lib/backend/bacendBase.service';
+import { ApiError } from '@/lib/backend/exceptions/api-error';
+import { IQueryOptions } from '@/interfaces/query.interface';
+import { CreateHeroContentDto, UpdateHeroContentDto, HeroContent } from '@/lib/backend/schemas/portfolio-new.schema';
+
+export class BackendHeroContentService extends BackendBaseService<HeroContent> {
+  constructor() {
+    super('heroContent');
+  }
+
+  async create(data: CreateHeroContentDto): Promise<any> {
+    // Check if hero content for this language already exists
+    const existing = await this.model.findUnique({
+      where: { lang: data.lang }
+    });
+
+    if (existing) {
+      throw ApiError.conflict(`Hero content for language ${data.lang} already exists`, {});
+    }
+
+    return this.model.create({
+      data,
+      include: {
+        profileImage: true,
+      }
+    });
+  }
+
+  async findByLanguage(lang: string, options: IQueryOptions = {}): Promise<any> {
+    const processedOptions = this.processQueryOptions(options, true);
+
+    return this.model.findUnique({
+      where: { lang },
+      include: {
+        profileImage: true,
+        ...processedOptions.include
+      }
+    });
+  }
+
+  async updateById(id: string, data: UpdateHeroContentDto): Promise<any> {
+    const existing = await this.model.findUnique({ where: { id } });
+    if (!existing) {
+      throw ApiError.notFound('Hero content not found', {});
+    }
+
+    return this.model.update({
+      where: { id },
+      data,
+      include: {
+        profileImage: true,
+      }
+    });
+  }
+
+  async deleteById(id: string): Promise<any> {
+    const existing = await this.model.findUnique({ where: { id } });
+    if (!existing) {
+      throw ApiError.notFound('Hero content not found', {});
+    }
+
+    return this.model.delete({
+      where: { id },
+      include: {
+        profileImage: true,
+      }
+    });
+  }
+}

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BackendContactInfoService } from '@/lib/backend/services/contact-info.service';
 import { apiHandler } from '@/lib/backend/api-handler';
-import { createContactInfoSchema, updateContactInfoSchema } from '@/lib/backend/schemas/portfolio-new.schema';
+import { createContactInfoSchema, updateContactInfoSchema } from '@/lib/backend/schemas/portfolio.schema';
 
 const contactInfoService = new BackendContactInfoService();
 

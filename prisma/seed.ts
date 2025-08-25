@@ -855,7 +855,7 @@ async function main() {
   console.log('👤 Creating demo admin user...');
   await prisma.user.create({
     data: {
-      email: 'admin@webnest.com',
+      email: 'mustafa.gamal.elsayed@gmail.com',
       password: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewkFUZbRS9/5OKj.' // "password123"
     }
   });

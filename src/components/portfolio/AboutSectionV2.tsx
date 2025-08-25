@@ -13,57 +13,6 @@ const AboutSectionV2 = () => {
     sectionName: 'about'
   });
 
-  // Static fallback data
-  const staticAboutCards = [
-    {
-      icon: <Users size={32} />,
-      question: language === 'ar' ? "مين أنا؟" : "Who am I?",
-      answer: language === 'ar'
-        ? "مهندس برمجيات متخصص في تطوير الحلول التقنية المبتكرة، مؤسس شركة Webnest لحلول الويب والتطبيقات الذكية."
-        : "A software engineer specialized in developing innovative technical solutions, founder of Webnest for web solutions and smart applications.",
-      gradient: "from-blue-500 to-purple-600"
-    },
-    {
-      icon: <Rocket size={32} />,
-      question: language === 'ar' ? "بدأت منين؟" : "Where did I start?",
-      answer: language === 'ar'
-        ? "بدأت رحلتي في WE School for Applied Technology حيث تعلمت أساسيات هندسة البرمجيات. ثم طورت مهاراتي من خلال العمل على مشاريع حقيقية ومتنوعة."
-        : "I started my journey at WE School for Applied Technology where I learned the fundamentals of software engineering. Then I developed my skills through working on real and diverse projects.",
-      gradient: "from-green-500 to-teal-600"
-    },
-    {
-      icon: <Code size={32} />,
-      question: language === 'ar' ? "بعمل إيه دلوقتي؟" : "What do I do now?",
-      answer: language === 'ar'
-        ? "حالياً طالب في Delta Higher Institute وأعمل كمهندس برمجيات في مشاريع متنوعة. أركز على تطوير تطبيقات الويب بـ React، تطبيقات الموبايل بـ Flutter."
-        : "Currently a student at Delta Higher Institute and working as a software engineer on diverse projects. I focus on developing web applications with React, mobile applications with Flutter.",
-      gradient: "from-orange-500 to-red-600"
-    },
-    {
-      icon: <Lightbulb size={32} />,
-      question: language === 'ar' ? "إيه تخصصي؟" : "What's my specialty?",
-      answer: language === 'ar'
-        ? "متخصص في Full Stack Development مع خبرة عميقة في React.js, Next.js, Laravel, Flutter, وأنظمة DevOps. كما أعمل مع تقنيات الذكاء الاصطناعي."
-        : "Specialized in Full Stack Development with deep experience in React.js, Next.js, Laravel, Flutter, and DevOps systems. I also work with AI technologies.",
-      gradient: "from-purple-500 to-pink-600"
-    },
-    {
-      icon: <Target size={32} />,
-      question: language === 'ar' ? "إيه هدفي؟" : "What's my goal?",
-      answer: language === 'ar'
-        ? "هدفي بناء حلول تقنية مبتكرة تساعد الشركات والأفراد على تحقيق أهدافهم وتطوير أعمالهم."
-        : "My goal is to build innovative technical solutions that help companies and individuals achieve their goals and develop their businesses.",
-      gradient: "from-indigo-500 to-blue-600"
-    },
-    {
-      icon: <Award size={32} />,
-      question: language === 'ar' ? "إيه اللي يميزني؟" : "What makes me unique?",
-      answer: language === 'ar'
-        ? "يميزني الجمع بين الخبرة التقنية العميقة والفهم الواضح لاحتياجات السوق. أركز على كتابة كود نظيف وقابل للصيانة."
-        : "I'm distinguished by combining deep technical expertise with clear understanding of market needs. I focus on writing clean and maintainable code.",
-      gradient: "from-yellow-500 to-orange-600"
-    }
-  ];
 
   // Use API data if available, otherwise use static data
   const qaCards = aboutData && aboutData.length > 0
@@ -73,7 +22,7 @@ const AboutSectionV2 = () => {
       answer: card.answer,
       gradient: getGradientByOrder(index)
     }))
-    : staticAboutCards;
+    : [];
 
   function getIconByOrder(order: number) {
     const icons = [<Users size={32} />, <Rocket size={32} />, <Code size={32} />, <Lightbulb size={32} />, <Target size={32} />, <Award size={32} />];

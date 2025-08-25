@@ -1,7 +1,7 @@
 import { BackendBaseService } from '@/lib/backend/bacendBase.service';
 import { ApiError } from '@/lib/backend/exceptions/api-error';
 import { IQueryOptions } from '@/interfaces/query.interface';
-import { CreateAboutCardDto, UpdateAboutCardDto, AboutCard } from '@/lib/backend/schemas/portfolio-new.schema';
+import { CreateAboutCardDto, UpdateAboutCardDto, AboutCard } from '@/lib/backend/schemas/portfolio.schema';
 
 export class BackendAboutCardService extends BackendBaseService<AboutCard> {
   constructor() {
@@ -11,7 +11,7 @@ export class BackendAboutCardService extends BackendBaseService<AboutCard> {
   async create(data: CreateAboutCardDto): Promise<any> {
     return this.model.create({
       data,
-    
+
     });
   }
 
@@ -40,7 +40,7 @@ export class BackendAboutCardService extends BackendBaseService<AboutCard> {
     return this.model.update({
       where: { id },
       data,
-  
+
     });
   }
 
@@ -52,7 +52,7 @@ export class BackendAboutCardService extends BackendBaseService<AboutCard> {
 
     return this.model.delete({
       where: { id },
-    
+
     });
   }
 

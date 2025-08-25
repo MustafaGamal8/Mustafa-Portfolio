@@ -1,219 +1,306 @@
 import { z } from 'zod';
 
-// Profile Schema
-export const profileSchema = z.object({
+// Language enum schema
+export const languageSchema = z.enum(['EN', 'AR']);
+
+// Personal Info Schema
+export const personalInfoSchema = z.object({
   id: z.string(),
+  lang: languageSchema,
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(1, 'Description is required'),
   bio: z.string().optional(),
-  title: z.string().optional(),
-  location: z.string().optional(),
-  phone: z.string().optional(),
-  linkedin: z.string().optional(),
-  github: z.string().optional(),
-  website: z.string().optional(),
-  whatsapp: z.string().optional(),
   imageId: z.string().optional(),
   resumeId: z.string().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });
 
-
-
-export const createProfileSchema = profileSchema.omit({
-  id: true,
+export const createPersonalInfoSchema = personalInfoSchema.omit({
   createdAt: true,
   updatedAt: true,
 });
 
-export const updateProfileSchema = createProfileSchema.partial();
+export const updatePersonalInfoSchema = createPersonalInfoSchema.partial();
 
-// Skill Schema
-export const skillCategoryEnum = z.enum(['FRONTEND', 'BACKEND', 'MOBILE', 'DEVOPS', 'DATABASE', 'AI_ML', 'TOOLS', 'SOFT_SKILLS']);
-
-export const skillSchema = z.object({
+// Hero Content Schema
+export const heroContentSchema = z.object({
   id: z.string(),
-  name: z.string().min(2, 'Skill name must be at least 2 characters'),
-  level: z.number().min(1).max(100, 'Skill level must be between 1 and 100'),
-  category: skillCategoryEnum,
-  icon: z.string().optional(),
-  isVisible: z.boolean().default(true),
-  order: z.number().default(0),
-  profileId: z.string(),
+  lang: languageSchema,
+  name: z.string().min(1, 'Name is required'),
+  mainTitle: z.string().min(1, 'Main title is required'),
+  subTitle: z.string().optional(),
+  description: z.string().min(1, 'Description is required'),
+  dynamicTexts: z.array(z.string()).default([]),
+  ctaText: z.string().optional(),
+  profileImageId: z.string().optional(),
+  backgroundImageId: z.string().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });
 
-export const createSkillSchema = skillSchema.omit({
-  id: true,
+export const createHeroContentSchema = heroContentSchema.omit({
   createdAt: true,
   updatedAt: true,
 });
 
-export const updateSkillSchema = createSkillSchema.partial().omit({
-  profileId: true,
-});
+export const updateHeroContentSchema = createHeroContentSchema.partial();
 
-// Project Schema
-export const projectCategoryEnum = z.enum(['WEB', 'MOBILE', 'AI', 'IOT', 'DESKTOP', 'OTHER']);
-export const projectStatusEnum = z.enum(['PLANNING', 'IN_PROGRESS', 'COMPLETED', 'ON_HOLD', 'CANCELLED']);
-
-export const projectSchema = z.object({
-  id: z.string(),
-  title: z.string().min(2, 'Project title must be at least 2 characters'),
-  description: z.string().min(10, 'Project description must be at least 10 characters'),
-  longDescription: z.string().optional(),
-  image: z.string().optional(),
-  tags: z.array(z.string()),
-  category: projectCategoryEnum,
-  link: z.string().optional(),
-  github: z.string().optional(),
-  status: projectStatusEnum.default('IN_PROGRESS'),
-  duration: z.string().optional(),
-  teamSize: z.string().optional(),
-  features: z.array(z.string()),
-  isPublic: z.boolean().default(true),
-  order: z.number().default(0),
-  authorId: z.string(),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
-});
-
-export const createProjectSchema = projectSchema.omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const updateProjectSchema = createProjectSchema.partial().omit({
-  authorId: true,
-});
-
-// Achievement Schema
-export const achievementSchema = z.object({
-  id: z.string(),
-  title: z.string().min(2, 'Achievement title must be at least 2 characters'),
-  description: z.string().min(10, 'Achievement description must be at least 10 characters'),
-  date: z.date(),
-  icon: z.string().optional(),
-  link: z.string().optional(),
-  isVisible: z.boolean().default(true),
-  order: z.number().default(0),
-  profileId: z.string(),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
-});
-
-export const createAchievementSchema = achievementSchema.omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const updateAchievementSchema = createAchievementSchema.partial().omit({
-  profileId: true,
-});
-
-// Contact Schema
-export const contactStatusEnum = z.enum(['UNREAD', 'READ', 'IN_PROGRESS', 'RESOLVED', 'ARCHIVED']);
-
-export const contactSchema = z.object({
-  id: z.string(),
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email format'),
-  subject: z.string().optional(),
-  message: z.string().min(10, 'Message must be at least 10 characters'),
-  status: contactStatusEnum.default('UNREAD'),
-  assignedToId: z.string().optional(),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
-});
-
-export const createContactSchema = contactSchema.omit({
-  id: true,
-  status: true,
-  assignedToId: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const updateContactSchema = contactSchema.partial().omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-// AboutCard Schema
+// About Card Schema
 export const aboutCardSchema = z.object({
   id: z.string(),
-  question: z.string().min(2, 'Question must be at least 2 characters'),
-  answer: z.string().min(10, 'Answer must be at least 10 characters'),
-  icon: z.string(),
-  gradient: z.string(),
+  lang: languageSchema,
+  title: z.string().min(1, 'Title is required'),
+  question: z.string().min(1, 'Question is required'),
+  answer: z.string().min(1, 'Answer is required'),
+  gradient: z.string().optional(),
   order: z.number().default(0),
-  isVisible: z.boolean().default(true),
+  isActive: z.boolean().default(true),
+  iconId: z.string().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });
 
 export const createAboutCardSchema = aboutCardSchema.omit({
-  id: true,
   createdAt: true,
   updatedAt: true,
 });
 
 export const updateAboutCardSchema = createAboutCardSchema.partial();
 
-// File Schema
-export const fileSchema = z.object({
+// Skill Category Schema
+export const skillCategorySchema = z.object({
   id: z.string(),
-  name: z.string().min(1, 'File name is required'),
-  url: z.string().url('Invalid URL format'),
-  path: z.string().min(1, 'File path is required'),
-  type: z.string().min(1, 'File type is required'),
-  size: z.number().min(0, 'File size must be non-negative'),
-  profileId: z.string().optional(),
-  projectId: z.string().optional(),
+  lang: languageSchema,
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(1, 'Description is required'),
+  gradient: z.string().optional(),
+  experience: z.string().optional(),
+  projectCount: z.number().default(0),
+  order: z.number().default(0),
+  isActive: z.boolean().default(true),
+  iconId: z.string().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });
 
-export const createFileSchema = fileSchema.omit({
-  id: true,
+export const createSkillCategorySchema = skillCategorySchema.omit({
   createdAt: true,
   updatedAt: true,
 });
 
-export const updateFileSchema = createFileSchema.partial();
+export const updateSkillCategorySchema = createSkillCategorySchema.partial();
 
-// Types
-export type Profile = z.infer<typeof profileSchema>;
-export type CreateProfileDto = z.infer<typeof createProfileSchema>;
-export type UpdateProfileDto = z.infer<typeof updateProfileSchema>;
+// Skill Schema
+export const skillLevelSchema = z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT']);
 
-export type Skill = z.infer<typeof skillSchema>;
-export type CreateSkillDto = z.infer<typeof createSkillSchema>;
-export type UpdateSkillDto = z.infer<typeof updateSkillSchema>;
-export type SkillCategory = z.infer<typeof skillCategoryEnum>;
+export const skillSchema = z.object({
+  id: z.string(),
+  lang: languageSchema,
+  name: z.string().min(1, 'Name is required'),
+  level: skillLevelSchema.default('INTERMEDIATE'),
+  description: z.string().optional(),
+  yearsExperience: z.number().optional(),
+  projectCount: z.number().default(0),
+  order: z.number().default(0),
+  isActive: z.boolean().default(true),
+  skillCategoryId: z.string(),
+  iconId: z.string().optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+});
 
-export type Project = z.infer<typeof projectSchema>;
-export type CreateProjectDto = z.infer<typeof createProjectSchema>;
-export type UpdateProjectDto = z.infer<typeof updateProjectSchema>;
-export type ProjectCategory = z.infer<typeof projectCategoryEnum>;
-export type ProjectStatus = z.infer<typeof projectStatusEnum>;
+export const createSkillSchema = skillSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+});
 
-export type Achievement = z.infer<typeof achievementSchema>;
-export type CreateAchievementDto = z.infer<typeof createAchievementSchema>;
-export type UpdateAchievementDto = z.infer<typeof updateAchievementSchema>;
+export const updateSkillSchema = createSkillSchema.partial();
 
-export type Contact = z.infer<typeof contactSchema>;
-export type CreateContactDto = z.infer<typeof createContactSchema>;
-export type UpdateContactDto = z.infer<typeof updateContactSchema>;
-export type ContactStatus = z.infer<typeof contactStatusEnum>;
+// Project Schema
+export const projectStatusSchema = z.enum(['DRAFT', 'IN_PROGRESS', 'COMPLETED', 'ARCHIVED']);
+
+export const projectSchema = z.object({
+  id: z.string(),
+  lang: languageSchema,
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(1, 'Description is required'),
+  longDescription: z.string().optional(),
+  status: projectStatusSchema.default('DRAFT'),
+  category: z.string().min(1, 'Category is required'),
+  projectUrl: z.string().optional(),
+  githubUrl: z.string().optional(),
+  demoUrl: z.string().optional(),
+  duration: z.string().optional(),
+  teamSize: z.string().optional(),
+  technologies: z.array(z.string()).default([]),
+  features: z.array(z.string()).default([]),
+  order: z.number().default(0),
+  isFeatured: z.boolean().default(false),
+  isActive: z.boolean().default(true),
+  startDate: z.string().datetime().optional(),
+  endDate: z.string().datetime().optional(),
+  imageId: z.string().optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+});
+
+export const createProjectSchema = projectSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const updateProjectSchema = createProjectSchema.partial();
+
+// Achievement Schema
+export const achievementSchema = z.object({
+  id: z.string(),
+  lang: languageSchema,
+  title: z.string().min(1, 'Title is required'),
+  subtitle: z.string().optional(),
+  description: z.string().min(1, 'Description is required'),
+  value: z.string().optional(),
+  order: z.number().default(0),
+  isActive: z.boolean().default(true),
+  iconId: z.string().optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+});
+
+export const createAchievementSchema = achievementSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const updateAchievementSchema = createAchievementSchema.partial();
+
+// Contact Info Schema
+export const contactInfoSchema = z.object({
+  id: z.string(),
+  lang: languageSchema,
+  type: z.string().min(1, 'Type is required'),
+  label: z.string().min(1, 'Label is required'),
+  value: z.string().min(1, 'Value is required'),
+  link: z.string().optional(),
+  icon: z.string().optional(),
+  order: z.number().default(0),
+  isActive: z.boolean().default(true),
+  isPrimary: z.boolean().default(false),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+});
+
+export const createContactInfoSchema = contactInfoSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const updateContactInfoSchema = createContactInfoSchema.partial();
+
+// Social Link Schema
+export const socialLinkSchema = z.object({
+  id: z.string(),
+  lang: languageSchema,
+  name: z.string().min(1, 'Name is required'),
+  url: z.string().url('Must be a valid URL'),
+  icon: z.string().optional(),
+  order: z.number().default(0),
+  isActive: z.boolean().default(true),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+});
+
+export const createSocialLinkSchema = socialLinkSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const updateSocialLinkSchema = createSocialLinkSchema.partial();
+
+// Service Schema
+export const serviceSchema = z.object({
+  id: z.string(),
+  lang: languageSchema,
+  name: z.string().min(1, 'Name is required'),
+  description: z.string().optional(),
+  icon: z.string().optional(),
+  price: z.string().optional(),
+  duration: z.string().optional(),
+  order: z.number().default(0),
+  isActive: z.boolean().default(true),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+});
+
+export const createServiceSchema = serviceSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const updateServiceSchema = createServiceSchema.partial();
+
+// Quick Link Schema
+export const quickLinkSchema = z.object({
+  id: z.string(),
+  lang: languageSchema,
+  name: z.string().min(1, 'Name is required'),
+  href: z.string().min(1, 'Href is required'),
+  order: z.number().default(0),
+  isActive: z.boolean().default(true),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+});
+
+export const createQuickLinkSchema = quickLinkSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const updateQuickLinkSchema = createQuickLinkSchema.partial();
+
+// Export types
+export type PersonalInfo = z.infer<typeof personalInfoSchema>;
+export type CreatePersonalInfoDto = z.infer<typeof createPersonalInfoSchema>;
+export type UpdatePersonalInfoDto = z.infer<typeof updatePersonalInfoSchema>;
+
+export type HeroContent = z.infer<typeof heroContentSchema>;
+export type CreateHeroContentDto = z.infer<typeof createHeroContentSchema>;
+export type UpdateHeroContentDto = z.infer<typeof updateHeroContentSchema>;
 
 export type AboutCard = z.infer<typeof aboutCardSchema>;
 export type CreateAboutCardDto = z.infer<typeof createAboutCardSchema>;
 export type UpdateAboutCardDto = z.infer<typeof updateAboutCardSchema>;
 
-export type File = z.infer<typeof fileSchema>;
-export type CreateFileDto = z.infer<typeof createFileSchema>;
-export type UpdateFileDto = z.infer<typeof updateFileSchema>;
+export type SkillCategory = z.infer<typeof skillCategorySchema>;
+export type CreateSkillCategoryDto = z.infer<typeof createSkillCategorySchema>;
+export type UpdateSkillCategoryDto = z.infer<typeof updateSkillCategorySchema>;
+
+export type Skill = z.infer<typeof skillSchema>;
+export type CreateSkillDto = z.infer<typeof createSkillSchema>;
+export type UpdateSkillDto = z.infer<typeof updateSkillSchema>;
+
+export type Project = z.infer<typeof projectSchema>;
+export type CreateProjectDto = z.infer<typeof createProjectSchema>;
+export type UpdateProjectDto = z.infer<typeof updateProjectSchema>;
+
+export type Achievement = z.infer<typeof achievementSchema>;
+export type CreateAchievementDto = z.infer<typeof createAchievementSchema>;
+export type UpdateAchievementDto = z.infer<typeof updateAchievementSchema>;
+
+export type ContactInfo = z.infer<typeof contactInfoSchema>;
+export type CreateContactInfoDto = z.infer<typeof createContactInfoSchema>;
+export type UpdateContactInfoDto = z.infer<typeof updateContactInfoSchema>;
+
+export type SocialLink = z.infer<typeof socialLinkSchema>;
+export type CreateSocialLinkDto = z.infer<typeof createSocialLinkSchema>;
+export type UpdateSocialLinkDto = z.infer<typeof updateSocialLinkSchema>;
+
+export type Service = z.infer<typeof serviceSchema>;
+export type CreateServiceDto = z.infer<typeof createServiceSchema>;
+export type UpdateServiceDto = z.infer<typeof updateServiceSchema>;
+
+export type QuickLink = z.infer<typeof quickLinkSchema>;
+export type CreateQuickLinkDto = z.infer<typeof createQuickLinkSchema>;
+export type UpdateQuickLinkDto = z.infer<typeof updateQuickLinkSchema>;

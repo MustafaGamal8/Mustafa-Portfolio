@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BackendHeroContentService } from '@/lib/backend/services/hero-content.service';
 import { apiHandler } from '@/lib/backend/api-handler';
-import { createHeroContentSchema, updateHeroContentSchema } from '@/lib/backend/schemas/portfolio-new.schema';
+import { createHeroContentSchema, updateHeroContentSchema } from '@/lib/backend/schemas/portfolio.schema';
 
 const heroContentService = new BackendHeroContentService();
 

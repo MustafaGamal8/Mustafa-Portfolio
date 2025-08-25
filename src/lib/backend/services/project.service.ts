@@ -1,7 +1,7 @@
 import { BackendBaseService } from '@/lib/backend/bacendBase.service';
 import { ApiError } from '@/lib/backend/exceptions/api-error';
 import { IQueryOptions } from '@/interfaces/query.interface';
-import { CreateProjectDto, UpdateProjectDto, Project } from '@/lib/backend/schemas/portfolio-new.schema';
+import { CreateProjectDto, UpdateProjectDto, Project } from '@/lib/backend/schemas/portfolio.schema';
 
 export class BackendProjectService extends BackendBaseService<Project> {
   constructor() {

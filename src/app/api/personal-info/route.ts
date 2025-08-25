@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BackendPersonalInfoService } from '@/lib/backend/services/personal-info.service';
 import { apiHandler } from '@/lib/backend/api-handler';
-import { createPersonalInfoSchema, updatePersonalInfoSchema } from '@/lib/backend/schemas/portfolio-new.schema';
+import { createPersonalInfoSchema, updatePersonalInfoSchema } from '@/lib/backend/schemas/portfolio.schema';
 
 const personalInfoService = new BackendPersonalInfoService();
 

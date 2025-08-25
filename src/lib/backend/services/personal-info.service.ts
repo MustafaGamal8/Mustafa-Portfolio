@@ -1,7 +1,7 @@
 import { BackendBaseService } from '@/lib/backend/bacendBase.service';
 import { ApiError } from '@/lib/backend/exceptions/api-error';
 import { IQueryOptions } from '@/interfaces/query.interface';
-import { CreatePersonalInfoDto, UpdatePersonalInfoDto, PersonalInfo } from '@/lib/backend/schemas/portfolio-new.schema';
+import { CreatePersonalInfoDto, UpdatePersonalInfoDto, PersonalInfo } from '@/lib/backend/schemas/portfolio.schema';
 
 export class BackendPersonalInfoService extends BackendBaseService<PersonalInfo> {
   constructor() {

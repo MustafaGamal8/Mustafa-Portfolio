@@ -23,22 +23,13 @@ export const PUBLIC_ROUTES: PublicRoutesConfig = {
   },
 
 
-  '/api/auth/verify-email': {
-    methods: ['GET'],
-    description: 'Verify email endpoint'
-  },
-
-  // Payment routes
-  '/api/payments/[id]/proof': {
+  
+  '/api/portfolio': {
     methods: ['POST'],
-    isDynamic: true
+    description: 'Public portfolio'
   },
 
-  '/api/transactions/[id]': {
-    methods: ['GET'],
-    description: 'Payment endpoints',
-    isDynamic: true
-  },
+  
 
   // File access route
   '/storage/files/[id]': {

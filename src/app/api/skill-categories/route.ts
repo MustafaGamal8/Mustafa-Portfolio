@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BackendSkillCategoryService } from '@/lib/backend/services/skill-category.service';
 import { apiHandler } from '@/lib/backend/api-handler';
-import { createSkillCategorySchema, updateSkillCategorySchema } from '@/lib/backend/schemas/portfolio-new.schema';
+import { createSkillCategorySchema, updateSkillCategorySchema } from '@/lib/backend/schemas/portfolio.schema';
 
 const skillCategoryService = new BackendSkillCategoryService();
 

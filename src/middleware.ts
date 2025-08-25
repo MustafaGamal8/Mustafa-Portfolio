@@ -20,10 +20,10 @@ export const config = {
 export async function middleware(request: NextRequest) {
   try {
     // Handle authentication first
-    // const authResponse = await handleAuth(request)
-    // if (authResponse) {
-    //   return authResponse
-    // }
+    const authResponse = await handleAuth(request)
+    if (authResponse) {
+      return authResponse
+    }
 
     // Process query parameters if auth check passes
     const processedHeaders = processQueryHeaders(request)

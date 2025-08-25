@@ -27,36 +27,6 @@ export class BackendAuthService extends BackendBaseService<User> {
     super('user');
   }
 
-  async register(data: CreateUserDto): Promise<any> {
-    // Check if user already exists
-    const existingUser = await this.model.findUnique({
-      where: { email: data.email }
-    });
-
-    if (existingUser) {
-      throw ApiError.conflict('User with this email already exists', {});
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(data.password, 12);
-
-    // Create user
-    const user = await this.model.create({
-      data: {
-        email: data.email,
-        password: hashedPassword
-      },
-      select: {
-        id: true,
-        email: true,
-        createdAt: true,
-        updatedAt: true
-      }
-    });
-
-    return user;
-  }
-
   async login(data: LoginDto): Promise<{ user: any; token: string }> {
     // Find user
     const user = await this.model.findUnique({
@@ -82,7 +52,7 @@ export class BackendAuthService extends BackendBaseService<User> {
     // Generate JWT token
     const token = jwt.sign(
       { userId: user.id, email: user.email },
-      process.env.JWT_SECRET || 'your-secret-key',
+      process.env.JWT_SECRET || '',
       { expiresIn: '7d' }
     );
 

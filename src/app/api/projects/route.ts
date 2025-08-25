@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BackendProjectService } from '@/lib/backend/services/project.service';
 import { apiHandler } from '@/lib/backend/api-handler';
-import { createProjectSchema, updateProjectSchema } from '@/lib/backend/schemas/portfolio-new.schema';
+import { createProjectSchema, updateProjectSchema } from '@/lib/backend/schemas/portfolio.schema';
 
 const projectService = new BackendProjectService();
 

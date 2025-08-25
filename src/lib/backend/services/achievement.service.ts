@@ -1,7 +1,7 @@
 import { BackendBaseService } from '@/lib/backend/bacendBase.service';
 import { ApiError } from '@/lib/backend/exceptions/api-error';
 import { IQueryOptions } from '@/interfaces/query.interface';
-import { CreateAchievementDto, UpdateAchievementDto, Achievement } from '@/lib/backend/schemas/portfolio-new.schema';
+import { CreateAchievementDto, UpdateAchievementDto, Achievement } from '@/lib/backend/schemas/portfolio.schema';
 
 export class BackendAchievementService extends BackendBaseService<Achievement> {
   constructor() {

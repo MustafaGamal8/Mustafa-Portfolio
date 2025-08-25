@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BackendAchievementService } from '@/lib/backend/services/achievement.service';
 import { apiHandler } from '@/lib/backend/api-handler';
-import { createAchievementSchema, updateAchievementSchema } from '@/lib/backend/schemas/portfolio-new.schema';
+import { createAchievementSchema, updateAchievementSchema } from '@/lib/backend/schemas/portfolio.schema';
 
 const achievementService = new BackendAchievementService();
 

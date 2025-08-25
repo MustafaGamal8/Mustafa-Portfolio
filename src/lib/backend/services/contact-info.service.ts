@@ -1,7 +1,7 @@
 import { BackendBaseService } from '@/lib/backend/bacendBase.service';
 import { ApiError } from '@/lib/backend/exceptions/api-error';
 import { IQueryOptions } from '@/interfaces/query.interface';
-import { CreateContactInfoDto, UpdateContactInfoDto, ContactInfo } from '@/lib/backend/schemas/portfolio-new.schema';
+import { CreateContactInfoDto, UpdateContactInfoDto, ContactInfo } from '@/lib/backend/schemas/portfolio.schema';
 
 export class BackendContactInfoService extends BackendBaseService<ContactInfo> {
   constructor() {

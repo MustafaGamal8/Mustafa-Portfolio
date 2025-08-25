@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BackendAboutCardService } from '@/lib/backend/services/about-card.service';
 import { apiHandler } from '@/lib/backend/api-handler';
-import { createAboutCardSchema, updateAboutCardSchema } from '@/lib/backend/schemas/portfolio-new.schema';
+import { createAboutCardSchema, updateAboutCardSchema } from '@/lib/backend/schemas/portfolio.schema';
 
 const aboutCardService = new BackendAboutCardService();
 

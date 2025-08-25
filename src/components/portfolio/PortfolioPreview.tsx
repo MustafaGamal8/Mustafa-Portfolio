@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { portfolioService } from '@/services/frontend/portfolio.service';
+import { portfolioService } from '@/lib/frontend/services/portfolio.service';
 import { Language } from '@prisma/client';
 
 interface PortfolioPreviewProps {

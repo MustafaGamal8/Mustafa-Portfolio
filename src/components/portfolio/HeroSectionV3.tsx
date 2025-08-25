@@ -15,31 +15,12 @@ const HeroSectionV3 = () => {
     sectionName: 'hero'
   });
 
-  // Static fallback data
-  const staticHeroData = {
-    name: language === 'ar' ? 'مصطفى جمال' : 'Mostafa Gamal',
-    mainTitle: language === 'ar' ? 'مهندس برمجيات ومبتكر حلول' : 'Software Engineer & Solution Innovator',
-    subTitle: language === 'ar' ? 'أحول الأفكار إلى واقع رقمي' : 'Turning ideas into digital reality',
-    description: language === 'ar'
-      ? 'مرحباً بك! أنا مصطفى، مهندس برمجيات شغوف بتطوير الحلول التقنية المبتكرة.'
-      : 'Welcome! I\'m Mostafa, a passionate software engineer dedicated to developing innovative technical solutions.',
-    dynamicTexts: language === 'ar'
-      ? ['مطور ويب', 'مطور Flutter', 'خبير DevOps', 'مؤسس شركة', 'مطور AI', 'مبتكر حلول']
-      : ['Web Developer', 'Flutter Expert', 'DevOps Expert', 'Company Founder', 'AI Developer', 'Solution Innovator'],
-    ctaText: language === 'ar' ? 'تواصل معي' : 'Contact Me'
-  };
+
 
   // Use API data if available, otherwise use static data
-  const displayData = heroData && heroData.length > 0 ? heroData[0] : staticHeroData;
+  const displayData = heroData ?? {};
 
-  const dynamicTexts = displayData.dynamicTexts || [
-    t('hero.dynamic.web'),
-    t('hero.dynamic.flutter'),
-    t('hero.dynamic.devops'),
-    t('hero.dynamic.founder'),
-    t('hero.dynamic.ai'),
-    t('hero.dynamic.solutions')
-  ];
+  const dynamicTexts = displayData.dynamicTexts || [];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -48,32 +29,7 @@ const HeroSectionV3 = () => {
     return () => clearInterval(interval);
   }, []);
   // Enhanced logo component with better design
-  const CustomLogo = () => (
-    <div
-      className={`flex items-center justify-center gap-4 mb-8 ${language === 'ar' ? 'flex-row-reverse' : 'flex-row'
-        }`}
-    >
-      {/* Enhanced M8 Logo */}
-      <div className="relative group">
-        <div className="text-4xl md:text-6xl font-bold text-primary relative transform group-hover:scale-105 transition-transform duration-300">
-          <span className="relative inline-block">
-            <span className="bg-gradient-to-br from-primary to-primary-light bg-clip-text text-transparent">M</span>
-            <span className="absolute -top-1 -right-1 text-lg md:text-2xl text-primary-light font-light animate-pulse">8</span>
-          </span>
-        </div>
-        <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-      </div>
 
-      {/* Enhanced code brackets with name */}
-      <div className="flex flex-col items-center space-y-1">
-        <div className="text-sm md:text-lg text-primary-dark font-mono animate-fade-in">&lt;</div>
-        <div className="text-xl md:text-3xl font-bold text-foreground px-2 bg-gradient-to-r from-primary/10 to-primary-light/10 rounded-lg backdrop-blur-sm">
-          {language === 'ar' ? 'مصطفى جمال' : 'Mostafa Gamal'}
-        </div>
-        <div className="text-sm md:text-lg text-primary-dark font-mono animate-fade-in">/&gt;</div>
-      </div>
-    </div>
-  );
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">

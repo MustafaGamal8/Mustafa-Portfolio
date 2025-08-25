@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BackendSocialLinkService } from '@/lib/backend/services/social-link.service';
 import { apiHandler } from '@/lib/backend/api-handler';
-import { createSocialLinkSchema, updateSocialLinkSchema } from '@/lib/backend/schemas/portfolio-new.schema';
+import { createSocialLinkSchema, updateSocialLinkSchema } from '@/lib/backend/schemas/portfolio.schema';
 
 const socialLinkService = new BackendSocialLinkService();
 

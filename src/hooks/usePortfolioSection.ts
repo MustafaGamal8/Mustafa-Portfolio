@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { portfolioService } from '@/services/frontend/portfolio.service';
+import { portfolioService } from '@/lib/frontend/services/portfolio.service';
 import { useLanguage } from '@/components/portfolio/LanguageProvider';
 
 interface UsePortfolioSectionProps {
@@ -35,13 +35,14 @@ export function usePortfolioSection<T = any>({
 
     try {
       const response = await portfolioService.getPortfolioSections({
-        lang: language as 'EN' | 'AR',
+        lang: language.toLocaleUpperCase() as 'EN' | 'AR',
         sections: [sectionName]
       });
-
+      
       if (response.success && response.data) {
         // Get the data for this specific section
         const sectionKey = getSectionKey(sectionName);
+        console.log("🚀 ~ fetchData ~ sectionKey:", sectionKey,response)
         const sectionData = (response.data as any)[sectionKey];
         if (sectionData) {
           setData(sectionData);
@@ -80,17 +81,19 @@ export function usePortfolioSection<T = any>({
 // Helper function to map section names to API response keys
 function getSectionKey(sectionName: string): string {
   const sectionMap: Record<string, string> = {
-    'hero': 'heroContent',
-    'about': 'aboutCards',
-    'skills': 'skillCategories',
+    'hero': 'hero',
+    'about': 'about',
+    'skills': 'skills',
     'projects': 'projects',
     'achievements': 'achievements',
-    'contact': 'contactInfo',
-    'social': 'socialLinks',
-    'personal': 'personalInfo',
+    'contact': 'contact',
+    'social': 'contact',
+    'personal': 'personal',
     'services': 'services',
-    'quicklinks': 'quickLinks'
+    'quicklinks': 'contact'
   };
 
   return sectionMap[sectionName.toLowerCase()] || sectionName;
 }
+
+          

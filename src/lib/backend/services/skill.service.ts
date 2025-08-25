@@ -1,13 +1,25 @@
 import { BackendBaseService } from '@/lib/backend/bacendBase.service';
 import { ApiError } from '@/lib/backend/exceptions/api-error';
 import { IQueryOptions } from '@/interfaces/query.interface';
-import { CreateSkillDto, UpdateSkillDto, Skill } from '@/lib/backend/schemas/portfolio-new.schema';
+import { CreateSkillDto, UpdateSkillDto, Skill } from '@/lib/backend/schemas/portfolio.schema';
 
 export class BackendSkillService extends BackendBaseService<Skill> {
   constructor() {
     super('skill');
   }
 
+
+  async getPublicSkills(): Promise<any> {
+    return this.model.findMany({
+      where: {
+        isActive: true
+      },
+      include: {
+        skillCategory: true
+      },
+      orderBy: { order: 'asc' }
+    });
+  }
   async create(data: CreateSkillDto): Promise<any> {
     return this.model.create({
       data,
@@ -56,7 +68,7 @@ export class BackendSkillService extends BackendBaseService<Skill> {
     return this.model.update({
       where: { id },
       data,
-      
+
     });
   }
 
@@ -68,7 +80,7 @@ export class BackendSkillService extends BackendBaseService<Skill> {
 
     return this.model.delete({
       where: { id },
-    
+
     });
   }
 }

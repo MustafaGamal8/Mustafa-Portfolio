@@ -1,7 +1,7 @@
 import { BackendBaseService } from '@/lib/backend/bacendBase.service';
 import { ApiError } from '@/lib/backend/exceptions/api-error';
 import { IQueryOptions } from '@/interfaces/query.interface';
-import { CreateSkillCategoryDto, UpdateSkillCategoryDto, SkillCategory } from '@/lib/backend/schemas/portfolio-new.schema';
+import { CreateSkillCategoryDto, UpdateSkillCategoryDto, SkillCategory } from '@/lib/backend/schemas/portfolio.schema';
 
 export class BackendSkillCategoryService extends BackendBaseService<SkillCategory> {
   constructor() {
@@ -31,7 +31,7 @@ export class BackendSkillCategoryService extends BackendBaseService<SkillCategor
       include: {
         skills: {
           where: { isActive: true },
-        
+
           orderBy: { order: 'asc' }
         },
         ...processedOptions.include
@@ -51,7 +51,7 @@ export class BackendSkillCategoryService extends BackendBaseService<SkillCategor
       data,
       include: {
         skills: {
-  
+
           orderBy: { order: 'asc' }
         }
       }

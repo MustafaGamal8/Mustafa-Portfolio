@@ -11,9 +11,7 @@ export class BackendAboutCardService extends BackendBaseService<AboutCard> {
   async create(data: CreateAboutCardDto): Promise<any> {
     return this.model.create({
       data,
-      include: {
-        icon: true
-      }
+    
     });
   }
 
@@ -27,7 +25,6 @@ export class BackendAboutCardService extends BackendBaseService<AboutCard> {
         ...processedOptions.where
       },
       include: {
-        icon: true,
         ...processedOptions.include
       },
       orderBy: { order: 'asc' }
@@ -43,9 +40,7 @@ export class BackendAboutCardService extends BackendBaseService<AboutCard> {
     return this.model.update({
       where: { id },
       data,
-      include: {
-        icon: true
-      }
+  
     });
   }
 
@@ -57,9 +52,7 @@ export class BackendAboutCardService extends BackendBaseService<AboutCard> {
 
     return this.model.delete({
       where: { id },
-      include: {
-        icon: true
-      }
+    
     });
   }
 

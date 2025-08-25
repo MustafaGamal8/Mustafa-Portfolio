@@ -29,6 +29,10 @@ export interface IQueryOptions {
   [key: string]: any;
 }
 
+export interface IQueryParams {
+  [key: string]: any;
+}
+
 export interface QueryMeta {
   page?: number;
   limit?: number;

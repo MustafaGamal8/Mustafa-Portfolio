@@ -8,13 +8,14 @@ import ProjectsSectionV2 from '@/components/portfolio/ProjectsSectionV2';
 import AchievementsSection from '@/components/portfolio/AchievementsSection';
 import ContactSection from '@/components/portfolio/ContactSection';
 import Footer from '@/components/portfolio/Footer';
+import PortfolioPreview from '@/components/portfolio/PortfolioPreview';
 
 export default function Home() {
   return (
     <LanguageProvider>
       <main className="min-h-screen">
         <LoadingScreen />
-        <Navbar />
+        <Navbar />   
         <HeroSectionV3 />
         <AboutSectionV2 />
         <SkillsSectionV2 />
@@ -24,6 +25,6 @@ export default function Home() {
         <Footer />
       </main>
     </LanguageProvider>
-  
+
   );
 }

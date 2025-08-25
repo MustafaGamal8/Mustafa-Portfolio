@@ -1,33 +1,68 @@
 'use client';
 import { Mail, Phone, MapPin, Heart, ExternalLink } from 'lucide-react';
+import { usePortfolioSection } from '@/hooks/usePortfolioSection';
+import { useLanguage } from './LanguageProvider';
 
 const Footer = () => {
+  const { language } = useLanguage();
+  const { data: footerData, loading, isStaticData } = usePortfolioSection({ sectionName: 'footer' });
   const currentYear = new Date().getFullYear();
-  
-  const socialLinks = [
+
+  // Static fallback data with multi-language support
+  const staticSocialLinks = [
     { name: 'LinkedIn', url: 'https://linkedin.com/in/mostafa-gamal', icon: 'LinkedIn' },
     { name: 'GitHub', url: 'https://github.com/mostafa-codes', icon: 'GitHub' },
     { name: 'Twitter', url: 'https://twitter.com/mostafa_codes', icon: 'Twitter' },
     { name: 'Instagram', url: 'https://instagram.com/mostafa.codes', icon: 'Instagram' }
   ];
 
-  const quickLinks = [
-    { name: 'الرئيسية', href: '#hero' },
-    { name: 'عني', href: '#about' },
-    { name: 'مهاراتي', href: '#skills' },
-    { name: 'مشاريعي', href: '#projects' },
-    { name: 'إنجازاتي', href: '#achievements' },
-    { name: 'تواصل معي', href: '#contact' }
+  const staticQuickLinks = [
+    {
+      name: language === 'ar' ? 'الرئيسية' : 'Home',
+      href: '#hero'
+    },
+    {
+      name: language === 'ar' ? 'عني' : 'About',
+      href: '#about'
+    },
+    {
+      name: language === 'ar' ? 'مهاراتي' : 'Skills',
+      href: '#skills'
+    },
+    {
+      name: language === 'ar' ? 'مشاريعي' : 'Projects',
+      href: '#projects'
+    },
+    {
+      name: language === 'ar' ? 'إنجازاتي' : 'Achievements',
+      href: '#achievements'
+    },
+    {
+      name: language === 'ar' ? 'تواصل معي' : 'Contact',
+      href: '#contact'
+    }
   ];
 
-  const services = [
+  const staticServices = language === 'ar' ? [
     'تطوير مواقع الويب',
     'تطبيقات الموبايل',
     'أنظمة إدارة المحتوى',
     'حلول الذكاء الاصطناعي',
     'خدمات DevOps',
     'استشارات تقنية'
+  ] : [
+    'Web Development',
+    'Mobile Applications',
+    'Content Management Systems',
+    'AI Solutions',
+    'DevOps Services',
+    'Technical Consulting'
   ];
+
+  // Use API data if available, otherwise use static data
+  const socialLinks = footerData?.socialLinks || staticSocialLinks;
+  const quickLinks = footerData?.quickLinks || staticQuickLinks;
+  const services = footerData?.services || staticServices;
 
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
@@ -42,13 +77,17 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="lg:col-span-1">
             <div className="mb-6">
-              <h3 className="text-2xl font-bold mb-2">مصطفى جمال</h3>
+              <h3 className="text-2xl font-bold mb-2">
+                {language === 'ar' ? 'مصطفى جمال' : 'Mostafa Gamal'}
+              </h3>
               <p className="text-primary-foreground/80 text-sm leading-relaxed">
-                مهندس برمجيات ومؤسس Webnest، متخصص في تطوير الحلول التقنية المبتكرة 
-                التي تساعد الشركات على النمو والتطور في العصر الرقمي.
+                {language === 'ar'
+                  ? 'مهندس برمجيات ومؤسس Webnest، متخصص في تطوير الحلول التقنية المبتكرة التي تساعد الشركات على النمو والتطور في العصر الرقمي.'
+                  : 'Software Engineer and Founder of Webnest, specialized in developing innovative technical solutions that help companies grow and evolve in the digital age.'
+                }
               </p>
             </div>
-            
+
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm">
                 <Mail size={16} className="text-primary-foreground/60" />
@@ -60,16 +99,18 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <MapPin size={16} className="text-primary-foreground/60" />
-                <span>القاهرة، مصر</span>
+                <span>{language === 'ar' ? 'القاهرة، مصر' : 'Cairo, Egypt'}</span>
               </div>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">روابط سريعة</h4>
+            <h4 className="text-lg font-semibold mb-4">
+              {language === 'ar' ? 'روابط سريعة' : 'Quick Links'}
+            </h4>
             <ul className="space-y-2">
-              {quickLinks.map((link, index) => (
+              {quickLinks.map((link: any, index: number) => (
                 <li key={index}>
                   <button
                     onClick={() => scrollToSection(link.href)}
@@ -84,9 +125,11 @@ const Footer = () => {
 
           {/* Services */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">خدماتي</h4>
+            <h4 className="text-lg font-semibold mb-4">
+              {language === 'ar' ? 'خدماتي' : 'My Services'}
+            </h4>
             <ul className="space-y-2">
-              {services.map((service, index) => (
+              {services.map((service: any, index: number) => (
                 <li key={index} className="text-sm text-primary-foreground/80 flex items-center gap-2">
                   <div className="w-1 h-1 bg-primary-foreground/60 rounded-full flex-shrink-0"></div>
                   {service}
@@ -97,7 +140,9 @@ const Footer = () => {
 
           {/* Company & Social */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">تابعني</h4>
+            <h4 className="text-lg font-semibold mb-4">
+              {language === 'ar' ? 'تابعني' : 'Follow Me'}
+            </h4>
             <div className="space-y-4">
               <div>
                 <a
@@ -106,13 +151,13 @@ const Footer = () => {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors duration-200 group"
                 >
-                  <span>شركة Webnest</span>
+                  <span>{language === 'ar' ? 'شركة Webnest' : 'Webnest Company'}</span>
                   <ExternalLink size={14} className="group-hover:translate-x-1 transition-transform duration-200" />
                 </a>
               </div>
-              
+
               <div className="flex gap-4">
-                {socialLinks.map((social, index) => (
+                {socialLinks.map((social: any, index: number) => (
                   <a
                     key={index}
                     href={social.url}
@@ -137,20 +182,39 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-primary-foreground/80">
-              <span>© {currentYear} مصطفى جمال. جميع الحقوق محفوظة.</span>
+              <span>
+                {language === 'ar'
+                  ? `© ${currentYear} مصطفى جمال. جميع الحقوق محفوظة.`
+                  : `© ${currentYear} Mostafa Gamal. All rights reserved.`
+                }
+              </span>
             </div>
-            
+
             <div className="flex items-center gap-2 text-sm text-primary-foreground/80">
-              <span>صُنع بـ</span>
+              <span>{language === 'ar' ? 'صُنع بـ' : 'Made with'}</span>
               <Heart size={16} className="text-red-300 animate-pulse" />
-              <span>في مصر</span>
+              <span>{language === 'ar' ? 'في مصر' : 'in Egypt'}</span>
             </div>
           </div>
-          
+
+          {/* Data Source Indicator */}
+          {(loading || !isStaticData) && (
+            <div className="mt-4 flex items-center justify-center gap-2">
+              {loading && (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground"></div>
+              )}
+              <span className="text-xs text-primary-foreground/60">
+                {loading ? 'Loading from API...' : isStaticData ? 'Static Data' : 'Live Data ✓'}
+              </span>
+            </div>
+          )}
+
           <div className="mt-4 pt-4 border-t border-primary-foreground/10">
             <p className="text-center text-xs text-primary-foreground/60 leading-relaxed">
-              هذا الموقع تم تطويره باستخدام React, TypeScript, Tailwind CSS وأحدث تقنيات الويب. 
-              للاستفسارات والمشاريع الجديدة، لا تتردد في التواصل معي.
+              {language === 'ar'
+                ? 'هذا الموقع تم تطويره باستخدام React, TypeScript, Tailwind CSS وأحدث تقنيات الويب. للاستفسارات والمشاريع الجديدة، لا تتردد في التواصل معي.'
+                : 'This website was developed using React, TypeScript, Tailwind CSS and the latest web technologies. For inquiries and new projects, feel free to contact me.'
+              }
             </p>
           </div>
         </div>

@@ -1,7 +1,8 @@
 'use client';
-'use client';
 import React, { useState } from 'react';
 import { ExternalLink, Github, Calendar, Users, Star, ArrowLeft, ArrowRight } from 'lucide-react';
+import { usePortfolioSection } from '@/hooks/usePortfolioSection';
+import { useLanguage } from './LanguageProvider';
 
 const projectWebImage = '/assets/project-web.jpg';
 const projectChatbotImage = '/assets/project-chatbot.jpg';
@@ -11,102 +12,105 @@ const projectManagementImage = '/assets/project-management.jpg';
 const projectEcommerceImage = '/assets/project-ecommerce.jpg';
 
 const ProjectsSectionV2 = () => {
+  const { language } = useLanguage();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const projects = [
+  // Fetch projects data from API
+  const { data: projectsData, loading, error, isStaticData } = usePortfolioSection({
+    sectionName: 'projects'
+  });
+
+  // Static fallback data
+  const staticProjects = [
     {
-      title: 'منصة Webnest الشاملة',
-      description: 'موقع شركة متقدم يقدم خدمات تطوير الويب والتطبيقات مع نظام إدارة محتوى متطور ولوحة تحكم شاملة للعملاء والمشاريع.',
-      longDescription: 'منصة شاملة تضم موقع الشركة، نظام CRM متطور، لوحة تحكم للمشاريع، وسائل الدفع المتعددة، وتقارير تفصيلية. المنصة تدعم عدة لغات ومحسنة للسيو.',
+      title: language === 'ar' ? 'منصة Webnest الشاملة' : 'Comprehensive Webnest Platform',
+      description: language === 'ar'
+        ? 'موقع شركة متقدم يقدم خدمات تطوير الويب والتطبيقات مع نظام إدارة محتوى متطور ولوحة تحكم شاملة للعملاء والمشاريع.'
+        : 'Advanced company website providing web and app development services with advanced content management system and comprehensive control panel for clients and projects.',
+      longDescription: language === 'ar'
+        ? 'منصة شاملة تضم موقع الشركة، نظام CRM متطور، لوحة تحكم للمشاريع، وسائل الدفع المتعددة، وتقارير تفصيلية. المنصة تدعم عدة لغات ومحسنة للسيو.'
+        : 'Comprehensive platform including company website, advanced CRM system, project control panel, multiple payment methods, and detailed reports. The platform supports multiple languages and is SEO optimized.',
       image: projectWebImage,
       tags: ['React', 'Next.js', 'TypeScript', 'Tailwind', 'Laravel API'],
       category: 'web',
       link: 'https://webnest.com.eg',
       github: 'https://github.com/mostafa/webnest',
-      status: 'مكتمل',
-      duration: '4 أشهر',
-      teamSize: '3 مطورين',
-      features: ['نظام إدارة محتوى', 'متعدد اللغات', 'محسن للسيو', 'لوحة تحكم شاملة']
+      status: language === 'ar' ? 'مكتمل' : 'Completed',
+      duration: language === 'ar' ? '4 أشهر' : '4 months',
+      teamSize: language === 'ar' ? '3 مطورين' : '3 developers',
+      features: language === 'ar'
+        ? ['نظام إدارة محتوى', 'متعدد اللغات', 'محسن للسيو', 'لوحة تحكم شاملة']
+        : ['Content Management System', 'Multi-language', 'SEO Optimized', 'Comprehensive Dashboard']
     },
     {
-      title: 'نظام ChatBot AI المتطور',
-      description: 'chatbot ذكي للشركات مع معالجة اللغة الطبيعية، تعلم آلي، ودمج مع أنظمة CRM لخدمة عملاء متفوقة على مدار الساعة.',
-      longDescription: 'نظام ذكاء اصطناعي متقدم يدعم المحادثات باللغة العربية والإنجليزية، مع قدرات تعلم مستمر وتحليل للمشاعر، ودمج مع أنظمة الشركة المختلفة.',
+      title: language === 'ar' ? 'نظام ChatBot AI المتطور' : 'Advanced AI ChatBot System',
+      description: language === 'ar'
+        ? 'chatbot ذكي للشركات مع معالجة اللغة الطبيعية، تعلم آلي، ودمج مع أنظمة CRM لخدمة عملاء متفوقة على مدار الساعة.'
+        : 'Smart chatbot for companies with natural language processing, machine learning, and CRM system integration for superior 24/7 customer service.',
+      longDescription: language === 'ar'
+        ? 'نظام ذكاء اصطناعي متقدم يدعم المحادثات باللغة العربية والإنجليزية، مع قدرات تعلم مستمر وتحليل للمشاعر، ودمج مع أنظمة الشركة المختلفة.'
+        : 'Advanced AI system supporting conversations in Arabic and English, with continuous learning capabilities and sentiment analysis, integrated with various company systems.',
       image: projectChatbotImage,
       tags: ['Python', 'TensorFlow', 'NLP', 'FastAPI', 'Redis'],
       category: 'ai',
       link: 'https://demo.chatbot-ai.com',
       github: 'https://github.com/mostafa/ai-chatbot',
-      status: 'مكتمل',
-      duration: '6 أشهر',
-      teamSize: '2 مطورين',
-      features: ['معالجة اللغة الطبيعية', 'تعلم آلي', 'دعم متعدد اللغات', 'تحليل المشاعر']
+      status: language === 'ar' ? 'مكتمل' : 'Completed',
+      duration: language === 'ar' ? '6 أشهر' : '6 months',
+      teamSize: language === 'ar' ? '2 مطورين' : '2 developers',
+      features: language === 'ar'
+        ? ['معالجة اللغة الطبيعية', 'تعلم آلي', 'دعم متعدد اللغات', 'تحليل المشاعر']
+        : ['Natural Language Processing', 'Machine Learning', 'Multi-language Support', 'Sentiment Analysis']
     },
     {
-      title: 'منصة الزراعة الذكية',
-      description: 'نظام متكامل لمراقبة المحاصيل باستخدام طائرة DJI Mavic 3M مع معالجة الصور بالذكاء الاصطناعي وتحليل البيانات الزراعية.',
-      longDescription: 'منصة شاملة تجمع بين تقنيات الطائرات المسيرة والذكاء الاصطناعي لمراقبة المحاصيل، تحليل التربة، كشف الآفات، وتوفير توصيات زراعية مخصصة للمزارعين.',
+      title: language === 'ar' ? 'منصة الزراعة الذكية' : 'Smart Agriculture Platform',
+      description: language === 'ar'
+        ? 'نظام متكامل لمراقبة المحاصيل باستخدام طائرة DJI Mavic 3M مع معالجة الصور بالذكاء الاصطناعي وتحليل البيانات الزراعية.'
+        : 'Integrated system for crop monitoring using DJI Mavic 3M drone with AI image processing and agricultural data analysis.',
+      longDescription: language === 'ar'
+        ? 'منصة شاملة تجمع بين تقنيات الطائرات المسيرة والذكاء الاصطناعي لمراقبة المحاصيل، تحليل التربة، كشف الآفات، وتوفير توصيات زراعية مخصصة للمزارعين.'
+        : 'Comprehensive platform combining drone technology and artificial intelligence for crop monitoring, soil analysis, pest detection, and providing customized agricultural recommendations for farmers.',
       image: projectDroneImage,
       tags: ['Python', 'OpenCV', 'Machine Learning', 'IoT', 'React Dashboard'],
       category: 'iot',
       link: 'https://smart-agriculture.com',
       github: 'https://github.com/mostafa/smart-agriculture',
-      status: 'مكتمل',
-      duration: '8 أشهر',
-      teamSize: '4 مطورين',
-      features: ['تحليل الصور الجوية', 'كشف الآفات', 'تحليل التربة', 'تقارير مفصلة']
-    },
-    {
-      title: 'تطبيق EcoLife Mobile',
-      description: 'تطبيق Flutter متعدد المنصات للحياة الصحية والبيئية مع تتبع الأنشطة، نصائح بيئية، ونظام مكافآت تفاعلي.',
-      longDescription: 'تطبيق شامل يساعد المستخدمين على تبني نمط حياة صحي وصديق للبيئة، مع ميزات تتبع الأنشطة، حساب البصمة الكربونية، ومجتمع تفاعلي للمستخدمين.',
-      image: projectFlutterImage,
-      tags: ['Flutter', 'Dart', 'Firebase', 'Google Maps API', 'Push Notifications'],
-      category: 'mobile',
-      link: 'https://apps.apple.com/ecolife',
-      github: 'https://github.com/mostafa/ecolife-app',
-      status: 'مكتمل',
-      duration: '5 أشهر',
-      teamSize: '2 مطورين',
-      features: ['تتبع الأنشطة', 'حساب البصمة الكربونية', 'نظام مكافآت', 'مجتمع تفاعلي']
-    },
-    {
-      title: 'نظام إدارة المشاريع ProManager',
-      description: 'منصة شاملة لإدارة المشاريع والفرق مع تتبع المهام، إدارة الموارد، تقارير تفصيلية، وتكامل مع أدوات التطوير.',
-      longDescription: 'نظام متطور لإدارة المشاريع يوفر أدوات شاملة للتخطيط، التنفيذ، والمتابعة مع لوحات تحكم تفاعلية، إشعارات ذكية، وتقارير مفصلة لتحليل الأداء.',
-      image: projectManagementImage,
-      tags: ['Laravel', 'Vue.js', 'MySQL', 'Redis', 'Websockets'],
-      category: 'web',
-      link: 'https://promanager-demo.com',
-      github: 'https://github.com/mostafa/promanager',
-      status: 'مكتمل',
-      duration: '7 أشهر',
-      teamSize: '5 مطورين',
-      features: ['إدارة المهام', 'تتبع الوقت', 'تقارير تفاعلية', 'التعاون الجماعي']
-    },
-    {
-      title: 'متجر TechMart الإلكتروني',
-      description: 'منصة تجارة إلكترونية متطورة للأجهزة التقنية مع نظام دفع متعدد، إدارة المخزون، وتجربة تسوق متميزة.',
-      longDescription: 'متجر إلكتروني شامل يوفر تجربة تسوق سلسة مع محرك بحث متقدم، توصيات ذكية، نظام مراجعات، وإدارة شاملة للطلبات والشحن.',
-      image: projectEcommerceImage,
-      tags: ['Next.js', 'Stripe', 'MongoDB', 'Node.js', 'Tailwind CSS'],
-      category: 'web',
-      link: 'https://techmart-demo.com',
-      github: 'https://github.com/mostafa/techmart',
-      status: 'قيد التطوير',
-      duration: '6 أشهر',
-      teamSize: '4 مطورين',
-      features: ['نظام دفع متعدد', 'إدارة المخزون', 'توصيات ذكية', 'تتبع الطلبات']
+      status: language === 'ar' ? 'مكتمل' : 'Completed',
+      duration: language === 'ar' ? '8 أشهر' : '8 months',
+      teamSize: language === 'ar' ? '4 مطورين' : '4 developers',
+      features: language === 'ar'
+        ? ['تحليل الصور الجوية', 'كشف الآفات', 'تحليل التربة', 'تقارير مفصلة']
+        : ['Aerial Image Analysis', 'Pest Detection', 'Soil Analysis', 'Detailed Reports']
     }
   ];
 
+  // Use API data if available, otherwise use static data
+  const projects = projectsData && projectsData.length > 0
+    ? projectsData.map((project: any) => ({
+      ...project,
+      image: project.image?.url || getDefaultImage(project.category),
+      tags: project.technologies || [],
+      features: project.features || []
+    }))
+    : staticProjects;
+
+  function getDefaultImage(category: string) {
+    const imageMap: Record<string, string> = {
+      'web': projectWebImage,
+      'ai': projectChatbotImage,
+      'iot': projectDroneImage,
+      'mobile': projectFlutterImage
+    };
+    return imageMap[category] || projectWebImage;
+  }
+
   const categories = [
-    { id: 'all', name: 'جميع المشاريع', count: projects.length },
-    { id: 'web', name: 'تطوير الويب', count: projects.filter(p => p.category === 'web').length },
-    { id: 'mobile', name: 'تطبيقات الموبايل', count: projects.filter(p => p.category === 'mobile').length },
-    { id: 'ai', name: 'الذكاء الاصطناعي', count: projects.filter(p => p.category === 'ai').length },
-    { id: 'iot', name: 'إنترنت الأشياء', count: projects.filter(p => p.category === 'iot').length }
+    { id: 'all', name: language === 'ar' ? 'جميع المشاريع' : 'All Projects', count: projects.length },
+    { id: 'web', name: language === 'ar' ? 'تطوير الويب' : 'Web Development', count: projects.filter((p: any) => p.category === 'web').length },
+    { id: 'mobile', name: language === 'ar' ? 'تطبيقات الموبايل' : 'Mobile Apps', count: projects.filter((p: any) => p.category === 'mobile').length },
+    { id: 'ai', name: language === 'ar' ? 'الذكاء الاصطناعي' : 'Artificial Intelligence', count: projects.filter((p: any) => p.category === 'ai').length },
+    { id: 'iot', name: language === 'ar' ? 'إنترنت الأشياء' : 'IoT', count: projects.filter((p: any) => p.category === 'iot').length }
   ];
 
   const filteredProjects = selectedCategory === 'all'
@@ -144,12 +148,26 @@ const ProjectsSectionV2 = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-8">
-            مشاريعي المتميزة
+            {language === 'ar' ? 'مشاريعي المتميزة' : 'My Featured Projects'}
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed mb-8">
-            مجموعة مختارة من أفضل المشاريع التي عملت عليها، كل مشروع يعكس خبرتي في تقنيات مختلفة
-            وحلول مبتكرة تلبي احتياجات العملاء المتنوعة.
+            {language === 'ar'
+              ? 'مجموعة مختارة من أفضل المشاريع التي عملت عليها، كل مشروع يعكس خبرتي في تقنيات مختلفة وحلول مبتكرة تلبي احتياجات العملاء المتنوعة.'
+              : 'A curated selection of the best projects I\'ve worked on, each project reflects my expertise in different technologies and innovative solutions that meet diverse client needs.'
+            }
           </p>
+
+          {/* Data Source Indicator */}
+          {(loading || !isStaticData) && (
+            <div className="mb-8 flex items-center justify-center gap-2">
+              {loading && (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+              )}
+              <span className="text-xs text-muted-foreground">
+                {loading ? 'Loading from API...' : isStaticData ? 'Static Data' : 'Live Data ✓'}
+              </span>
+            </div>
+          )}
 
           {/* Category Filters */}
           <div className="flex flex-wrap justify-center gap-3 mb-12">

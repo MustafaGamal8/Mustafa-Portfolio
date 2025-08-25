@@ -1,48 +1,96 @@
 'use client';
 import { useState } from 'react';
 import { Code, Lightbulb, Target, Rocket, Users, Award } from 'lucide-react';
+import { usePortfolioSection } from '@/hooks/usePortfolioSection';
+import { useLanguage } from './LanguageProvider';
 
 const AboutSectionV2 = () => {
+  const { language } = useLanguage();
   const [flippedCards, setFlippedCards] = useState<Set<number>>(new Set());
 
-  const qaCards = [
+  // Fetch about data from API
+  const { data: aboutData, loading, error, isStaticData } = usePortfolioSection({
+    sectionName: 'about'
+  });
+
+  // Static fallback data
+  const staticAboutCards = [
     {
       icon: <Users size={32} />,
-      question: "مين أنا؟",
-      answer: "مهندس برمجيات متخصص في تطوير الحلول التقنية المبتكرة، مؤسس شركة Webnest لحلول الويب والتطبيقات الذكية. أجمع بين الخبرة التقنية والفهم العميق لاحتياجات السوق المحلي والعالمي.",
+      question: language === 'ar' ? "مين أنا؟" : "Who am I?",
+      answer: language === 'ar'
+        ? "مهندس برمجيات متخصص في تطوير الحلول التقنية المبتكرة، مؤسس شركة Webnest لحلول الويب والتطبيقات الذكية."
+        : "A software engineer specialized in developing innovative technical solutions, founder of Webnest for web solutions and smart applications.",
       gradient: "from-blue-500 to-purple-600"
     },
     {
       icon: <Rocket size={32} />,
-      question: "بدأت منين؟", 
-      answer: "بدأت رحلتي في WE School for Applied Technology حيث تعلمت أساسيات هندسة البرمجيات. ثم طورت مهاراتي من خلال العمل على مشاريع حقيقية ومتنوعة في مجالات مختلفة من تطوير الويب إلى الذكاء الاصطناعي.",
+      question: language === 'ar' ? "بدأت منين؟" : "Where did I start?",
+      answer: language === 'ar'
+        ? "بدأت رحلتي في WE School for Applied Technology حيث تعلمت أساسيات هندسة البرمجيات. ثم طورت مهاراتي من خلال العمل على مشاريع حقيقية ومتنوعة."
+        : "I started my journey at WE School for Applied Technology where I learned the fundamentals of software engineering. Then I developed my skills through working on real and diverse projects.",
       gradient: "from-green-500 to-teal-600"
     },
     {
       icon: <Code size={32} />,
-      question: "بعمل إيه دلوقتي؟",
-      answer: "حالياً طالب في Delta Higher Institute وأعمل كمهندس برمجيات في مشاريع متنوعة. أركز على تطوير تطبيقات الويب بـ React، تطبيقات الموبايل بـ Flutter، وأنظمة DevOps مع خبرة في الذكاء الاصطناعي وتقنيات الطائرات المسيرة.",
+      question: language === 'ar' ? "بعمل إيه دلوقتي؟" : "What do I do now?",
+      answer: language === 'ar'
+        ? "حالياً طالب في Delta Higher Institute وأعمل كمهندس برمجيات في مشاريع متنوعة. أركز على تطوير تطبيقات الويب بـ React، تطبيقات الموبايل بـ Flutter."
+        : "Currently a student at Delta Higher Institute and working as a software engineer on diverse projects. I focus on developing web applications with React, mobile applications with Flutter.",
       gradient: "from-orange-500 to-red-600"
     },
     {
       icon: <Lightbulb size={32} />,
-      question: "إيه تخصصي؟",
-      answer: "متخصص في Full Stack Development مع خبرة عميقة في React.js, Next.js, Laravel, Flutter, وأنظمة DevOps. كما أعمل مع تقنيات الذكاء الاصطناعي، معالجة الصور، وتطوير حلول مبتكرة للشركات والمؤسسات.",
+      question: language === 'ar' ? "إيه تخصصي؟" : "What's my specialty?",
+      answer: language === 'ar'
+        ? "متخصص في Full Stack Development مع خبرة عميقة في React.js, Next.js, Laravel, Flutter, وأنظمة DevOps. كما أعمل مع تقنيات الذكاء الاصطناعي."
+        : "Specialized in Full Stack Development with deep experience in React.js, Next.js, Laravel, Flutter, and DevOps systems. I also work with AI technologies.",
       gradient: "from-purple-500 to-pink-600"
     },
     {
       icon: <Target size={32} />,
-      question: "إيه هدفي؟",
-      answer: "هدفي بناء حلول تقنية مبتكرة تساعد الشركات والأفراد على تحقيق أهدافهم وتطوير أعمالهم. أسعى لتوفير تجربة مستخدم استثنائية وحلول تقنية فعالة تواكب التطور التكنولوجي السريع.",
+      question: language === 'ar' ? "إيه هدفي؟" : "What's my goal?",
+      answer: language === 'ar'
+        ? "هدفي بناء حلول تقنية مبتكرة تساعد الشركات والأفراد على تحقيق أهدافهم وتطوير أعمالهم."
+        : "My goal is to build innovative technical solutions that help companies and individuals achieve their goals and develop their businesses.",
       gradient: "from-indigo-500 to-blue-600"
     },
     {
       icon: <Award size={32} />,
-      question: "إيه اللي يميزني؟",
-      answer: "يميزني الجمع بين الخبرة التقنية العميقة والفهم الواضح لاحتياجات السوق. أركز على كتابة كود نظيف وقابل للصيانة، مع اتباع أفضل الممارسات في التطوير والتصميم لضمان تقديم منتجات عالية الجودة.",
+      question: language === 'ar' ? "إيه اللي يميزني؟" : "What makes me unique?",
+      answer: language === 'ar'
+        ? "يميزني الجمع بين الخبرة التقنية العميقة والفهم الواضح لاحتياجات السوق. أركز على كتابة كود نظيف وقابل للصيانة."
+        : "I'm distinguished by combining deep technical expertise with clear understanding of market needs. I focus on writing clean and maintainable code.",
       gradient: "from-yellow-500 to-orange-600"
     }
   ];
+
+  // Use API data if available, otherwise use static data
+  const qaCards = aboutData && aboutData.length > 0
+    ? aboutData.map((card: any, index: number) => ({
+      icon: getIconByOrder(index),
+      question: card.question,
+      answer: card.answer,
+      gradient: getGradientByOrder(index)
+    }))
+    : staticAboutCards;
+
+  function getIconByOrder(order: number) {
+    const icons = [<Users size={32} />, <Rocket size={32} />, <Code size={32} />, <Lightbulb size={32} />, <Target size={32} />, <Award size={32} />];
+    return icons[order % icons.length];
+  }
+
+  function getGradientByOrder(order: number) {
+    const gradients = [
+      "from-blue-500 to-purple-600",
+      "from-green-500 to-teal-600",
+      "from-orange-500 to-red-600",
+      "from-purple-500 to-pink-600",
+      "from-indigo-500 to-blue-600",
+      "from-yellow-500 to-orange-600"
+    ];
+    return gradients[order % gradients.length];
+  }
 
   const handleCardClick = (index: number) => {
     const newFlippedCards = new Set(flippedCards);
@@ -59,17 +107,33 @@ const AboutSectionV2 = () => {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-8">
-            تعرف عليّ أكتر
+            {language === 'ar' ? 'تعرف عليّ أكتر' : 'Get to Know Me More'}
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            اكتشف قصتي ورحلتي في عالم البرمجة من خلال هذه البطاقات التفاعلية. 
-            كل بطاقة تحكي جزءاً من رحلتي المهنية والأهداف التي أسعى لتحقيقها.
+            {language === 'ar'
+              ? 'اكتشف قصتي ورحلتي في عالم البرمجة من خلال هذه البطاقات التفاعلية. كل بطاقة تحكي جزءاً من رحلتي المهنية والأهداف التي أسعى لتحقيقها.'
+              : 'Discover my story and journey in the programming world through these interactive cards. Each card tells part of my professional journey and the goals I strive to achieve.'
+            }
           </p>
-          <p className="mobile-tap-indicator mt-4">اضغط على أي بطاقة لقراءة التفاصيل</p>
+          <p className="mobile-tap-indicator mt-4">
+            {language === 'ar' ? 'اضغط على أي بطاقة لقراءة التفاصيل' : 'Tap any card to read details'}
+          </p>
+
+          {/* Data Source Indicator */}
+          {(loading || !isStaticData) && (
+            <div className="mt-4 flex items-center justify-center gap-2">
+              {loading && (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+              )}
+              <span className="text-xs text-muted-foreground">
+                {loading ? 'Loading from API...' : isStaticData ? 'Static Data' : 'Live Data ✓'}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {qaCards.map((card, index) => (
+          {qaCards.map((card: any, index: number) => (
             <div
               key={index}
               className={`flip-card animate-scale-in ${flippedCards.has(index) ? 'flipped' : ''}`}
@@ -91,7 +155,7 @@ const AboutSectionV2 = () => {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className={`flip-card-back bg-gradient-to-br ${card.gradient}`}>
                   <div className="text-center">
                     <div className="mb-4 text-white/90">

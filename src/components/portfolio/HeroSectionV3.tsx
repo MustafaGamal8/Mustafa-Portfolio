@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowDown, ChevronDown, Sparkles } from 'lucide-react';
 import { useLanguage } from './LanguageProvider';
+import { usePortfolioSection } from '@/hooks/usePortfolioSection';
 
 const profileImage = '/assets/profile-image.jpg';
 
@@ -9,7 +10,29 @@ const HeroSectionV3 = () => {
   const { t, language } = useLanguage();
   const [currentText, setCurrentText] = useState(0);
 
-  const dynamicTexts = [
+  // Fetch hero data from API
+  const { data: heroData, loading, error, isStaticData } = usePortfolioSection({
+    sectionName: 'hero'
+  });
+
+  // Static fallback data
+  const staticHeroData = {
+    name: language === 'ar' ? 'مصطفى جمال' : 'Mostafa Gamal',
+    mainTitle: language === 'ar' ? 'مهندس برمجيات ومبتكر حلول' : 'Software Engineer & Solution Innovator',
+    subTitle: language === 'ar' ? 'أحول الأفكار إلى واقع رقمي' : 'Turning ideas into digital reality',
+    description: language === 'ar'
+      ? 'مرحباً بك! أنا مصطفى، مهندس برمجيات شغوف بتطوير الحلول التقنية المبتكرة.'
+      : 'Welcome! I\'m Mostafa, a passionate software engineer dedicated to developing innovative technical solutions.',
+    dynamicTexts: language === 'ar'
+      ? ['مطور ويب', 'مطور Flutter', 'خبير DevOps', 'مؤسس شركة', 'مطور AI', 'مبتكر حلول']
+      : ['Web Developer', 'Flutter Expert', 'DevOps Expert', 'Company Founder', 'AI Developer', 'Solution Innovator'],
+    ctaText: language === 'ar' ? 'تواصل معي' : 'Contact Me'
+  };
+
+  // Use API data if available, otherwise use static data
+  const displayData = heroData && heroData.length > 0 ? heroData[0] : staticHeroData;
+
+  const dynamicTexts = displayData.dynamicTexts || [
     t('hero.dynamic.web'),
     t('hero.dynamic.flutter'),
     t('hero.dynamic.devops'),
@@ -102,11 +125,11 @@ const HeroSectionV3 = () => {
           <div className="animate-scale-in mb-8" style={{ animationDelay: '0.2s' }}>
             {/* <CustomLogo /> */}
             <h1 className="text-5xl md:text-5xl lg:text-8xl font-bold text-foreground mb-6 leading-tight">
-              {t('hero.name')}
+              {displayData.name}
             </h1>
 
             <p className="text-xl md:text-3xl text-muted-foreground mb-8 font-medium">
-              {t('hero.title')}
+              {displayData.mainTitle}
             </p>
 
             {/* Dynamic Text with Better Animation */}
@@ -124,8 +147,20 @@ const HeroSectionV3 = () => {
           {/* Description */}
           <div className="animate-fade-in-up mb-12" style={{ animationDelay: '0.6s' }}>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              {t('hero.description')}
+              {displayData.description}
             </p>
+
+            {/* Data Source Indicator */}
+            {(loading || !isStaticData) && (
+              <div className="mt-4 flex items-center justify-center gap-2">
+                {loading && (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                )}
+                <span className="text-xs text-muted-foreground">
+                  {loading ? 'Loading from API...' : isStaticData ? 'Static Data' : 'Live Data ✓'}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Stats */}
@@ -164,7 +199,7 @@ const HeroSectionV3 = () => {
                 href="#contact"
                 className="hero-button-secondary"
               >
-                {t('hero.cta.contact')}
+                {displayData.ctaText || t('hero.cta.contact')}
               </a>
             </div>
           </div>

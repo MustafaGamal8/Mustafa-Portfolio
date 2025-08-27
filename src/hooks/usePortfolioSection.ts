@@ -38,11 +38,11 @@ export function usePortfolioSection<T = any>({
         lang: language.toLocaleUpperCase() as 'EN' | 'AR',
         sections: [sectionName]
       });
-      
+
       if (response.success && response.data) {
         // Get the data for this specific section
         const sectionKey = getSectionKey(sectionName);
-        console.log("🚀 ~ fetchData ~ sectionKey:", sectionKey,response)
+        console.log("🚀 ~ fetchData ~ sectionKey:", sectionKey, response)
         const sectionData = (response.data as any)[sectionKey];
         if (sectionData) {
           setData(sectionData);
@@ -84,6 +84,7 @@ function getSectionKey(sectionName: string): string {
     'hero': 'hero',
     'about': 'about',
     'skills': 'skills',
+    'skillCategories': 'skillCategories',
     'projects': 'projects',
     'achievements': 'achievements',
     'contact': 'contact',
@@ -96,4 +97,3 @@ function getSectionKey(sectionName: string): string {
   return sectionMap[sectionName.toLowerCase()] || sectionName;
 }
 
-          

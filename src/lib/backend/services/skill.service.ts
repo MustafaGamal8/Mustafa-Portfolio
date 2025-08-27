@@ -10,7 +10,7 @@ export class BackendSkillService extends BackendBaseService<Skill> {
 
 
   async getPublicSkills(): Promise<any> {
-    return this.model.findMany({
+    return await this.model.findMany({
       where: {
         isActive: true
       },
@@ -21,7 +21,7 @@ export class BackendSkillService extends BackendBaseService<Skill> {
     });
   }
   async create(data: CreateSkillDto): Promise<any> {
-    return this.model.create({
+    return await this.model.create({
       data,
     });
   }
@@ -29,7 +29,7 @@ export class BackendSkillService extends BackendBaseService<Skill> {
   async findByLanguage(lang: string, options: IQueryOptions = {}): Promise<any> {
     const processedOptions = this.processQueryOptions(options);
 
-    return this.model.findMany({
+    return await this.model.findMany({
       where: {
         lang,
         isActive: true,
@@ -46,7 +46,7 @@ export class BackendSkillService extends BackendBaseService<Skill> {
   async findByCategoryId(categoryId: string, options: IQueryOptions = {}): Promise<any> {
     const processedOptions = this.processQueryOptions(options);
 
-    return this.model.findMany({
+    return await this.model.findMany({
       where: {
         skillCategoryId: categoryId,
         isActive: true,
@@ -65,7 +65,7 @@ export class BackendSkillService extends BackendBaseService<Skill> {
       throw ApiError.notFound('Skill not found', {});
     }
 
-    return this.model.update({
+    return await this.model.update({
       where: { id },
       data,
 
@@ -78,7 +78,7 @@ export class BackendSkillService extends BackendBaseService<Skill> {
       throw ApiError.notFound('Skill not found', {});
     }
 
-    return this.model.delete({
+    return await this.model.delete({
       where: { id },
 
     });

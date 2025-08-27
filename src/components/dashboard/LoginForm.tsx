@@ -32,8 +32,8 @@ export const LoginForm = () => {
         localStorage.setItem('user', JSON.stringify(response));
         window.location.href = '/dashboard';
       }
-    } catch (error) {
-      setError('Login failed. Please try again.');
+    } catch (error ) {
+      setError((error as any).response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

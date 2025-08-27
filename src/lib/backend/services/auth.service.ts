@@ -123,7 +123,7 @@ export class BackendAuthService extends BackendBaseService<User> {
   async getAllUsers(options: IQueryOptions = {}): Promise<any> {
     const processedOptions = this.processQueryOptions(options);
 
-    return this.model.findMany({
+    return await this.model.findMany({
       select: {
         id: true,
         email: true,
@@ -144,7 +144,7 @@ export class BackendAuthService extends BackendBaseService<User> {
       throw ApiError.notFound('User not found', {});
     }
 
-    return this.model.delete({
+    return await this.model.delete({
       where: { id: userId },
       select: {
         id: true,

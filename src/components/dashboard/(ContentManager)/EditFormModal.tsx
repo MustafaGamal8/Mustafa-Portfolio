@@ -1,0 +1,123 @@
+'use client';
+
+import React from 'react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Save } from 'lucide-react';
+import { useContentManager } from './ContentManagerContext';
+import { FormField } from './FormField';
+import { ImageUpload } from './ImageUpload';
+import { getFieldsForSection } from './fieldConfigs';
+
+export const EditFormModal: React.FC = () => {
+  const {
+    editingItem,
+    setEditingItem,
+    isModalOpen,
+    setIsModalOpen,
+    selectedImage,
+    setSelectedImage,
+    editLanguage,
+    isLoading,
+    getCurrentSection,
+    handleSave,
+    activeSection
+  } = useContentManager();
+
+  if (!editingItem || !isModalOpen) return null;
+
+  const currentSection = getCurrentSection();
+  if (!currentSection) return null;
+
+  const fields = getFieldsForSection(currentSection.type);
+
+  const handleFieldChange = (fieldName: string, value: any) => {
+    setEditingItem((prev: any) => ({ ...prev, [fieldName]: value }));
+  };
+
+  const getImageFieldName = () => {
+    switch (activeSection) {
+      case 'projects':
+        return 'imageId';
+      case 'personal':
+        return 'imageId';
+      case 'hero':
+        return 'profileImageId';
+      case 'achievements':
+        return 'iconId';
+      default:
+        return 'imageId';
+    }
+  };
+
+  return (
+    <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" dir={editLanguage === 'AR' ? 'rtl' : 'ltr'}>
+        <div className="space-y-6" key={`${editingItem?.id || 'new'}-${editLanguage}`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {currentSection.icon}
+              <h3 className="text-xl font-semibold">
+                {editingItem.id ? 'Edit' : 'Add New'} {currentSection.label}
+              </h3>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4" key={`form-${editLanguage}`}>
+            {fields.map((field) => (
+              <FormField
+                key={field.name}
+                field={field}
+                value={editingItem[field.name]}
+                onChange={(value) => handleFieldChange(field.name, value)}
+                editLanguage={editLanguage}
+              />
+            ))}
+
+            <ImageUpload
+              imageId={editingItem[getImageFieldName()]}
+              selectedImage={selectedImage}
+              onImageSelect={setSelectedImage}
+              activeSection={activeSection}
+              label={currentSection.type === 'hero' ? 'Profile Image' :
+                currentSection.type === 'achievements' ? 'Icon' : 'Image'}
+            />
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between pt-4 border-t" dir='ltr'>
+            <div className="flex items-center space-x-3">
+              <Switch
+                checked={editingItem.isActive !== false}
+                onCheckedChange={(checked) => setEditingItem((prev: any) => ({ ...prev, isActive: checked }))}
+                className="data-[state=checked]:bg-primary"
+              />
+              <Label className="text-sm font-medium">Active</Label>
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setEditingItem(null);
+                  setSelectedImage(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={() => handleSave(editingItem)} disabled={isLoading}>
+                <Save className="h-4 w-4 mr-2" />
+                {isLoading ? 'Saving...' : 'Save'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};

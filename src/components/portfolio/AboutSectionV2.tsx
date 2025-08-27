@@ -1,11 +1,11 @@
 'use client';
 import { useState } from 'react';
-import { Code, Lightbulb, Target, Rocket, Users, Award } from 'lucide-react';
 import { usePortfolioSection } from '@/hooks/usePortfolioSection';
 import { useLanguage } from './LanguageProvider';
+import renderLucideIcon from '@/lib/frontend/utils/renderLucideIcon';
 
 const AboutSectionV2 = () => {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const [flippedCards, setFlippedCards] = useState<Set<number>>(new Set());
 
   // Fetch about data from API
@@ -14,20 +14,17 @@ const AboutSectionV2 = () => {
   });
 
 
-  // Use API data if available, otherwise use static data
+  // Use API data if available, otherwise no cards
   const qaCards = aboutData && aboutData.length > 0
     ? aboutData.map((card: any, index: number) => ({
-      icon: getIconByOrder(index),
+      icon: card.icon ? renderLucideIcon(card.icon) : null,
       question: card.question,
       answer: card.answer,
-      gradient: getGradientByOrder(index)
+      gradient: card.gradient || getGradientByOrder(index)
     }))
     : [];
 
-  function getIconByOrder(order: number) {
-    const icons = [<Users size={32} />, <Rocket size={32} />, <Code size={32} />, <Lightbulb size={32} />, <Target size={32} />, <Award size={32} />];
-    return icons[order % icons.length];
-  }
+
 
   function getGradientByOrder(order: number) {
     const gradients = [
@@ -56,16 +53,13 @@ const AboutSectionV2 = () => {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-8">
-            {language === 'ar' ? 'تعرف عليّ أكتر' : 'Get to Know Me More'}
+            {t('about.title')}
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            {language === 'ar'
-              ? 'اكتشف قصتي ورحلتي في عالم البرمجة من خلال هذه البطاقات التفاعلية. كل بطاقة تحكي جزءاً من رحلتي المهنية والأهداف التي أسعى لتحقيقها.'
-              : 'Discover my story and journey in the programming world through these interactive cards. Each card tells part of my professional journey and the goals I strive to achieve.'
-            }
+            {t('about.subtitle')}
           </p>
           <p className="mobile-tap-indicator mt-4">
-            {language === 'ar' ? 'اضغط على أي بطاقة لقراءة التفاصيل' : 'Tap any card to read details'}
+            {t('about.cardInstruction')}
           </p>
 
           {/* Data Source Indicator */}
@@ -100,7 +94,7 @@ const AboutSectionV2 = () => {
                     </h3>
                     <div className="w-16 h-1 bg-primary mx-auto rounded-full mb-4"></div>
                     <p className="text-muted-foreground text-sm">
-                      {flippedCards.has(index) ? 'اضغط مرة أخرى للعودة' : 'اضغط للإجابة'}
+                      {flippedCards.has(index) ? t('about.flipBack') : t('about.flipToAnswer')}
                     </p>
                   </div>
                 </div>
@@ -124,23 +118,23 @@ const AboutSectionV2 = () => {
         <div className="mt-20 text-center">
           <div className="bg-gradient-to-r from-primary/10 to-primary-light/10 rounded-2xl p-8 md:p-12 border border-primary/20">
             <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-6">
-              لماذا تختار العمل معي؟
+              {t('about.whyChooseMe')}
             </h3>
             <div className="grid md:grid-cols-3 gap-8">
               <div className="text-center">
                 <div className="text-4xl mb-4">🚀</div>
-                <h4 className="text-lg font-semibold mb-2">سرعة في التنفيذ</h4>
-                <p className="text-muted-foreground text-sm">تسليم المشاريع في الوقت المحدد مع الحفاظ على أعلى معايير الجودة</p>
+                <h4 className="text-lg font-semibold mb-2">{t('about.fastExecution')}</h4>
+                <p className="text-muted-foreground text-sm">{t('about.fastExecutionDesc')}</p>
               </div>
               <div className="text-center">
                 <div className="text-4xl mb-4">💡</div>
-                <h4 className="text-lg font-semibold mb-2">حلول مبتكرة</h4>
-                <p className="text-muted-foreground text-sm">استخدام أحدث التقنيات لتطوير حلول فريدة ومتطورة</p>
+                <h4 className="text-lg font-semibold mb-2">{t('about.innovativeSolutions')}</h4>
+                <p className="text-muted-foreground text-sm">{t('about.innovativeSolutionsDesc')}</p>
               </div>
               <div className="text-center">
                 <div className="text-4xl mb-4">🎯</div>
-                <h4 className="text-lg font-semibold mb-2">دعم مستمر</h4>
-                <p className="text-muted-foreground text-sm">متابعة دائمة وصيانة شاملة لضمان استمرارية العمل بكفاءة</p>
+                <h4 className="text-lg font-semibold mb-2">{t('about.continuousSupport')}</h4>
+                <p className="text-muted-foreground text-sm">{t('about.continuousSupportDesc')}</p>
               </div>
             </div>
           </div>

@@ -17,7 +17,7 @@ const LoadingScreen = () => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(timer);
-          setTimeout(() => setIsVisible(false), 500);
+          setTimeout(() => setIsVisible(false), 700);
           return 100;
         }
         return prev + 2;

@@ -19,6 +19,7 @@ export default function PortfolioPreview({ className = '' }: PortfolioPreviewPro
     'hero',
     'about',
     'skills',
+    'skillCategories',
     'projects',
     'achievements',
     'contact',

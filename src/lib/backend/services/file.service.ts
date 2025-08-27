@@ -1,43 +1,31 @@
 import { BackendBaseService } from '@/lib/backend/bacendBase.service';
 import { ApiError } from '@/lib/backend/exceptions/api-error';
 import { File } from '@prisma/client';
-import { writeFile, mkdir, unlink } from 'fs/promises';
-import { join } from 'path';
-import { v4 as uuidv4 } from 'uuid';
-import { existsSync } from 'fs';
 import { IQueryOptions } from '@/interfaces/query.interface';
-
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
-export class BackendFileService extends BackendBaseService<File> {
-  private readonly storageDir: string;
+// Define the file upload interface
+interface UploadedFile {
+  originalname: string;
+  buffer: Buffer;
+  mimetype: string;
+  size: number;
+}
 
+export class BackendFileService extends BackendBaseService<File> {
   constructor() {
     super('file');
-    this.storageDir = join(process.cwd(), 'storage', 'files');
-  }
-
-  private async ensureStorageDir() {
-    if (!existsSync(this.storageDir)) {
-      await mkdir(this.storageDir, { recursive: true });
-    }
-  }
-
-  async findById(id: number, options: IQueryOptions = {}): Promise<File> {
-    return super.findById(id, options)
   }
 
   async getFileByUrl(url: string): Promise<File | null> {
     const file = await this.model.findFirst({
-      where: { url:  process.env.APP_URL + url }
+      where: { url }
     });
-    return file ;
+    return file;
   }
 
-  async uploadFile(file: Express.Multer.File): Promise<File> {
-  
-
+  async uploadFile(file: UploadedFile): Promise<File> {
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
       throw ApiError.badRequest('File too large', {
@@ -46,38 +34,42 @@ export class BackendFileService extends BackendBaseService<File> {
       });
     }
 
-    // Ensure storage directory exists
-    await this.ensureStorageDir();
+    // Validate file type (images only for base64 storage)
+    const allowedMimeTypes = [
+      'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+      'application/pdf' // Allow PDF for resumes
+    ];
 
-    // Generate unique filename
-    const fileExtension = file.originalname.split('.').pop();
-    const fileName = `${uuidv4()}.${fileExtension}`;
-    const filePath = join(this.storageDir, fileName);
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      throw ApiError.badRequest('Invalid file type', {
+        field: 'file',
+        reason: 'Only images (JPEG, PNG, GIF, WebP) and PDF files are allowed'
+      });
+    }
 
     try {
-      // Save file
-      await writeFile(filePath, file.buffer);
-      // Create file record in database
-      const fileUrl = process.env.APP_URL + `/storage/files/${fileName}`;
-      return this.model.create({
+      // Convert file to base64
+      const base64Data = file.buffer.toString('base64');
+      const dataUrl = `data:${file.mimetype};base64,${base64Data}`;
+
+      // Create file record in database with base64 data
+      return await this.model.create({
         data: {
           name: file.originalname,
-          path: `/storage/files/${fileName}`,
-          url: fileUrl,
+          path: dataUrl, // Store base64 data URL in path field
+          url: dataUrl,  // Store base64 data URL in url field
           type: file.mimetype,
           size: file.size
         }
       });
     } catch (error) {
-      // Clean up file if database operation fails
-      await unlink(filePath).catch(() => { });
       throw ApiError.internal('Failed to save file', {
         reason: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   }
 
-  async deleteFile(id: number): Promise<{ success: boolean }> {
+  async deleteFile(id: string): Promise<{ success: boolean }> {
     const file = await this.model.findUnique({
       where: { id }
     });
@@ -87,16 +79,32 @@ export class BackendFileService extends BackendBaseService<File> {
     }
 
     try {
-      // Delete file from storage
-      const filePath = join(process.cwd(), file.path);
-      await unlink(filePath).catch(() => { });
+      // Delete database record (no physical file to delete since it's base64)
+      await this.model.delete({
+        where: { id }
+      });
 
-      // Delete database record
-      return super.delete(id);
+      return { success: true };
     } catch (error) {
       throw ApiError.internal('Failed to delete file', {
         reason: error instanceof Error ? error.message : 'Unknown error'
       });
     }
+  }
+
+  // Get file content as base64 (for direct display)
+  async getFileContent(id: string): Promise<string | null> {
+    const file = await this.model.findUnique({
+      where: { id },
+      select: { url: true }
+    });
+
+    return file?.url || null;
+  }
+
+  // Utility method to validate base64 image
+  private isValidBase64Image(dataUrl: string): boolean {
+    const base64Pattern = /^data:image\/(jpeg|jpg|png|gif|webp);base64,/;
+    return base64Pattern.test(dataUrl);
   }
 } 

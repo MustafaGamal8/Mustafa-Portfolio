@@ -12,7 +12,7 @@ const projectManagementImage = '/assets/project-management.jpg';
 const projectEcommerceImage = '/assets/project-ecommerce.jpg';
 
 const ProjectsSectionV2 = () => {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -21,71 +21,9 @@ const ProjectsSectionV2 = () => {
     sectionName: 'projects'
   });
 
-  // Static fallback data
-  const staticProjects = [
-    {
-      title: language === 'ar' ? 'منصة Webnest الشاملة' : 'Comprehensive Webnest Platform',
-      description: language === 'ar'
-        ? 'موقع شركة متقدم يقدم خدمات تطوير الويب والتطبيقات مع نظام إدارة محتوى متطور ولوحة تحكم شاملة للعملاء والمشاريع.'
-        : 'Advanced company website providing web and app development services with advanced content management system and comprehensive control panel for clients and projects.',
-      longDescription: language === 'ar'
-        ? 'منصة شاملة تضم موقع الشركة، نظام CRM متطور، لوحة تحكم للمشاريع، وسائل الدفع المتعددة، وتقارير تفصيلية. المنصة تدعم عدة لغات ومحسنة للسيو.'
-        : 'Comprehensive platform including company website, advanced CRM system, project control panel, multiple payment methods, and detailed reports. The platform supports multiple languages and is SEO optimized.',
-      image: projectWebImage,
-      tags: ['React', 'Next.js', 'TypeScript', 'Tailwind', 'Laravel API'],
-      category: 'web',
-      link: 'https://webnest.com.eg',
-      github: 'https://github.com/mostafa/webnest',
-      status: language === 'ar' ? 'مكتمل' : 'Completed',
-      duration: language === 'ar' ? '4 أشهر' : '4 months',
-      teamSize: language === 'ar' ? '3 مطورين' : '3 developers',
-      features: language === 'ar'
-        ? ['نظام إدارة محتوى', 'متعدد اللغات', 'محسن للسيو', 'لوحة تحكم شاملة']
-        : ['Content Management System', 'Multi-language', 'SEO Optimized', 'Comprehensive Dashboard']
-    },
-    {
-      title: language === 'ar' ? 'نظام ChatBot AI المتطور' : 'Advanced AI ChatBot System',
-      description: language === 'ar'
-        ? 'chatbot ذكي للشركات مع معالجة اللغة الطبيعية، تعلم آلي، ودمج مع أنظمة CRM لخدمة عملاء متفوقة على مدار الساعة.'
-        : 'Smart chatbot for companies with natural language processing, machine learning, and CRM system integration for superior 24/7 customer service.',
-      longDescription: language === 'ar'
-        ? 'نظام ذكاء اصطناعي متقدم يدعم المحادثات باللغة العربية والإنجليزية، مع قدرات تعلم مستمر وتحليل للمشاعر، ودمج مع أنظمة الشركة المختلفة.'
-        : 'Advanced AI system supporting conversations in Arabic and English, with continuous learning capabilities and sentiment analysis, integrated with various company systems.',
-      image: projectChatbotImage,
-      tags: ['Python', 'TensorFlow', 'NLP', 'FastAPI', 'Redis'],
-      category: 'ai',
-      link: 'https://demo.chatbot-ai.com',
-      github: 'https://github.com/mostafa/ai-chatbot',
-      status: language === 'ar' ? 'مكتمل' : 'Completed',
-      duration: language === 'ar' ? '6 أشهر' : '6 months',
-      teamSize: language === 'ar' ? '2 مطورين' : '2 developers',
-      features: language === 'ar'
-        ? ['معالجة اللغة الطبيعية', 'تعلم آلي', 'دعم متعدد اللغات', 'تحليل المشاعر']
-        : ['Natural Language Processing', 'Machine Learning', 'Multi-language Support', 'Sentiment Analysis']
-    },
-    {
-      title: language === 'ar' ? 'منصة الزراعة الذكية' : 'Smart Agriculture Platform',
-      description: language === 'ar'
-        ? 'نظام متكامل لمراقبة المحاصيل باستخدام طائرة DJI Mavic 3M مع معالجة الصور بالذكاء الاصطناعي وتحليل البيانات الزراعية.'
-        : 'Integrated system for crop monitoring using DJI Mavic 3M drone with AI image processing and agricultural data analysis.',
-      longDescription: language === 'ar'
-        ? 'منصة شاملة تجمع بين تقنيات الطائرات المسيرة والذكاء الاصطناعي لمراقبة المحاصيل، تحليل التربة، كشف الآفات، وتوفير توصيات زراعية مخصصة للمزارعين.'
-        : 'Comprehensive platform combining drone technology and artificial intelligence for crop monitoring, soil analysis, pest detection, and providing customized agricultural recommendations for farmers.',
-      image: projectDroneImage,
-      tags: ['Python', 'OpenCV', 'Machine Learning', 'IoT', 'React Dashboard'],
-      category: 'iot',
-      link: 'https://smart-agriculture.com',
-      github: 'https://github.com/mostafa/smart-agriculture',
-      status: language === 'ar' ? 'مكتمل' : 'Completed',
-      duration: language === 'ar' ? '8 أشهر' : '8 months',
-      teamSize: language === 'ar' ? '4 مطورين' : '4 developers',
-      features: language === 'ar'
-        ? ['تحليل الصور الجوية', 'كشف الآفات', 'تحليل التربة', 'تقارير مفصلة']
-        : ['Aerial Image Analysis', 'Pest Detection', 'Soil Analysis', 'Detailed Reports']
-    }
-  ];
+  // No static data - all comes from API
 
-  // Use API data if available, otherwise use static data
+  // Use API data if available, otherwise empty array  
   const projects = projectsData && projectsData.length > 0
     ? projectsData.map((project: any) => ({
       ...project,
@@ -93,7 +31,7 @@ const ProjectsSectionV2 = () => {
       tags: project.technologies || [],
       features: project.features || []
     }))
-    : staticProjects;
+    : [];
 
   function getDefaultImage(category: string) {
     const imageMap: Record<string, string> = {
@@ -106,16 +44,16 @@ const ProjectsSectionV2 = () => {
   }
 
   const categories = [
-    { id: 'all', name: language === 'ar' ? 'جميع المشاريع' : 'All Projects', count: projects.length },
-    { id: 'web', name: language === 'ar' ? 'تطوير الويب' : 'Web Development', count: projects.filter((p: any) => p.category === 'web').length },
-    { id: 'mobile', name: language === 'ar' ? 'تطبيقات الموبايل' : 'Mobile Apps', count: projects.filter((p: any) => p.category === 'mobile').length },
-    { id: 'ai', name: language === 'ar' ? 'الذكاء الاصطناعي' : 'Artificial Intelligence', count: projects.filter((p: any) => p.category === 'ai').length },
-    { id: 'iot', name: language === 'ar' ? 'إنترنت الأشياء' : 'IoT', count: projects.filter((p: any) => p.category === 'iot').length }
+    { id: 'all', name: t('projects.all'), count: projects.length },
+    { id: 'web', name: t('projects.web'), count: projects.filter((p: any) => p.category === 'web').length },
+    { id: 'mobile', name: t('projects.mobile'), count: projects.filter((p: any) => p.category === 'mobile').length },
+    { id: 'ai', name: t('projects.ai'), count: projects.filter((p: any) => p.category === 'ai').length },
+    { id: 'iot', name: t('projects.iot'), count: projects.filter((p: any) => p.category === 'iot').length }
   ];
 
   const filteredProjects = selectedCategory === 'all'
     ? projects
-    : projects.filter(project => project.category === selectedCategory);
+    : projects.filter((project: any) => project.category === selectedCategory);
 
   const nextSlide = () => {
     const maxSlides = Math.ceil(filteredProjects.length / itemsPerSlide);
@@ -148,13 +86,10 @@ const ProjectsSectionV2 = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-8">
-            {language === 'ar' ? 'مشاريعي المتميزة' : 'My Featured Projects'}
+            {t('projects.title')}
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed mb-8">
-            {language === 'ar'
-              ? 'مجموعة مختارة من أفضل المشاريع التي عملت عليها، كل مشروع يعكس خبرتي في تقنيات مختلفة وحلول مبتكرة تلبي احتياجات العملاء المتنوعة.'
-              : 'A curated selection of the best projects I\'ve worked on, each project reflects my expertise in different technologies and innovative solutions that meet diverse client needs.'
-            }
+            {t('projects.subtitle')}
           </p>
 
           {/* Data Source Indicator */}
@@ -207,7 +142,7 @@ const ProjectsSectionV2 = () => {
                 >
                   {filteredProjects
                     .slice(slideIndex * itemsPerSlide, (slideIndex + 1) * itemsPerSlide)
-                    .map((project, index) => (
+                    .map((project: any, index: number) => (
                       <div
                         key={`${project.title}-${slideIndex}-${index}`}
                         className={`project-card animate-scale-in ${itemsPerSlide === 1 ? 'w-full max-w-md' : 'flex-1'
@@ -226,7 +161,7 @@ const ProjectsSectionV2 = () => {
 
                           {/* Project Status Badge */}
                           <div className="absolute top-4 right-4">
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${project.status === 'مكتمل'
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${project.status === t('projects.completed')
                               ? 'bg-green-500 text-white'
                               : 'bg-yellow-500 text-white'
                               }`}>
@@ -258,7 +193,7 @@ const ProjectsSectionV2 = () => {
 
                           {/* Technologies */}
                           <div className="flex flex-wrap gap-2 mb-6">
-                            {project.tags.slice(0, 4).map((tag, tagIndex) => (
+                            {project.tags.slice(0, 4).map((tag: any, tagIndex: number) => (
                               <span
                                 key={tagIndex}
                                 className="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full border border-primary/20"
@@ -275,9 +210,9 @@ const ProjectsSectionV2 = () => {
 
                           {/* Key Features */}
                           <div className="mb-6">
-                            <h4 className="text-sm font-semibold mb-2 text-card-foreground">المميزات الرئيسية:</h4>
+                            <h4 className="text-sm font-semibold mb-2 text-card-foreground">{t('projects.features')}</h4>
                             <div className="grid grid-cols-2 gap-1">
-                              {project.features.slice(0, 4).map((feature, featureIndex) => (
+                              {project.features.slice(0, 4).map((feature: any, featureIndex: number) => (
                                 <div key={featureIndex} className="flex items-center gap-1 text-xs text-muted-foreground">
                                   <Star size={12} className="text-primary flex-shrink-0" />
                                   {feature}
@@ -295,7 +230,7 @@ const ProjectsSectionV2 = () => {
                               className="flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary-dark transition-all duration-200 hover:scale-105 flex-1 justify-center"
                             >
                               <ExternalLink size={16} />
-                              عرض المشروع
+                              {t('projects.view')}
                             </a>
 
                             <a
@@ -321,7 +256,7 @@ const ProjectsSectionV2 = () => {
               <button
                 onClick={prevSlide}
                 className="absolute top-1/2 -translate-y-1/2 -left-4 lg:-left-16 w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-hover)] transition-all duration-300 hover:scale-110 flex items-center justify-center"
-                aria-label="المشروع السابق"
+                aria-label={t('projects.prev')}
               >
                 <ArrowLeft size={20} />
               </button>
@@ -329,7 +264,7 @@ const ProjectsSectionV2 = () => {
               <button
                 onClick={nextSlide}
                 className="absolute top-1/2 -translate-y-1/2 -right-4 lg:-right-16 w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-hover)] transition-all duration-300 hover:scale-110 flex items-center justify-center"
-                aria-label="المشروع التالي"
+                aria-label={t('projects.next')}
               >
                 <ArrowRight size={20} />
               </button>
@@ -347,7 +282,7 @@ const ProjectsSectionV2 = () => {
                     ? 'bg-primary scale-125'
                     : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
                     }`}
-                  aria-label={`انتقل إلى الشريحة ${index + 1}`}
+                  aria-label={`${t('projects.slide')} ${index + 1}`}
                 />
               ))}
             </div>
@@ -358,16 +293,16 @@ const ProjectsSectionV2 = () => {
         <div className="mt-20 text-center">
           <div className="bg-gradient-to-r from-primary to-primary-light rounded-2xl p-8 md:p-12 text-primary-foreground">
             <h3 className="text-2xl md:text-3xl font-bold mb-4">
-              عندك فكرة مشروع؟
+              {t('projects.cta.title')}
             </h3>
             <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
-              دعني أساعدك في تحويل فكرتك إلى واقع رقمي مميز. أعمل معك من التخطيط حتى التنفيذ النهائي.
+              {t('projects.cta.subtitle')}
             </p>
             <button
               onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
               className="hero-button bg-white text-primary hover:bg-gray-50 hover:scale-105"
             >
-              ابدأ مشروعك الآن
+              {t('projects.cta.button')}
             </button>
           </div>
         </div>

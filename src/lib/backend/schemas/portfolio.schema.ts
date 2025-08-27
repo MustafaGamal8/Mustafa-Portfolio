@@ -34,9 +34,15 @@ export const heroContentSchema = z.object({
   subTitle: z.string().optional(),
   description: z.string().min(1, 'Description is required'),
   dynamicTexts: z.array(z.string()).default([]),
+  stats: z.array(z.object({
+    label: z.string(),
+    value: z.string(),
+    icon: z.string().optional()
+  })).optional(),
   ctaText: z.string().optional(),
   profileImageId: z.string().optional(),
   backgroundImageId: z.string().optional(),
+  resumeId: z.string().optional(), // Added missing resume field
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });
@@ -56,6 +62,7 @@ export const aboutCardSchema = z.object({
   question: z.string().min(1, 'Question is required'),
   answer: z.string().min(1, 'Answer is required'),
   gradient: z.string().optional(),
+  icon: z.string().optional(), // Added missing icon field
   order: z.number().default(0),
   isActive: z.boolean().default(true),
   iconId: z.string().optional(),
@@ -77,6 +84,7 @@ export const skillCategorySchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(1, 'Description is required'),
   gradient: z.string().optional(),
+  icon: z.string().optional(), // Added missing icon field
   experience: z.string().optional(),
   projectCount: z.number().default(0),
   order: z.number().default(0),
@@ -102,6 +110,7 @@ export const skillSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   level: skillLevelSchema.default('INTERMEDIATE'),
   description: z.string().optional(),
+  icon: z.string().optional(), // Added missing icon field
   yearsExperience: z.number().optional(),
   projectCount: z.number().default(0),
   order: z.number().default(0),
@@ -143,6 +152,7 @@ export const projectSchema = z.object({
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
   imageId: z.string().optional(),
+  additionalImages: z.array(z.string()).default([]), // Added missing field
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });

@@ -23,7 +23,7 @@ export class BackendSocialLinkService extends BackendBaseService<SocialLink> {
       throw ApiError.conflict(`Social link ${data.name} already exists for language ${data.lang}`, {});
     }
 
-    return this.model.create({
+    return await this.model.create({
       data
     });
   }
@@ -31,7 +31,7 @@ export class BackendSocialLinkService extends BackendBaseService<SocialLink> {
   async findByLanguage(lang: string, options: IQueryOptions = {}): Promise<any> {
     const processedOptions = this.processQueryOptions(options);
 
-    return this.model.findMany({
+    return await this.model.findMany({
       where: {
         lang,
         isActive: true,
@@ -47,7 +47,7 @@ export class BackendSocialLinkService extends BackendBaseService<SocialLink> {
       throw ApiError.notFound('Social link not found', {});
     }
 
-    return this.model.update({
+    return await this.model.update({
       where: { id },
       data
     });
@@ -59,7 +59,7 @@ export class BackendSocialLinkService extends BackendBaseService<SocialLink> {
       throw ApiError.notFound('Social link not found', {});
     }
 
-    return this.model.delete({
+    return await this.model.delete({
       where: { id }
     });
   }

@@ -9,7 +9,7 @@ export class BackendAchievementService extends BackendBaseService<Achievement> {
   }
 
   async create(data: CreateAchievementDto): Promise<any> {
-    return this.model.create({
+    return await this.model.create({
       data,
       include: {
         icon: true
@@ -20,7 +20,7 @@ export class BackendAchievementService extends BackendBaseService<Achievement> {
   async findByLanguage(lang: string, options: IQueryOptions = {}): Promise<any> {
     const processedOptions = this.processQueryOptions(options);
 
-    return this.model.findMany({
+    return await this.model.findMany({
       where: {
         lang,
         isActive: true,
@@ -40,7 +40,7 @@ export class BackendAchievementService extends BackendBaseService<Achievement> {
       throw ApiError.notFound('Achievement not found', {});
     }
 
-    return this.model.update({
+    return await this.model.update({
       where: { id },
       data,
       include: {
@@ -55,7 +55,7 @@ export class BackendAchievementService extends BackendBaseService<Achievement> {
       throw ApiError.notFound('Achievement not found', {});
     }
 
-    return this.model.delete({
+    return await this.model.delete({
       where: { id },
       include: {
         icon: true

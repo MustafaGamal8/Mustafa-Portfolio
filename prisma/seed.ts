@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -853,10 +854,14 @@ async function main() {
 
   // Create a demo admin user
   console.log('👤 Creating demo admin user...');
-  await prisma.user.create({
-    data: {
+  await prisma.user.upsert({
+    where: { email: 'mustafa.gamal.elsayed@gmail.com' },
+    update: {
+      password: await bcrypt.hash('password', 12)
+    },
+    create: {
       email: 'mustafa.gamal.elsayed@gmail.com',
-      password: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewkFUZbRS9/5OKj.' // "password123"
+      password: await bcrypt.hash('password', 12),
     }
   });
 
@@ -875,8 +880,8 @@ async function main() {
   console.log('- Users: 1 admin user');
   console.log('');
   console.log('🔑 Admin credentials:');
-  console.log('Email: admin@webnest.com');
-  console.log('Password: password123');
+  console.log('Email: mustafa.gamal.elsayed@gmail.com');
+  console.log('Password: *****');
 }
 
 main()

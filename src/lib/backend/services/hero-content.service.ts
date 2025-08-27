@@ -18,7 +18,7 @@ export class BackendHeroContentService extends BackendBaseService<HeroContent> {
       throw ApiError.conflict(`Hero content for language ${data.lang} already exists`, {});
     }
 
-    return this.model.create({
+    return await this.model.create({
       data,
       include: {
         profileImage: true,
@@ -29,7 +29,7 @@ export class BackendHeroContentService extends BackendBaseService<HeroContent> {
   async findByLanguage(lang: string, options: IQueryOptions = {}): Promise<any> {
     const processedOptions = this.processQueryOptions(options, true);
 
-    return this.model.findUnique({
+    return await this.model.findUnique({
       where: { lang },
       include: {
         profileImage: true,
@@ -44,7 +44,7 @@ export class BackendHeroContentService extends BackendBaseService<HeroContent> {
       throw ApiError.notFound('Hero content not found', {});
     }
 
-    return this.model.update({
+    return await this.model.update({
       where: { id },
       data,
       include: {
@@ -59,7 +59,7 @@ export class BackendHeroContentService extends BackendBaseService<HeroContent> {
       throw ApiError.notFound('Hero content not found', {});
     }
 
-    return this.model.delete({
+    return await this.model.delete({
       where: { id },
       include: {
         profileImage: true,

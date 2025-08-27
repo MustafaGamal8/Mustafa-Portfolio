@@ -9,7 +9,7 @@ export class BackendProjectService extends BackendBaseService<Project> {
   }
 
   async create(data: CreateProjectDto): Promise<any> {
-    return this.model.create({
+    return await this.model.create({
       data,
       include: {
         image: true
@@ -20,7 +20,7 @@ export class BackendProjectService extends BackendBaseService<Project> {
   async findByLanguage(lang: string, options: IQueryOptions = {}): Promise<any> {
     const processedOptions = this.processQueryOptions(options);
 
-    return this.model.findMany({
+    return await this.model.findMany({
       where: {
         lang,
         isActive: true,
@@ -37,7 +37,7 @@ export class BackendProjectService extends BackendBaseService<Project> {
   async findFeaturedByLanguage(lang: string, options: IQueryOptions = {}): Promise<any> {
     const processedOptions = this.processQueryOptions(options);
 
-    return this.model.findMany({
+    return await this.model.findMany({
       where: {
         lang,
         isActive: true,
@@ -55,7 +55,7 @@ export class BackendProjectService extends BackendBaseService<Project> {
   async findByCategory(lang: string, category: string, options: IQueryOptions = {}): Promise<any> {
     const processedOptions = this.processQueryOptions(options);
 
-    return this.model.findMany({
+    return await this.model.findMany({
       where: {
         lang,
         category,
@@ -76,7 +76,7 @@ export class BackendProjectService extends BackendBaseService<Project> {
       throw ApiError.notFound('Project not found', {});
     }
 
-    return this.model.update({
+    return await this.model.update({
       where: { id },
       data,
       include: {
@@ -91,7 +91,7 @@ export class BackendProjectService extends BackendBaseService<Project> {
       throw ApiError.notFound('Project not found', {});
     }
 
-    return this.model.delete({
+    return await this.model.delete({
       where: { id },
       include: {
         image: true
@@ -105,7 +105,7 @@ export class BackendProjectService extends BackendBaseService<Project> {
       throw ApiError.notFound('Project not found', {});
     }
 
-    return this.model.update({
+    return await this.model.update({
       where: { id },
       data: { isFeatured: !existing.isFeatured },
       include: {

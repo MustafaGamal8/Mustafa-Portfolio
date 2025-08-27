@@ -23,7 +23,7 @@ export class BackendContactInfoService extends BackendBaseService<ContactInfo> {
       throw ApiError.conflict(`Contact info of type ${data.type} already exists for language ${data.lang}`, {});
     }
 
-    return this.model.create({
+    return await this.model.create({
       data
     });
   }
@@ -31,7 +31,7 @@ export class BackendContactInfoService extends BackendBaseService<ContactInfo> {
   async findByLanguage(lang: string, options: IQueryOptions = {}): Promise<any> {
     const processedOptions = this.processQueryOptions(options);
 
-    return this.model.findMany({
+    return await this.model.findMany({
       where: {
         lang,
         isActive: true,
@@ -42,7 +42,7 @@ export class BackendContactInfoService extends BackendBaseService<ContactInfo> {
   }
 
   async findPrimaryByLanguage(lang: string): Promise<any> {
-    return this.model.findMany({
+    return await this.model.findMany({
       where: {
         lang,
         isPrimary: true,
@@ -58,7 +58,7 @@ export class BackendContactInfoService extends BackendBaseService<ContactInfo> {
       throw ApiError.notFound('Contact info not found', {});
     }
 
-    return this.model.update({
+    return await this.model.update({
       where: { id },
       data
     });
@@ -70,7 +70,7 @@ export class BackendContactInfoService extends BackendBaseService<ContactInfo> {
       throw ApiError.notFound('Contact info not found', {});
     }
 
-    return this.model.delete({
+    return await this.model.delete({
       where: { id }
     });
   }
@@ -92,7 +92,7 @@ export class BackendContactInfoService extends BackendBaseService<ContactInfo> {
     });
 
     // Set this one as primary
-    return this.model.update({
+    return await this.model.update({
       where: { id },
       data: { isPrimary: true }
     });

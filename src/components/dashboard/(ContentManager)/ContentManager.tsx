@@ -2,12 +2,12 @@
 
 import React from 'react';
 import { TabsContent } from '@/components/ui/tabs';
-import { ContentManagerProvider } from './(ContentManager)/ContentManagerContext';
-import { MessageAlert } from './(ContentManager)/MessageAlert';
-import { EditFormModal } from './(ContentManager)/EditFormModal';
-import { SectionTabs } from './(ContentManager)/SectionTabs';
-import { ContentHeader } from './(ContentManager)/ContentHeader';
-import { ContentList } from './(ContentManager)/ContentList';
+import { ContentManagerProvider } from './ContentManagerContext';
+import { MessageAlert } from './MessageAlert';
+import { EditFormModal } from './EditFormModal';
+import { SectionTabs } from './SectionTabs';
+import { ContentHeader } from './ContentHeader';
+import { ContentList } from './ContentList';
 
 const ContentManagerInner: React.FC = () => {
   return (

@@ -10,71 +10,15 @@ const AchievementsSection = () => {
     sectionName: 'achievements'
   });
 
-  // Static fallback data
-  const staticAchievements = [
-    {
-      icon: '🏅',
-      title: language === 'ar' ? '+20 مشروع' : '+20 Projects',
-      subtitle: language === 'ar' ? 'مشروع مكتمل' : 'Completed Projects',
-      description: language === 'ar'
-        ? 'مشاريع متنوعة من مواقع الويب إلى تطبيقات الموبايل'
-        : 'Diverse projects from websites to mobile applications',
-      value: '+20'
-    },
-    {
-      icon: '🏆',
-      title: language === 'ar' ? '+15 عميل سعيد' : '+15 Happy Clients',
-      subtitle: language === 'ar' ? 'عميل راضي' : 'Satisfied Clients',
-      description: language === 'ar'
-        ? 'عملاء من مختلف القطاعات حققوا أهدافهم معنا'
-        : 'Clients from various sectors who achieved their goals with us',
-      value: '+15'
-    },
-    {
-      icon: '🚀',
-      title: language === 'ar' ? '+5 سنوات خبرة' : '+5 Years Experience',
-      subtitle: language === 'ar' ? 'في المجال' : 'In the Field',
-      description: language === 'ar'
-        ? 'خبرة متراكمة في تقنيات البرمجة الحديثة'
-        : 'Accumulated experience in modern programming technologies',
-      value: '+5'
-    },
-    {
-      icon: '💡',
-      title: language === 'ar' ? '3 منتجات مبتكرة' : '3 Innovative Products',
-      subtitle: language === 'ar' ? 'حلول فريدة' : 'Unique Solutions',
-      description: language === 'ar'
-        ? 'أنظمة ذكية ومتطورة تلبي احتياجات السوق'
-        : 'Smart and advanced systems that meet market needs',
-      value: '3'
-    },
-    {
-      icon: '🎯',
-      title: language === 'ar' ? '98% معدل نجاح' : '98% Success Rate',
-      subtitle: language === 'ar' ? 'في المشاريع' : 'In Projects',
-      description: language === 'ar'
-        ? 'التزام بالجودة والمواعيد المحددة'
-        : 'Commitment to quality and deadlines',
-      value: '98%'
-    },
-    {
-      icon: '🌟',
-      title: language === 'ar' ? 'شركة Webnest' : 'Webnest Company',
-      subtitle: language === 'ar' ? 'مؤسس الشركة' : 'Company Founder',
-      description: language === 'ar'
-        ? 'شركة متخصصة في حلول الويب والتطبيقات الذكية'
-        : 'Company specialized in web solutions and smart applications',
-      value: '1'
-    }
-  ];
+  // No static data - all comes from API
 
-  // Use API data if available, otherwise use static data
+  // Use API data if available, otherwise empty array
   const achievements = achievementsData && achievementsData.length > 0
     ? achievementsData.map((achievement: any, index: number) => ({
       ...achievement,
-      icon: getIconByOrder(index)
+      icon: achievement.icon || getIconByOrder(index)
     }))
-    : staticAchievements;
+    : [];
 
   function getIconByOrder(order: number) {
     const icons = ['🏅', '🏆', '🚀', '💡', '🎯', '🌟'];

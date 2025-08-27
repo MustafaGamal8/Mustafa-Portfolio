@@ -9,7 +9,7 @@ export class BackendSkillCategoryService extends BackendBaseService<SkillCategor
   }
 
   async create(data: CreateSkillCategoryDto): Promise<any> {
-    return this.model.create({
+    return await this.model.create({
       data,
       include: {
         skills: {
@@ -22,7 +22,7 @@ export class BackendSkillCategoryService extends BackendBaseService<SkillCategor
   async findByLanguage(lang: string, options: IQueryOptions = {}): Promise<any> {
     const processedOptions = this.processQueryOptions(options);
 
-    return this.model.findMany({
+    return await this.model.findMany({
       where: {
         lang,
         isActive: true,
@@ -40,13 +40,13 @@ export class BackendSkillCategoryService extends BackendBaseService<SkillCategor
     });
   }
 
+
   async updateById(id: string, data: UpdateSkillCategoryDto): Promise<any> {
     const existing = await this.model.findUnique({ where: { id } });
     if (!existing) {
       throw ApiError.notFound('Skill category not found', {});
     }
-
-    return this.model.update({
+    return await this.model.update({
       where: { id },
       data,
       include: {
@@ -64,7 +64,7 @@ export class BackendSkillCategoryService extends BackendBaseService<SkillCategor
       throw ApiError.notFound('Skill category not found', {});
     }
 
-    return this.model.delete({
+    return await this.model.delete({
       where: { id },
       include: {
         skills: true

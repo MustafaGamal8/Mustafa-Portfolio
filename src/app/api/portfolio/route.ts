@@ -8,11 +8,13 @@ import { BackendAchievementService } from '@/lib/backend/services/achievement.se
 import { BackendContactInfoService } from '@/lib/backend/services/contact-info.service';
 import { BackendSocialLinkService } from '@/lib/backend/services/social-link.service';
 import { apiHandler } from '@/lib/backend/api-handler';
+import { BackendSkillService } from '@/lib/backend/services/skill.service';
 
 const personalInfoService = new BackendPersonalInfoService();
 const heroContentService = new BackendHeroContentService();
 const aboutCardService = new BackendAboutCardService();
 const skillCategoryService = new BackendSkillCategoryService();
+const skillService = new BackendSkillService()
 const projectService = new BackendProjectService();
 const achievementService = new BackendAchievementService();
 const contactInfoService = new BackendContactInfoService();
@@ -39,8 +41,11 @@ export const GET = apiHandler(async (req: NextRequest) => {
           portfolioData.aboutCards = await aboutCardService.findByLanguage(lang);
           break;
         case 'skills':
-          portfolioData.skillCategories = await skillCategoryService.findByLanguage(lang);
+          portfolioData.skills = await skillService.findByLanguage(lang);
           break;
+        case 'skillCategories':
+          portfolioData.skillCategories = await skillService.findByLanguage(lang);
+          break;    
         case 'projects':
           portfolioData.projects = await projectService.findByLanguage(lang);
           portfolioData.featuredProjects = await projectService.findFeaturedByLanguage(lang);
@@ -126,7 +131,9 @@ export const POST = apiHandler(async (req: NextRequest) => {
         case 'about':
           return { section: 'about', data: await aboutCardService.findByLanguage(lang) };
         case 'skills':
-          return { section: 'skills', data: await skillCategoryService.findByLanguage(lang) };
+          return { section: 'skills', data: await skillService.findByLanguage(lang) };
+        case 'skillCategories':
+          return { section: 'skillCategories', data: await skillCategoryService.findByLanguage(lang) };
         case 'projects':
           return { section: 'projects', data: await projectService.findByLanguage(lang) };
         case 'achievements':

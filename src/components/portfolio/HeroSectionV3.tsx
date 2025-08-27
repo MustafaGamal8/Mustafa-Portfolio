@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { ArrowDown, ChevronDown, Sparkles } from 'lucide-react';
 import { useLanguage } from './LanguageProvider';
 import { usePortfolioSection } from '@/hooks/usePortfolioSection';
+import renderLucideIcon from '@/lib/frontend/utils/renderLucideIcon';
 
-const profileImage = '/assets/profile-image.jpg';
 
 const HeroSectionV3 = () => {
   const { t, language } = useLanguage();
@@ -21,13 +21,17 @@ const HeroSectionV3 = () => {
   const displayData = heroData ?? {};
 
   const dynamicTexts = displayData.dynamicTexts || [];
-
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentText((prev) => (prev + 1) % dynamicTexts.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+    let intervalId: NodeJS.Timeout;
+    if (dynamicTexts.length > 1) {
+      intervalId = setInterval(() => {
+        setCurrentText((prev) => (prev + 1) % dynamicTexts.length);
+      }, 3000);
+    }
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [dynamicTexts.length]);
   // Enhanced logo component with better design
 
 
@@ -56,7 +60,7 @@ const HeroSectionV3 = () => {
             <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-8">
               <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary-light rounded-full animate-pulse opacity-75"></div>
               <img
-                src={profileImage}
+                src={displayData?.profileImage?.url}
                 alt={language === 'ar' ? 'مصطفى جمال - مهندس برمجيات' : 'Mostafa Gamal - Software Engineer'}
                 className="relative w-full h-full object-cover rounded-full shadow-2xl border-4 border-white dark:border-gray-800 animate-float z-10"
               />
@@ -119,29 +123,33 @@ const HeroSectionV3 = () => {
             )}
           </div>
 
-          {/* Stats */}
-          <div className="animate-fade-in-up mb-12" style={{ animationDelay: '0.9s' }}>
-            <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">5+</div>
-                <div className="text-sm md:text-base text-muted-foreground">{t('hero.years')}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">100+</div>
-                <div className="text-sm md:text-base text-muted-foreground">{t('hero.projects')}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">50+</div>
-                <div className="text-sm md:text-base text-muted-foreground">{t('hero.clients')}</div>
+          {/* Stats - Now dynamic from API */}
+          
+          {displayData.stats && displayData.stats.length > 0 && (
+            <div className="animate-fade-in-up mb-12" style={{ animationDelay: '0.9s' }}>
+              <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
+                {displayData.stats.map((stat: any, index: number) => (
+                  <div key={index} className="text-center">
+                    <div className="flex items-center justify-center mb-2">
+                    
+                      <div className="text-3xl md:text-4xl font-bold text-primary">
+                        {stat.value}+
+                      </div>
+                    </div>
+                    <div className="text-sm md:text-base text-muted-foreground">
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
+          )}
 
           {/* CTA Buttons */}
           <div className="animate-fade-in-up mb-16" style={{ animationDelay: '1.2s' }}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <a
-                href="#projects"
+                href="#about"
                 className="hero-button-primary group"
               >
                 {t('hero.cta.projects')}

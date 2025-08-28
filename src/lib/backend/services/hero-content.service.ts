@@ -21,7 +21,16 @@ export class BackendHeroContentService extends BackendBaseService<HeroContent> {
     return await this.model.create({
       data,
       include: {
-        profileImage: true,
+        profileImage: {
+          select: {
+            id: true,
+            name: true,
+            url: true,
+            type: true,
+            size: true,
+            // Exclude base64 field to prevent base64 data in response
+          }
+        },
       }
     });
   }
@@ -29,10 +38,14 @@ export class BackendHeroContentService extends BackendBaseService<HeroContent> {
   async findByLanguage(lang: string, options: IQueryOptions = {}): Promise<any> {
     const processedOptions = this.processQueryOptions(options, true);
 
-    return await this.model.findUnique({
+    return await this.model.findFirst({
       where: { lang },
       include: {
-        profileImage: true,
+        profileImage: {
+          select: {
+            url: true,
+          }
+        },
         ...processedOptions.include
       }
     });
@@ -48,7 +61,16 @@ export class BackendHeroContentService extends BackendBaseService<HeroContent> {
       where: { id },
       data,
       include: {
-        profileImage: true,
+        profileImage: {
+          select: {
+            id: true,
+            name: true,
+            url: true,
+            type: true,
+            size: true,
+            // Exclude base64 field to prevent base64 data in response
+          }
+        },
       }
     });
   }

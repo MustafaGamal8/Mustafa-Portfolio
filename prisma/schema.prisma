@@ -32,22 +32,21 @@ enum SkillLevel {
 model File {
   id        String    @id @default(cuid()) @map("_id")
   name      String
-  url       String
+  url       String // Will store full URL path like "/api/files/[id]"
   path      String
   type      String
   size      Int
+  base64    String // Store the actual base64 data here
   createdAt DateTime?
   updatedAt DateTime?
 
   // Relations - Changed to one-to-many to allow file reuse
-  profileImages    PersonalInfo[] @relation("profileImage")
-  profileResumes   PersonalInfo[] @relation("profileResume")
-  heroProfileImgs  HeroContent[]  @relation("heroProfileImage")
-  projectImages    Project[]      @relation("projectImage")
-  achievementIcons Achievement[]  @relation("achievementIcon")
-  HeroContent      HeroContent[]  @relation("heroProfileCv")
-  Project          Project[]
-  Achievement      Achievement[]
+  profileImages   PersonalInfo[] @relation("profileImage")
+  profileResumes  PersonalInfo[] @relation("profileResume")
+  heroProfileImgs HeroContent[]  @relation("heroProfileImage")
+  projectImages   Project[]      @relation("projectImage")
+  HeroContent     HeroContent[]  @relation("heroProfileCv")
+  Achievement     Achievement[]
 
   @@map("files")
 }
@@ -83,7 +82,6 @@ model PersonalInfo {
   resumeId String?
   resume   File?   @relation("profileResume", fields: [resumeId], references: [id])
 
-  @@unique([lang])
   @@map("personal_info")
 }
 
@@ -107,7 +105,6 @@ model HeroContent {
   File   File?   @relation("heroProfileCv", fields: [fileId], references: [id])
   fileId String?
 
-  @@unique([lang])
   @@map("hero_content")
 }
 
@@ -124,7 +121,6 @@ model AboutCard {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([lang, order])
   @@map("about_cards")
 }
 
@@ -143,7 +139,6 @@ model SkillCategory {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  @@unique([lang, order])
   @@map("skill_categories")
 }
 
@@ -163,7 +158,6 @@ model Skill {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
-  @@unique([lang, skillCategoryId, order])
   @@map("skills")
 }
 
@@ -193,16 +187,14 @@ model Project {
   // File relations
   imageId String?
   image   File?   @relation("projectImage", fields: [imageId], references: [id], onDelete: SetNull)
-  File    File?   @relation(fields: [fileId], references: [id])
-  fileId  String?
 
-  @@unique([lang, order])
   @@map("projects")
 }
 
 model Achievement {
   id          String   @id @default(cuid()) @map("_id")
   lang        Language
+  icon        String?
   title       String
   subtitle    String?
   description String
@@ -213,12 +205,9 @@ model Achievement {
   updatedAt   DateTime @updatedAt
 
   // File relations
-  iconId String?
-  icon   File?   @relation("achievementIcon", fields: [iconId], references: [id], onDelete: SetNull)
   File   File?   @relation(fields: [fileId], references: [id])
   fileId String?
 
-  @@unique([lang, order])
   @@map("achievements")
 }
 
@@ -268,7 +257,6 @@ model Service {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@unique([lang, order])
   @@map("services")
 }
 
@@ -282,6 +270,5 @@ model QuickLink {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([lang, order])
   @@map("quick_links")
 }

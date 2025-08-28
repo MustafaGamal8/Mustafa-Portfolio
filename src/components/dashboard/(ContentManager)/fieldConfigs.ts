@@ -8,7 +8,7 @@ export const getFieldsForSection = (sectionType: string): FieldConfig[] => {
       { name: 'title', label: 'Job Title', required: true },
       { name: 'description', label: 'Description', type: 'textarea', required: true },
       { name: 'bio', label: 'Bio', type: 'textarea' },
-      { name: 'imageId', label: 'Profile Image', type: 'file' },
+      { name: 'imageId', label: 'Profile Image', type: 'image' },
       { name: 'resumeId', label: 'Resume (PDF)', type: 'file' }
     ],
     hero: [
@@ -17,8 +17,8 @@ export const getFieldsForSection = (sectionType: string): FieldConfig[] => {
       { name: 'subTitle', label: 'Subtitle' },
       { name: 'description', label: 'Description', type: 'textarea', required: true },
       { name: 'ctaText', label: 'CTA Text' },
+      { name: 'profileImageId', label: 'Profile Image', type: 'image' },
       { name: 'dynamicTexts', label: 'Dynamic Texts', type: 'array' },
-      { name: 'profileImageId', label: 'Profile Image', type: 'file' },
       {
         name: 'stats',
         label: 'Stats',
@@ -27,7 +27,8 @@ export const getFieldsForSection = (sectionType: string): FieldConfig[] => {
           { name: 'label', label: 'Label', required: true },
           { name: 'value', label: 'Value', required: true },
         ]
-      }
+      },
+
     ],
     about: [
       { name: 'title', label: 'Title', required: true },
@@ -71,6 +72,7 @@ export const getFieldsForSection = (sectionType: string): FieldConfig[] => {
       { name: 'title', label: 'Title', required: true },
       { name: 'description', label: 'Description', type: 'textarea', required: true },
       { name: 'longDescription', label: 'Long Description', type: 'textarea' },
+      { name: 'imageId', label: 'Project Image', type: 'image' },
       {
         name: 'status',
         label: 'Status',
@@ -90,7 +92,6 @@ export const getFieldsForSection = (sectionType: string): FieldConfig[] => {
       { name: 'teamSize', label: 'Team Size' },
       { name: 'technologies', label: 'Technologies', type: 'array' },
       { name: 'features', label: 'Features', type: 'array' },
-      { name: 'imageId', label: 'Project Image', type: 'file' },
       { name: 'startDate', label: 'Start Date', type: 'datetime-local' },
       { name: 'endDate', label: 'End Date', type: 'datetime-local' },
       { name: 'isFeatured', label: 'Featured', type: 'checkbox' },
@@ -101,6 +102,7 @@ export const getFieldsForSection = (sectionType: string): FieldConfig[] => {
       { name: 'subtitle', label: 'Subtitle' },
       { name: 'description', label: 'Description', type: 'textarea', required: true },
       { name: 'value', label: 'Value' },
+      { name: 'icon', label: 'Icon', type: 'icon' },
       { name: 'order', label: 'Order', type: 'number' }
     ],
     contact: [

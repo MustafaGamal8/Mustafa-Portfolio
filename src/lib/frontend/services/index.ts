@@ -9,6 +9,7 @@ export { skillService, SkillService } from './skill.service';
 export { skillCategoryService, SkillCategoryService } from './skill-category.service';
 export { contactInfoService, ContactInfoService } from './contact-info.service';
 export { socialLinkService, SocialLinkService } from './social-link.service';
+export { fileService, FileService } from './file.service';
 
 // Re-export types from schema
 export type {

@@ -74,7 +74,7 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, ed
             onClick={() => setIconSelectorOpen(true)}
             className="flex items-center gap-2"
           >
-            {value ? renderLucideIcon(value,16) : null}
+            {value ? renderLucideIcon(value, 16) : null}
             {value ? (
               <Badge variant="secondary">{value}</Badge>
             ) : (
@@ -176,66 +176,9 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, ed
     );
   }
 
-  // Handle file upload fields
-  if (field.type === 'file' || field.name.includes('Image') || field.name.includes('Resume')) {
-    const [uploading, setUploading] = useState(false);
-
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-
-      setUploading(true);
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const response = await fetch('/api/files/upload', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (response.ok) {
-          const fileData = await response.json();
-          onChange(fileData.id);
-        } else {
-          throw new Error('Upload failed');
-        }
-      } catch (error) {
-        console.error('File upload error:', error);
-        alert('Failed to upload file');
-      } finally {
-        setUploading(false);
-      }
-    };
-
-    return (
-      <div key={`${field.name}-${editLanguage}`} className="space-y-2">
-        <Label htmlFor={field.name} className="text-sm font-medium">
-          {field.label} {field.required && <span className="text-red-500">*</span>}
-        </Label>
-
-        <div className="space-y-3">
-          <Input
-            id={field.name}
-            type="file"
-            accept={field.name.includes('Resume') ? '.pdf' : 'image/*'}
-            onChange={handleFileUpload}
-            disabled={uploading}
-            className="w-full"
-          />
-
-          {uploading && (
-            <div className="text-sm text-gray-500">Uploading...</div>
-          )}
-
-          {value && (
-            <div className="text-sm text-green-600">
-              File uploaded successfully
-            </div>
-          )}
-        </div>
-      </div>
-    );
+  // Skip file/image upload fields - handled by separate components
+  if (field.type === 'file' || field.type === 'image' || field.name.includes('Image') || field.name.includes('Resume')) {
+    return null;
   }
 
   const renderField = () => {

@@ -39,9 +39,59 @@ interface DashboardStats {
   unreadMessages: number;
 }
 
+interface DashboardOverview {
+  counters: {
+    projects: {
+      total: number;
+      active: number;
+      featured: number;
+      draft: number;
+    };
+    skills: {
+      total: number;
+      active: number;
+      categories: number;
+    };
+    content: {
+      aboutCards: number;
+      achievements: number;
+      heroContent: number;
+      personalInfo: number;
+      contactInfo: number;
+      socialLinks: number;
+    };
+    media: {
+      totalFiles: number;
+      images: number;
+      documents: number;
+    };
+  };
+  recentUpdates: {
+    type: string;
+    title: string;
+    action: string;
+    timestamp: string;
+    id: string;
+  }[];
+  overviewStats: {
+    totalViews: number;
+    totalMessages: number;
+    completionRate: number;
+  };
+}
+
 class DashboardService extends BaseService {
   constructor() {
     super('/api');
+  }
+
+  // Dashboard Overview - Single API call for all dashboard data
+  async getDashboardOverview(): Promise<DashboardOverview> {
+    const response = await this.get<{ success: boolean; data?: DashboardOverview; error?: string }>('/dashboard/overview');
+    if (!response.success) {
+      throw new Error(response.error || 'Failed to fetch dashboard overview');
+    }
+    return response.data!;
   }
 
   // Content Management - Using real API endpoints

@@ -21,7 +21,7 @@ export class BackendUsersService extends BackendBaseService<User> {
     const user = await this.model.create({
       data: {
         email: 'mustafa.gamal.elsayed@gmail.com',
-        password: await hash('password123', 12),
+        password: await hash('password', 12),
       }
     })
     return {

@@ -4,7 +4,6 @@ import { ApiError } from '@/lib/backend/exceptions/api-error';
 import { z } from 'zod';
 import { IQueryOptions } from '@/interfaces/query.interface';
 import { processQueryOptions } from './query-processor';
-import { getTokenInfo } from '@/lib/utils/access-token-auth';
 
 type ApiHandler = (req: NextRequest, params?: any, queryOptions?: IQueryOptions) => Promise<NextResponse>;
 

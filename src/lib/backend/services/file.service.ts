@@ -2,6 +2,7 @@ import { BackendBaseService } from '@/lib/backend/bacendBase.service';
 import { ApiError } from '@/lib/backend/exceptions/api-error';
 import { File } from '@prisma/client';
 import { IQueryOptions } from '@/interfaces/query.interface';
+import path from 'path';
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
@@ -16,6 +17,22 @@ interface UploadedFile {
 export class BackendFileService extends BackendBaseService<File> {
   constructor() {
     super('file');
+  }
+
+  // Custom method to find file by string ID
+  async findByStringId(id: string): Promise<File> {
+    const file = await this.model.findUnique({
+      where: { id }
+    });
+
+    if (!file) {
+      throw ApiError.notFound('File not found', {
+        field: 'id',
+        reason: `File with ID ${id} does not exist`
+      });
+    }
+
+    return file;
   }
 
   async getFileByUrl(url: string): Promise<File | null> {
@@ -50,18 +67,29 @@ export class BackendFileService extends BackendBaseService<File> {
     try {
       // Convert file to base64
       const base64Data = file.buffer.toString('base64');
-      const dataUrl = `data:${file.mimetype};base64,${base64Data}`;
 
-      // Create file record in database with base64 data
-      return await this.model.create({
+      // Create file record in database
+      const createdFile = await this.model.create({
         data: {
           name: file.originalname,
-          path: dataUrl, // Store base64 data URL in path field
-          url: dataUrl,  // Store base64 data URL in url field
+          path: `/api/files/`,
+          url: `/api/files/`, // This will be completed with the ID after creation
           type: file.mimetype,
-          size: file.size
+          size: file.size,
+          base64: `data:${file.mimetype};base64,${base64Data}` // Store full base64 data
         }
       });
+
+      // Update the URL to include the file ID
+      const updatedFile = await this.model.update({
+        where: { id: createdFile.id },
+        data: {
+          path: `/api/files/${createdFile.id}`,
+          url: `${process.env.NEXT_PUBLIC_APP_URL}/api/files/${createdFile.id}`
+        }
+      });
+
+      return updatedFile;
     } catch (error) {
       throw ApiError.internal('Failed to save file', {
         reason: error instanceof Error ? error.message : 'Unknown error'
@@ -71,7 +99,8 @@ export class BackendFileService extends BackendBaseService<File> {
 
   async deleteFile(id: string): Promise<{ success: boolean }> {
     const file = await this.model.findUnique({
-      where: { id }
+      where: { id },
+      select: { id: true }
     });
 
     if (!file) {
@@ -96,10 +125,10 @@ export class BackendFileService extends BackendBaseService<File> {
   async getFileContent(id: string): Promise<string | null> {
     const file = await this.model.findUnique({
       where: { id },
-      select: { url: true }
+      select: { base64: true }
     });
 
-    return file?.url || null;
+    return file?.base64 || null;
   }
 
   // Utility method to validate base64 image

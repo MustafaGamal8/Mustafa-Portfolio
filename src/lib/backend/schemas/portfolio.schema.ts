@@ -152,7 +152,6 @@ export const projectSchema = z.object({
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
   imageId: z.string().optional(),
-  additionalImages: z.array(z.string()).default([]), // Added missing field
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });
@@ -174,12 +173,13 @@ export const achievementSchema = z.object({
   value: z.string().optional(),
   order: z.number().default(0),
   isActive: z.boolean().default(true),
-  iconId: z.string().optional(),
+  icon: z.string().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });
 
 export const createAchievementSchema = achievementSchema.omit({
+  id: true,
   createdAt: true,
   updatedAt: true,
 });
@@ -203,6 +203,7 @@ export const contactInfoSchema = z.object({
 });
 
 export const createContactInfoSchema = contactInfoSchema.omit({
+  icon: true,
   createdAt: true,
   updatedAt: true,
 });

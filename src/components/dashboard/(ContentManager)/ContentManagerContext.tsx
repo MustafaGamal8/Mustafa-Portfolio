@@ -28,8 +28,10 @@ interface ContentManagerContextType extends ContentManagerState, ContentManagerA
   getCurrentSection: () => ContentSection | undefined;
   getSectionItems: (sectionType: string, language?: 'EN' | 'AR') => any[];
   loadContentItems: () => Promise<void>;
+  loadCurrentSectionItems: () => Promise<void>;
   handleSave: (item: any) => Promise<void>;
   handleDelete: (id: string) => Promise<void>;
+  showToast: (toast: { title: string; description: string; variant?: 'default' | 'destructive' }) => void;
 }
 
 const ContentManagerContext = createContext<ContentManagerContextType | undefined>(undefined);
@@ -42,12 +44,14 @@ export const useContentManager = () => {
   return context;
 };
 
-export const ContentManagerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ContentManagerProvider: React.FC<{
+  children: React.ReactNode;
+  showToast: (toast: { title: string; description: string; variant?: 'default' | 'destructive' }) => void;
+}> = ({ children, showToast }) => {
   const [contentData, setContentData] = useState<ContentData>({});
   const [editingItem, setEditingItem] = useState<any>(null);
   const [activeSection, setActiveSection] = useState<string>('personal');
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [editLanguage, setEditLanguage] = useState<'EN' | 'AR'>('EN');
@@ -157,11 +161,71 @@ export const ContentManagerProvider: React.FC<{ children: React.ReactNode }> = (
       setContentData(newContentData);
     } catch (error) {
       console.error('Failed to load content items:', error);
-      setMessage({ type: 'error', text: 'Failed to load content items' });
-      setTimeout(() => setMessage(null), 3000);
+      showToast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to load content items"
+      });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Optimized function to reload only the current section
+  const loadCurrentSectionItems = async () => {
+    try {
+      const currentSection = getCurrentSection();
+      if (!currentSection) return;
+
+      setIsLoading(true);
+
+      const [enData, arData] = await Promise.all([
+        currentSection.service.getByLanguage('EN'),
+        currentSection.service.getByLanguage('AR')
+      ]);
+
+      const enItems = Array.isArray(enData) ? enData : [enData].filter(Boolean);
+      const arItems = Array.isArray(arData) ? arData : [arData].filter(Boolean);
+
+      setContentData(prev => ({
+        ...prev,
+        [currentSection.dataKey]: {
+          EN: enItems,
+          AR: arItems
+        }
+      }));
+    } catch (error) {
+      const currentSection = getCurrentSection();
+      console.error(`Failed to load ${currentSection?.type || 'section'} items:`, error);
+      showToast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to load content items"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Utility function to remove null/undefined values from an object
+  const cleanFormData = (obj: any): any => {
+    if (obj === null || obj === undefined) return undefined;
+
+    if (Array.isArray(obj)) {
+      return obj.map(cleanFormData).filter(item => item !== undefined);
+    }
+
+    if (typeof obj === 'object') {
+      const cleaned: any = {};
+      for (const [key, value] of Object.entries(obj)) {
+        if (value !== null && value !== undefined && value !== '') {
+          cleaned[key] = cleanFormData(value);
+        }
+      }
+      return Object.keys(cleaned).length > 0 ? cleaned : undefined;
+    }
+
+    return obj;
   };
 
   const handleSave = async (item: any) => {
@@ -170,26 +234,37 @@ export const ContentManagerProvider: React.FC<{ children: React.ReactNode }> = (
       const currentSection = getCurrentSection();
       if (!currentSection) throw new Error('Invalid section');
 
-      const itemWithLang = { ...item, lang: editLanguage };
+      // Clean the item data to remove null/undefined/empty values
+      const cleanedItem = cleanFormData(item);
+      const itemWithLang = { ...cleanedItem, lang: editLanguage };
 
       if (item.id) {
         await currentSection.service.update(itemWithLang);
-        setMessage({ type: 'success', text: 'Content updated successfully!' });
+        showToast({
+          title: "Success",
+          description: "Content updated successfully!"
+        });
       } else {
         await currentSection.service.create(itemWithLang);
-        setMessage({ type: 'success', text: 'Content added successfully!' });
+        showToast({
+          title: "Success",
+          description: "Content added successfully!"
+        });
       }
 
-      await loadContentItems();
+      await loadCurrentSectionItems();
       setEditingItem(null);
       setIsModalOpen(false);
       setSelectedImage(null);
     } catch (error) {
       console.error('Save error:', error);
-      setMessage({ type: 'error', text: 'Failed to save content. Please try again.' });
+      showToast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save content. Please try again."
+      });
     } finally {
       setIsLoading(false);
-      setTimeout(() => setMessage(null), 3000);
     }
   };
 
@@ -207,12 +282,17 @@ export const ContentManagerProvider: React.FC<{ children: React.ReactNode }> = (
             AR: prev[currentSection.dataKey]?.AR?.filter((item: any) => item.id !== id) || []
           }
         }));
-        setMessage({ type: 'success', text: 'Content deleted successfully!' });
-        setTimeout(() => setMessage(null), 3000);
+        showToast({
+          title: "Success",
+          description: "Content deleted successfully!"
+        });
       } catch (error) {
         console.error('Delete error:', error);
-        setMessage({ type: 'error', text: 'Failed to delete content. Please try again.' });
-        setTimeout(() => setMessage(null), 3000);
+        showToast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to delete content. Please try again."
+        });
       }
     }
   };
@@ -228,7 +308,6 @@ export const ContentManagerProvider: React.FC<{ children: React.ReactNode }> = (
         editingItem,
         activeSection,
         isLoading,
-        message,
         isModalOpen,
         selectedImage,
         editLanguage,
@@ -237,7 +316,6 @@ export const ContentManagerProvider: React.FC<{ children: React.ReactNode }> = (
         setEditingItem,
         setActiveSection,
         setIsLoading,
-        setMessage,
         setIsModalOpen,
         setSelectedImage,
         setEditLanguage,
@@ -246,8 +324,10 @@ export const ContentManagerProvider: React.FC<{ children: React.ReactNode }> = (
         getCurrentSection,
         getSectionItems,
         loadContentItems,
+        loadCurrentSectionItems,
         handleSave,
         handleDelete,
+        showToast,
       }}
     >
       {children}

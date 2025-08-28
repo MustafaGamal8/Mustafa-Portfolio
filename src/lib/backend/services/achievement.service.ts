@@ -11,9 +11,6 @@ export class BackendAchievementService extends BackendBaseService<Achievement> {
   async create(data: CreateAchievementDto): Promise<any> {
     return await this.model.create({
       data,
-      include: {
-        icon: true
-      }
     });
   }
 
@@ -27,7 +24,6 @@ export class BackendAchievementService extends BackendBaseService<Achievement> {
         ...processedOptions.where
       },
       include: {
-        icon: true,
         ...processedOptions.include
       },
       orderBy: { order: 'asc' }
@@ -43,9 +39,6 @@ export class BackendAchievementService extends BackendBaseService<Achievement> {
     return await this.model.update({
       where: { id },
       data,
-      include: {
-        icon: true
-      }
     });
   }
 
@@ -57,9 +50,7 @@ export class BackendAchievementService extends BackendBaseService<Achievement> {
 
     return await this.model.delete({
       where: { id },
-      include: {
-        icon: true
-      }
+  
     });
   }
 

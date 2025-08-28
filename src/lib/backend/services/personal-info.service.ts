@@ -30,11 +30,19 @@ export class BackendPersonalInfoService extends BackendBaseService<PersonalInfo>
   async findByLanguage(lang: string, options: IQueryOptions = {}): Promise<any> {
     const processedOptions = this.processQueryOptions(options, true);
 
-    return await this.model.findUnique({
+    return await this.model.findFirst({
       where: { lang },
       include: {
-        image: true,
-        resume: true,
+        image: {
+          select: {
+            url: true
+          }
+        },
+        resume: {
+          select: {
+            url: true
+          }
+        },
         ...processedOptions.include
       }
     });

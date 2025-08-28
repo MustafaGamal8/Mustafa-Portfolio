@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { ExternalLink, Github, Calendar, Users, Star, ArrowLeft, ArrowRight } from 'lucide-react';
 import { usePortfolioSection } from '@/hooks/usePortfolioSection';
 import { useLanguage } from './LanguageProvider';
@@ -15,13 +15,12 @@ const ProjectsSectionV2 = () => {
   const { language, t } = useLanguage();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [itemsPerSlide, setItemsPerSlide] = useState(3);
 
   // Fetch projects data from API
   const { data: projectsData, loading, error, isStaticData } = usePortfolioSection({
     sectionName: 'projects'
   });
-
-  // No static data - all comes from API
 
   // Use API data if available, otherwise empty array  
   const projects = projectsData && projectsData.length > 0
@@ -43,33 +42,28 @@ const ProjectsSectionV2 = () => {
     return imageMap[category] || projectWebImage;
   }
 
-  const categories = [
-    { id: 'all', name: t('projects.all'), count: projects.length },
-    { id: 'web', name: t('projects.web'), count: projects.filter((p: any) => p.category === 'web').length },
-    { id: 'mobile', name: t('projects.mobile'), count: projects.filter((p: any) => p.category === 'mobile').length },
-    { id: 'ai', name: t('projects.ai'), count: projects.filter((p: any) => p.category === 'ai').length },
-    { id: 'iot', name: t('projects.iot'), count: projects.filter((p: any) => p.category === 'iot').length }
-  ];
+  // ✅ Dynamic categories from projects
+  const categories = useMemo(() => {
+    const uniqueCategories = Array.from(new Set(projects.map((p: any) => p.category)));
+
+    return [
+      { id: 'all', name: t('projects.all'), count: projects.length },
+      ...uniqueCategories.map((cat) => ({
+        id: cat,
+        name: t(`projects.${cat}`) || cat,
+        count: projects.filter((p: any) => p.category === cat).length
+      }))
+    ];
+  }, [projects, t]);
 
   const filteredProjects = selectedCategory === 'all'
     ? projects
     : projects.filter((project: any) => project.category === selectedCategory);
 
-  const nextSlide = () => {
-    const maxSlides = Math.ceil(filteredProjects.length / itemsPerSlide);
-    setCurrentSlide((prev) => (prev + 1) % maxSlides);
-  };
-
-  const prevSlide = () => {
-    const maxSlides = Math.ceil(filteredProjects.length / itemsPerSlide);
-    setCurrentSlide((prev) => (prev - 1 + maxSlides) % maxSlides);
-  };
-
-  const [itemsPerSlide, setItemsPerSlide] = React.useState(2);
-
-  React.useEffect(() => {
+  // ✅ update itemsPerSlide based on screen size
+  useEffect(() => {
     const updateItemsPerSlide = () => {
-      if (window.innerWidth >= 1024) setItemsPerSlide(2);
+      if (window.innerWidth >= 1024) setItemsPerSlide(3);
       else if (window.innerWidth >= 768) setItemsPerSlide(1);
       else setItemsPerSlide(1);
     };
@@ -80,6 +74,24 @@ const ProjectsSectionV2 = () => {
   }, []);
 
   const totalSlides = Math.ceil(filteredProjects.length / itemsPerSlide);
+
+  // ✅ reset slide when filter changes
+  useEffect(() => {
+    setCurrentSlide(0);
+  }, [filteredProjects]);
+
+  // ✅ use totalSlides instead of recalculating
+  const nextSlide = () => {
+    if (totalSlides > 0) {
+      setCurrentSlide((prev) => (prev + 1) % totalSlides);
+    }
+  };
+
+  const prevSlide = () => {
+    if (totalSlides > 0) {
+      setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+    }
+  };
 
   return (
     <section id="projects" className="py-20 px-4 bg-card-hover">
@@ -108,9 +120,9 @@ const ProjectsSectionV2 = () => {
           <div className="flex flex-wrap justify-center gap-3 mb-12">
             {categories.map((category) => (
               <button
-                key={category.id}
+                key={category.id as any}
                 onClick={() => {
-                  setSelectedCategory(category.id);
+                  setSelectedCategory(category.id as string);
                   setCurrentSlide(0);
                 }}
                 className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${selectedCategory === category.id
@@ -145,7 +157,7 @@ const ProjectsSectionV2 = () => {
                     .map((project: any, index: number) => (
                       <div
                         key={`${project.title}-${slideIndex}-${index}`}
-                        className={`project-card animate-scale-in ${itemsPerSlide === 1 ? 'w-full max-w-md' : 'flex-1'
+                        className={`project-card animate-scale-in ${itemsPerSlide === 1 ? 'w-full max-w-md' : 'max-w-md flex-1'
                           }`}
                         style={{
                           animationDelay: `${index * 0.1}s`

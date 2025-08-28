@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { DashboardLayout } from './DashboardLayout';
 import { ContentManager } from './(ContentManager)/ContentManager';
+import { MediaManager } from './MediaManager';
+import { WelcomeTab } from './WelcomeTab';
 import { TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -26,16 +28,16 @@ import {
   Award,
   Key,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  LogOut
 } from 'lucide-react';
 import { authService } from '@/lib/frontend/services/auth.service';
 import { portfolioService } from '@/lib/frontend/services/portfolio.service';
 import { usePortfolioSection } from '@/hooks/usePortfolioSection';
 
 export const DashboardWrapper = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [stats, setStats] = useState<any>(null);
-  const [portfolioData, setPortfolioData] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [isLoading, setIsLoading] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [passwordData, setPasswordData] = useState({
     oldPassword: '',
@@ -45,56 +47,8 @@ export const DashboardWrapper = () => {
   const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
 
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-
-  const loadDashboardData = async () => {
-    try {
-      setIsLoading(true);
-
-      // Use portfolio service to get all sections at once
-      const response = await portfolioService.getPortfolioSections({
-        lang: 'EN',
-        sections: [
-          'personalInfo',
-          'heroContent',
-          'aboutCards',
-          'skillCategories',
-          'skills',
-          'projects',
-          'achievements',
-          'contactInfo',
-          'socialLinks'
-        ]
-      });
-
-      if (response.success && response.data) {
-        setPortfolioData(response.data);
-
-        // Calculate stats from the loaded data
-        const calculatedStats = {
-          totalProjects: response.data.projects?.length || 0,
-          activeProjects: response.data.projects?.filter((p: any) => p.isActive)?.length || 0,
-          featuredProjects: response.data.projects?.filter((p: any) => p.isFeatured)?.length || 0,
-          totalSkills: response.data.skills?.length || 0,
-          activeSkills: response.data.skills?.filter((s: any) => s.isActive)?.length || 0,
-          totalAboutCards: response.data.aboutCards?.length || 0,
-          totalAchievements: response.data.achievements?.length || 0,
-          totalSkillCategories: response.data.skillCategories?.length || 0,
-          totalContactInfo: response.data.contactInfo?.length || 0,
-          totalSocialLinks: response.data.socialLinks?.length || 0,
-          personalInfoCount: response.data.personalInfo?.length || 0,
-          heroContentCount: response.data.heroContent?.length || 0
-        };
-
-        setStats(calculatedStats);
-      }
-    } catch (error) {
-      console.error('Failed to load dashboard data:', error);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
   };
 
 
@@ -156,8 +110,14 @@ export const DashboardWrapper = () => {
 
 
   return (
-    <DashboardLayout onLogout={handleLogout} stats={stats}>
+    <DashboardLayout
+      onLogout={handleLogout}
+      activeTab={activeTab}
+      onTabChange={handleTabChange}
+    >
+      <WelcomeTab onTabChange={handleTabChange} />
       <ContentManager />
+      <MediaManager />
 
       {/* Settings Tab */}
       <TabsContent value="settings" className="space-y-6">
@@ -201,49 +161,15 @@ export const DashboardWrapper = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Data Management</CardTitle>
+                  <CardTitle className="text-base">Account Management</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Total Projects</span>
-                    <Badge variant="secondary">{stats?.totalProjects || 0}</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Active Projects</span>
-                    <Badge variant="secondary">{stats?.activeProjects || 0}</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Total Skills</span>
-                    <Badge variant="secondary">{stats?.totalSkills || 0}</Badge>
-                  </div>
-                  <Button size="sm" variant="outline" className="w-full" onClick={loadDashboardData}>
-                    <Save className="h-4 w-4 mr-2" />
-                    Refresh Data
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <Button variant="outline" size="sm" onClick={loadDashboardData}>
-                    <BarChart3 className="h-4 w-4 mr-2" />
-                    Refresh Stats
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => window.open('/', '_blank')}>
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    Preview Site
-                  </Button>
                   <Dialog open={isPasswordModalOpen} onOpenChange={(open) => {
                     setIsPasswordModalOpen(open);
                     if (!open) resetPasswordForm();
                   }}>
                     <DialogTrigger asChild>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="w-full">
                         <Key className="h-4 w-4 mr-2" />
                         Change Password
                       </Button>
@@ -326,13 +252,14 @@ export const DashboardWrapper = () => {
                       </div>
                     </DialogContent>
                   </Dialog>
-                  <Button variant="outline" size="sm">
-                    <Settings className="h-4 w-4 mr-2" />
-                    Settings
+
+                  <Button variant="outline" size="sm" className="w-full">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
                   </Button>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </CardContent>
         </Card>
       </TabsContent>

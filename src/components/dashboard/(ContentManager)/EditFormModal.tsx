@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -10,9 +10,12 @@ import { Save } from 'lucide-react';
 import { useContentManager } from './ContentManagerContext';
 import { FormField } from './FormField';
 import { ImageUpload } from './ImageUpload';
+import { FileUpload } from './FileUpload';
 import { getFieldsForSection } from './fieldConfigs';
 
 export const EditFormModal: React.FC = () => {
+  const [isUploading, setIsUploading] = useState(false);
+
   const {
     editingItem,
     setEditingItem,
@@ -38,19 +41,76 @@ export const EditFormModal: React.FC = () => {
     setEditingItem((prev: any) => ({ ...prev, [fieldName]: value }));
   };
 
-  const getImageFieldName = () => {
-    switch (activeSection) {
-      case 'projects':
-        return 'imageId';
-      case 'personal':
-        return 'imageId';
-      case 'hero':
-        return 'profileImageId';
-      case 'achievements':
-        return 'iconId';
-      default:
-        return 'imageId';
+  const renderFieldComponent = (field: any) => {
+    // Handle image upload fields
+    if (field.type === 'image') {
+      const getImageFieldName = () => {
+        switch (activeSection) {
+          case 'projects':
+            return 'imageId';
+          case 'personal':
+            return 'imageId';
+          case 'hero':
+            return 'profileImageId';
+          case 'achievements':
+            return 'iconId';
+          default:
+            return 'imageId';
+        }
+      };
+
+      const handleImageUpload = (uploadedImageId: string) => {
+        const fieldName = getImageFieldName();
+        setEditingItem((prev: any) => ({ ...prev, [fieldName]: uploadedImageId }));
+      };
+
+      return (
+        <ImageUpload
+          key={field.name}
+          imageId={editingItem[getImageFieldName()]}
+          selectedImage={selectedImage}
+          onImageSelect={setSelectedImage}
+          onImageUpload={handleImageUpload}
+          onUploadingChange={setIsUploading}
+          activeSection={activeSection}
+          label={currentSection.type === 'hero' ? 'Profile Image' :
+            currentSection.type === 'achievements' ? 'Icon' : 'Image'}
+        />
+      );
     }
+
+    // Handle file upload fields
+    if (field.type === 'file') {
+      const handleFileUpload = (uploadedFileId: string) => {
+        setEditingItem((prev: any) => ({ ...prev, [field.name]: uploadedFileId }));
+      };
+
+      return (
+        <FileUpload
+          key={field.name}
+          fileId={editingItem[field.name]}
+          selectedFile={null}
+          onFileSelect={() => { }} // Not needed for this implementation
+          onFileUpload={handleFileUpload}
+          onUploadingChange={setIsUploading}
+          activeSection={activeSection}
+          label={field.label}
+          acceptedTypes="application/pdf,.pdf"
+          fileType="file"
+        />
+      );
+    }
+
+    // Regular form field
+    return (
+      <FormField
+        key={field.name}
+        field={field}
+        value={editingItem[field.name]}
+        onChange={(value) => handleFieldChange(field.name, value)}
+        editLanguage={editLanguage}
+      />
+    );
   };
 
   return (
@@ -67,24 +127,7 @@ export const EditFormModal: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4" key={`form-${editLanguage}`}>
-            {fields.map((field) => (
-              <FormField
-                key={field.name}
-                field={field}
-                value={editingItem[field.name]}
-                onChange={(value) => handleFieldChange(field.name, value)}
-                editLanguage={editLanguage}
-              />
-            ))}
-
-            <ImageUpload
-              imageId={editingItem[getImageFieldName()]}
-              selectedImage={selectedImage}
-              onImageSelect={setSelectedImage}
-              activeSection={activeSection}
-              label={currentSection.type === 'hero' ? 'Profile Image' :
-                currentSection.type === 'achievements' ? 'Icon' : 'Image'}
-            />
+            {fields.map((field) => renderFieldComponent(field))}
           </div>
 
           <Separator />
@@ -110,9 +153,9 @@ export const EditFormModal: React.FC = () => {
               >
                 Cancel
               </Button>
-              <Button onClick={() => handleSave(editingItem)} disabled={isLoading}>
+              <Button onClick={() => handleSave(editingItem)} disabled={isLoading || isUploading}>
                 <Save className="h-4 w-4 mr-2" />
-                {isLoading ? 'Saving...' : 'Save'}
+                {isLoading ? 'Saving...' : isUploading ? 'Uploading...' : 'Save'}
               </Button>
             </div>
           </div>

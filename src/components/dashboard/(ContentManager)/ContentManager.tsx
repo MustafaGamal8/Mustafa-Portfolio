@@ -3,16 +3,15 @@
 import React from 'react';
 import { TabsContent } from '@/components/ui/tabs';
 import { ContentManagerProvider } from './ContentManagerContext';
-import { MessageAlert } from './MessageAlert';
 import { EditFormModal } from './EditFormModal';
 import { SectionTabs } from './SectionTabs';
 import { ContentHeader } from './ContentHeader';
 import { ContentList } from './ContentList';
+import { useToast } from '@/hooks/use-toast';
 
 const ContentManagerInner: React.FC = () => {
   return (
     <TabsContent value="content" className="space-y-6">
-      <MessageAlert />
       <EditFormModal />
 
       {/* Section Tabs */}
@@ -28,8 +27,14 @@ const ContentManagerInner: React.FC = () => {
 };
 
 export const ContentManager: React.FC = () => {
+  const { toast } = useToast();
+
+  const showToast = (toastData: { title: string; description: string; variant?: 'default' | 'destructive' }) => {
+    toast(toastData);
+  };
+
   return (
-    <ContentManagerProvider>
+    <ContentManagerProvider showToast={showToast}>
       <ContentManagerInner />
     </ContentManagerProvider>
   );

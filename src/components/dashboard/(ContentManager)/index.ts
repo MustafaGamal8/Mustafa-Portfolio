@@ -7,7 +7,6 @@ export { SectionTabs } from './SectionTabs';
 export { ContentHeader } from './ContentHeader';
 export { ContentItemCard } from './ContentItemCard';
 export { ContentList } from './ContentList';
-export { MessageAlert } from './MessageAlert';
 export { IconSelector } from './IconSelector';
 export { DynamicArrayField } from './DynamicArrayField';
 export { getFieldsForSection } from './fieldConfigs';

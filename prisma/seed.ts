@@ -19,75 +19,6 @@ async function main() {
   await prisma.personalInfo.deleteMany();
   await prisma.file.deleteMany();
 
-  // Create Files for images
-  console.log('📁 Creating file records...');
-  const profileImageFile = await prisma.file.create({
-    data: {
-      name: 'profile-image.jpg',
-      url: '/assets/profile-image.jpg',
-      path: '/public/assets/profile-image.jpg',
-      type: 'image/jpeg',
-      size: 245760 // ~240KB
-    }
-  });
-
-  // Create project images
-  const projectImages = await Promise.all([
-    prisma.file.create({
-      data: {
-        name: 'project-web.jpg',
-        url: '/assets/project-web.jpg',
-        path: '/public/assets/project-web.jpg',
-        type: 'image/jpeg',
-        size: 512000
-      }
-    }),
-    prisma.file.create({
-      data: {
-        name: 'project-chatbot.jpg',
-        url: '/assets/project-chatbot.jpg',
-        path: '/public/assets/project-chatbot.jpg',
-        type: 'image/jpeg',
-        size: 487680
-      }
-    }),
-    prisma.file.create({
-      data: {
-        name: 'project-drone.jpg',
-        url: '/assets/project-drone.jpg',
-        path: '/public/assets/project-drone.jpg',
-        type: 'image/jpeg',
-        size: 623104
-      }
-    }),
-    prisma.file.create({
-      data: {
-        name: 'project-flutter.jpg',
-        url: '/assets/project-flutter.jpg',
-        path: '/public/assets/project-flutter.jpg',
-        type: 'image/jpeg',
-        size: 456789
-      }
-    }),
-    prisma.file.create({
-      data: {
-        name: 'project-management.jpg',
-        url: '/assets/project-management.jpg',
-        path: '/public/assets/project-management.jpg',
-        type: 'image/jpeg',
-        size: 534567
-      }
-    }),
-    prisma.file.create({
-      data: {
-        name: 'project-ecommerce.jpg',
-        url: '/assets/project-ecommerce.jpg',
-        path: '/public/assets/project-ecommerce.jpg',
-        type: 'image/jpeg',
-        size: 489123
-      }
-    })
-  ]);
 
   // Create Personal Info
   console.log('👤 Creating personal info...');
@@ -100,7 +31,6 @@ async function main() {
         title: 'مهندس برمجيات ومؤسس Webnest',
         description: 'مهندس برمجيات متخصص في تطوير الحلول التقنية المبتكرة، مؤسس شركة Webnest لحلول الويب والتطبيقات الذكية.',
         bio: 'أجمع بين الخبرة التقنية والفهم العميق لاحتياجات السوق المحلي والعالمي. أركز على بناء حلول تقنية مبتكرة تساعد الشركات والأفراد على تحقيق أهدافهم.',
-        imageId: profileImageFile.id
       },
       {
         lang: 'EN',
@@ -109,7 +39,6 @@ async function main() {
         title: 'Software Engineer & Webnest Founder',
         description: 'Software engineer specialized in developing innovative technical solutions, founder of Webnest company for web and smart applications solutions.',
         bio: 'I combine technical expertise with deep understanding of local and global market needs. I focus on building innovative technical solutions that help companies and individuals achieve their goals.',
-        imageId: profileImageFile.id
       }
     ]
   });
@@ -126,7 +55,6 @@ async function main() {
         description: 'مرحباً بك! أنا مصطفى، مهندس برمجيات شغوف بتطوير الحلول التقنية المبتكرة. أتخصص في تطوير تطبيقات الويب والموبايل، وأعمل على مشاريع الذكاء الاصطناعي والأتمتة.',
         dynamicTexts: ['مطور ويب', 'مطور Flutter', 'خبير DevOps', 'مؤسس شركة', 'مطور AI', 'مبتكر حلول'],
         ctaText: 'تواصل معي',
-        profileImageId: profileImageFile.id
       },
       {
         lang: 'EN',
@@ -136,7 +64,6 @@ async function main() {
         description: 'Welcome! I\'m Mostafa, a passionate software engineer dedicated to developing innovative technical solutions. I specialize in web and mobile app development, and work on AI and automation projects.',
         dynamicTexts: ['Web Developer', 'Flutter Expert', 'DevOps Expert', 'Company Founder', 'AI Developer', 'Solution Innovator'],
         ctaText: 'Contact Me',
-        profileImageId: profileImageFile.id
       }
     ]
   });
@@ -445,7 +372,6 @@ async function main() {
       title: 'منصة Webnest الشاملة',
       description: 'موقع شركة متقدم يقدم خدمات تطوير الويب والتطبيقات مع نظام إدارة محتوى متطور ولوحة تحكم شاملة للعملاء والمشاريع.',
       longDescription: 'منصة شاملة تضم موقع الشركة، نظام CRM متطور، لوحة تحكم للمشاريع، وسائل الدفع المتعددة، وتقارير تفصيلية. المنصة تدعم عدة لغات ومحسنة للسيو.',
-      imageId: projectImages[0].id,
       status: 'COMPLETED' as const,
       category: 'web',
       projectUrl: 'https://webnest.com.eg',
@@ -462,7 +388,6 @@ async function main() {
       title: 'نظام ChatBot AI المتطور',
       description: 'chatbot ذكي للشركات مع معالجة اللغة الطبيعية، تعلم آلي، ودمج مع أنظمة CRM لخدمة عملاء متفوقة على مدار الساعة.',
       longDescription: 'نظام ذكاء اصطناعي متقدم يدعم المحادثات باللغة العربية والإنجليزية، مع قدرات تعلم مستمر وتحليل للمشاعر، ودمج مع أنظمة الشركة المختلفة.',
-      imageId: projectImages[1].id,
       status: 'COMPLETED' as const,
       category: 'ai',
       projectUrl: 'https://demo.chatbot-ai.com',
@@ -479,7 +404,6 @@ async function main() {
       title: 'منصة الزراعة الذكية',
       description: 'نظام متكامل لمراقبة المحاصيل باستخدام طائرة DJI Mavic 3M مع معالجة الصور بالذكاء الاصطناعي وتحليل البيانات الزراعية.',
       longDescription: 'منصة شاملة تجمع بين تقنيات الطائرات المسيرة والذكاء الاصطناعي لمراقبة المحاصيل، تحليل التربة، كشف الآفات، وتوفير توصيات زراعية مخصصة للمزارعين.',
-      imageId: projectImages[2].id,
       status: 'COMPLETED' as const,
       category: 'iot',
       projectUrl: 'https://smart-agriculture.com',
@@ -496,7 +420,6 @@ async function main() {
       title: 'تطبيق EcoLife Mobile',
       description: 'تطبيق Flutter متعدد المنصات للحياة الصحية والبيئية مع تتبع الأنشطة، نصائح بيئية، ونظام مكافآت تفاعلي.',
       longDescription: 'تطبيق شامل يساعد المستخدمين على تبني نمط حياة صحي وصديق للبيئة، مع ميزات تتبع الأنشطة، حساب البصمة الكربونية، ومجتمع تفاعلي للمستخدمين.',
-      imageId: projectImages[3].id,
       status: 'COMPLETED' as const,
       category: 'mobile',
       projectUrl: 'https://apps.apple.com/ecolife',
@@ -515,7 +438,6 @@ async function main() {
       title: 'Webnest Comprehensive Platform',
       description: 'Advanced company website providing web and application development services with sophisticated content management system and comprehensive dashboard for clients and projects.',
       longDescription: 'Comprehensive platform including company website, advanced CRM system, project control dashboard, multiple payment methods, and detailed reports. The platform supports multiple languages and is SEO optimized.',
-      imageId: projectImages[0].id,
       status: 'COMPLETED' as const,
       category: 'web',
       projectUrl: 'https://webnest.com.eg',
@@ -532,7 +454,6 @@ async function main() {
       title: 'Advanced ChatBot AI System',
       description: 'Smart chatbot for businesses with natural language processing, machine learning, and CRM integration for superior 24/7 customer service.',
       longDescription: 'Advanced AI system supporting conversations in Arabic and English, with continuous learning capabilities and sentiment analysis, integrated with various company systems.',
-      imageId: projectImages[1].id,
       status: 'COMPLETED' as const,
       category: 'ai',
       projectUrl: 'https://demo.chatbot-ai.com',
@@ -549,7 +470,6 @@ async function main() {
       title: 'Smart Agriculture Platform',
       description: 'Integrated system for crop monitoring using DJI Mavic 3M drone with AI image processing and agricultural data analysis.',
       longDescription: 'Comprehensive platform combining drone technology and artificial intelligence for crop monitoring, soil analysis, pest detection, and providing customized agricultural recommendations for farmers.',
-      imageId: projectImages[2].id,
       status: 'COMPLETED' as const,
       category: 'iot',
       projectUrl: 'https://smart-agriculture.com',
@@ -566,7 +486,6 @@ async function main() {
       title: 'EcoLife Mobile App',
       description: 'Cross-platform Flutter app for healthy and environmental living with activity tracking, environmental tips, and interactive rewards system.',
       longDescription: 'Comprehensive app helping users adopt a healthy and eco-friendly lifestyle, with features for activity tracking, carbon footprint calculation, and interactive user community.',
-      imageId: projectImages[3].id,
       status: 'COMPLETED' as const,
       category: 'mobile',
       projectUrl: 'https://apps.apple.com/ecolife',

@@ -9,7 +9,6 @@ export const getFieldsForSection = (sectionType: string): FieldConfig[] => {
       { name: 'description', label: 'Description', type: 'textarea', required: true },
       { name: 'bio', label: 'Bio', type: 'textarea' },
       { name: 'imageId', label: 'Profile Image', type: 'image' },
-      { name: 'resumeId', label: 'Resume (PDF)', type: 'file' }
     ],
     hero: [
       { name: 'name', label: 'Name', required: true },
@@ -18,6 +17,7 @@ export const getFieldsForSection = (sectionType: string): FieldConfig[] => {
       { name: 'description', label: 'Description', type: 'textarea', required: true },
       { name: 'ctaText', label: 'CTA Text' },
       { name: 'profileImageId', label: 'Profile Image', type: 'image' },
+      { name: 'resumeId', label: 'Resume (PDF)', type: 'file' },
       { name: 'dynamicTexts', label: 'Dynamic Texts', type: 'array' },
       {
         name: 'stats',

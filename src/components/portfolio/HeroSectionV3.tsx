@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { ArrowDown, ChevronDown, Sparkles } from 'lucide-react';
+import { ArrowDown, ChevronDown, FileDown, Sparkles } from 'lucide-react';
 import { useLanguage } from './LanguageProvider';
 import { usePortfolioSection } from '@/hooks/usePortfolioSection';
 import renderLucideIcon from '@/lib/frontend/utils/renderLucideIcon';
@@ -124,14 +124,14 @@ const HeroSectionV3 = () => {
           </div>
 
           {/* Stats - Now dynamic from API */}
-          
+
           {displayData.stats && displayData.stats.length > 0 && (
             <div className="animate-fade-in-up mb-12" style={{ animationDelay: '0.9s' }}>
               <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
                 {displayData.stats.map((stat: any, index: number) => (
                   <div key={index} className="text-center">
                     <div className="flex items-center justify-center mb-2">
-                    
+
                       <div className="text-3xl md:text-4xl font-bold text-primary">
                         {stat.value}+
                       </div>
@@ -148,6 +148,13 @@ const HeroSectionV3 = () => {
           {/* CTA Buttons */}
           <div className="animate-fade-in-up mb-16" style={{ animationDelay: '1.2s' }}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a
+                href="#contact"
+                className="hero-button-secondary"
+              >
+                {displayData.ctaText || t('hero.cta.contact')}
+              </a>
+
               <a
                 href="#about"
                 className="hero-button-primary group"
@@ -159,12 +166,18 @@ const HeroSectionV3 = () => {
                 />
               </a>
 
-              <a
-                href="#contact"
-                className="hero-button-secondary"
-              >
-                {displayData.ctaText || t('hero.cta.contact')}
-              </a>
+            
+              {displayData?.resume?.url && (
+                <a
+                  href={displayData.resume.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hero-button-secondary flex items-center gap-2"
+                >
+                  {/* <FileDown size={20} /> */}
+                  CV
+                </a>
+              )}
             </div>
           </div>
 

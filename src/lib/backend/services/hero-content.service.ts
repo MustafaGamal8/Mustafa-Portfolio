@@ -46,6 +46,11 @@ export class BackendHeroContentService extends BackendBaseService<HeroContent> {
             url: true,
           }
         },
+        resume: {
+          select: {
+            url: true,
+          }
+        },
         ...processedOptions.include
       }
     });
@@ -64,11 +69,11 @@ export class BackendHeroContentService extends BackendBaseService<HeroContent> {
         profileImage: {
           select: {
             id: true,
-            name: true,
-            url: true,
-            type: true,
-            size: true,
-            // Exclude base64 field to prevent base64 data in response
+          }
+        },
+        resume: {
+          select: {
+            id: true,
           }
         },
       }

@@ -42,7 +42,6 @@ model File {
 
   // Relations - Changed to one-to-many to allow file reuse
   profileImages   PersonalInfo[] @relation("profileImage")
-  profileResumes  PersonalInfo[] @relation("profileResume")
   heroProfileImgs HeroContent[]  @relation("heroProfileImage")
   projectImages   Project[]      @relation("projectImage")
   HeroContent     HeroContent[]  @relation("heroProfileCv")
@@ -79,9 +78,6 @@ model PersonalInfo {
   imageId String?
   image   File?   @relation("profileImage", fields: [imageId], references: [id])
 
-  resumeId String?
-  resume   File?   @relation("profileResume", fields: [resumeId], references: [id])
-
   @@map("personal_info")
 }
 
@@ -102,8 +98,10 @@ model HeroContent {
   profileImageId String?
   profileImage   File?   @relation("heroProfileImage", fields: [profileImageId], references: [id], onDelete: SetNull)
 
-  File   File?   @relation("heroProfileCv", fields: [fileId], references: [id])
-  fileId String?
+  
+  resumeId String?
+  resume   File?   @relation("heroProfileCv", fields: [resumeId], references: [id])
+
 
   @@map("hero_content")
 }

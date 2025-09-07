@@ -23,16 +23,14 @@ export const PUBLIC_ROUTES: PublicRoutesConfig = {
   },
 
 
-  
   '/api/portfolio': {
     methods: ['POST'],
     description: 'Public portfolio'
   },
 
   
-
   // File access route
-  '/storage/files/[id]': {
+  '/api/files/[id]': {
     methods: ['GET'],
     description: 'Public file access',
     isDynamic: true

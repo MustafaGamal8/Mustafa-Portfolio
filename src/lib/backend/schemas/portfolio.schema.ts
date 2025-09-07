@@ -13,7 +13,6 @@ export const personalInfoSchema = z.object({
   description: z.string().min(1, 'Description is required'),
   bio: z.string().optional(),
   imageId: z.string().optional(),
-  resumeId: z.string().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });
@@ -41,8 +40,7 @@ export const heroContentSchema = z.object({
   })).optional(),
   ctaText: z.string().optional(),
   profileImageId: z.string().optional(),
-  backgroundImageId: z.string().optional(),
-  resumeId: z.string().optional(), // Added missing resume field
+  resumeId: z.string().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });

@@ -3,17 +3,60 @@ import { Mail, Phone, MapPin, Heart, ExternalLink } from 'lucide-react';
 import { usePortfolioSection } from '@/hooks/usePortfolioSection';
 import { useLanguage } from './LanguageProvider';
 
+// Type definitions for API data
+interface ContactInfo {
+  id: string;
+  type: string;
+  label: string;
+  value: string;
+  link?: string;
+  icon?: string;
+  order: number;
+  isActive: boolean;
+  isPrimary: boolean;
+}
+
+interface SocialLink {
+  id: string;
+  name: string;
+  url: string;
+  icon?: string;
+  order: number;
+  isActive: boolean;
+}
+
+interface FooterData {
+  contactInfo?: ContactInfo[];
+  socialLinks?: SocialLink[];
+}
+
 const Footer = () => {
   const { language } = useLanguage();
-  const { data: footerData, loading, isStaticData } = usePortfolioSection({ sectionName: 'footer' });
+  const { data: footerData, loading, isStaticData } = usePortfolioSection({ sectionName: 'footer' }) as {
+    data: FooterData | null;
+    loading: boolean;
+    isStaticData: boolean;
+  };
   const currentYear = new Date().getFullYear();
 
   // Static fallback data with multi-language support
   const staticSocialLinks = [
-    { name: 'LinkedIn', url: 'https://linkedin.com/in/mostafa-gamal', icon: 'LinkedIn' },
-    { name: 'GitHub', url: 'https://github.com/mostafa-codes', icon: 'GitHub' },
-    { name: 'Twitter', url: 'https://twitter.com/mostafa_codes', icon: 'Twitter' },
-    { name: 'Instagram', url: 'https://instagram.com/mostafa.codes', icon: 'Instagram' }
+    {
+      id: 'linkedin',
+      name: 'LinkedIn',
+      url: 'https://linkedin.com/in/mustafa-gamal-elsayed',
+      icon: 'LinkedIn',
+      order: 1,
+      isActive: true
+    },
+    {
+      id: 'github',
+      name: 'GitHub',
+      url: 'https://github.com/MustafaGamal8',
+      icon: 'GitHub',
+      order: 2,
+      isActive: true
+    }
   ];
 
   const staticQuickLinks = [
@@ -61,8 +104,19 @@ const Footer = () => {
 
   // Use API data if available, otherwise use static data
   const socialLinks = footerData?.socialLinks || staticSocialLinks;
-  const quickLinks = footerData?.quickLinks || staticQuickLinks;
-  const services = footerData?.services || staticServices;
+  const contactInfo = footerData?.contactInfo || [];
+  const quickLinks = staticQuickLinks;
+  const services = staticServices;
+
+  // Helper function to get contact info by type
+  const getContactByType = (type: string): ContactInfo | undefined => {
+    return contactInfo.find((contact: ContactInfo) => contact.type === type && contact.isActive);
+  };
+
+  // Get specific contact information
+  const emailContact = getContactByType('email');
+  const phoneContact = getContactByType('phone');
+  const locationContact = getContactByType('location');
 
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
@@ -70,7 +124,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-gradient-to-br from-primary to-primary-dark text-primary-foreground relative overflow-hidden">
+    <footer className="bg-gradient-to-br from-primary to-primary text-primary-foreground relative overflow-hidden">
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 py-16 relative z-10">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -82,25 +136,70 @@ const Footer = () => {
               </h3>
               <p className="text-primary-foreground/80 text-sm leading-relaxed">
                 {language === 'ar'
-                  ? 'مهندس برمجيات ومؤسس Webnest، متخصص في تطوير الحلول التقنية المبتكرة التي تساعد الشركات على النمو والتطور في العصر الرقمي.'
-                  : 'Software Engineer and Founder of Webnest, specialized in developing innovative technical solutions that help companies grow and evolve in the digital age.'
+                  ? 'مهندس برمجيات، متخصص في تطوير الحلول التقنية المبتكرة التي تساعد الشركات على النمو والتطور في العصر الرقمي.'
+                  : 'Software Engineer, specialized in developing innovative technical solutions that help companies grow and evolve in the digital age.'
                 }
               </p>
             </div>
 
             <div className="space-y-3">
-              <div className="flex items-center gap-3 text-sm">
-                <Mail size={16} className="text-primary-foreground/60" />
-                <span>mostafa@webnest.com.eg</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm">
-                <Phone size={16} className="text-primary-foreground/60" />
-                <span>+20 100 123 4567</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm">
-                <MapPin size={16} className="text-primary-foreground/60" />
-                <span>{language === 'ar' ? 'القاهرة، مصر' : 'Cairo, Egypt'}</span>
-              </div>
+              {emailContact && (
+                <div className="flex items-center gap-3 text-sm">
+                  <Mail size={16} className="text-primary-foreground/60" />
+                  {emailContact.link ? (
+                    <a href={emailContact.link} className="hover:text-primary-foreground transition-colors">
+                      {emailContact.value}
+                    </a>
+                  ) : (
+                    <span>{emailContact.value}</span>
+                  )}
+                  {emailContact.label && emailContact.label !== emailContact.value && (
+                    <span className="text-xs text-primary-foreground/60">({emailContact.label})</span>
+                  )}
+                </div>
+              )}
+              {phoneContact && (
+                <div className="flex items-center gap-3 text-sm">
+                  <Phone size={16} className="text-primary-foreground/60" />
+                  {phoneContact.link ? (
+                    <a href={phoneContact.link} className="hover:text-primary-foreground transition-colors">
+                      {phoneContact.value}
+                    </a>
+                  ) : (
+                    <span>{phoneContact.value}</span>
+                  )}
+                  {phoneContact.label && phoneContact.label !== phoneContact.value && (
+                    <span className="text-xs text-primary-foreground/60">({phoneContact.label})</span>
+                  )}
+                </div>
+              )}
+              {locationContact && (
+                <div className="flex items-center gap-3 text-sm">
+                  <MapPin size={16} className="text-primary-foreground/60" />
+                  <span>{locationContact.value}</span>
+                  {locationContact.label && locationContact.label !== locationContact.value && (
+                    <span className="text-xs text-primary-foreground/60">({locationContact.label})</span>
+                  )}
+                </div>
+              )}
+
+              {/* Fallback to static data if no contact info from API */}
+              {!emailContact && !phoneContact && !locationContact && (
+                <>
+                  <div className="flex items-center gap-3 text-sm">
+                    <Mail size={16} className="text-primary-foreground/60" />
+                    <span>mustafa.gamal.elsayed@gmail.com</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <Phone size={16} className="text-primary-foreground/60" />
+                    <span>+201093273277</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <MapPin size={16} className="text-primary-foreground/60" />
+                    <span>{language === 'ar' ? 'المنصورة، مصر' : 'Mansoura, Egypt'}</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -157,20 +256,24 @@ const Footer = () => {
               </div>
 
               <div className="flex gap-4">
-                {socialLinks.map((social: any, index: number) => (
-                  <a
-                    key={index}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 bg-primary-foreground/10 rounded-lg flex items-center justify-center hover:bg-primary-foreground/20 transition-all duration-300 hover:scale-110 group"
-                    aria-label={social.name}
-                  >
-                    <span className="text-xs font-medium group-hover:scale-110 transition-transform duration-200">
-                      {social.icon.charAt(0)}
-                    </span>
-                  </a>
-                ))}
+                {socialLinks
+                  .filter((social: any) => social.isActive !== false) // Filter out inactive social links
+                  .sort((a: any, b: any) => (a.order || 0) - (b.order || 0)) // Sort by order
+                  .map((social: any, index: number) => (
+                    <a
+                      key={social.id || index}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 bg-primary-foreground/10 rounded-lg flex items-center justify-center hover:bg-primary-foreground/20 transition-all duration-300 hover:scale-110 group"
+                      aria-label={social.name}
+                      title={social.name}
+                    >
+                      <span className="text-xs font-medium group-hover:scale-110 transition-transform duration-200">
+                        {social.icon ? social.icon.charAt(0) : social.name.charAt(0)}
+                      </span>
+                    </a>
+                  ))}
               </div>
             </div>
           </div>
@@ -192,7 +295,7 @@ const Footer = () => {
 
             <div className="flex items-center gap-2 text-sm text-primary-foreground/80">
               <span>{language === 'ar' ? 'صُنع بـ' : 'Made with'}</span>
-              <Heart size={16} className="text-red-300 animate-pulse" />
+              <Heart size={20} className="text-red-300 animate-pulse font-bold" />
               <span>{language === 'ar' ? 'في مصر' : 'in Egypt'}</span>
             </div>
           </div>

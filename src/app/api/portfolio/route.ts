@@ -57,6 +57,9 @@ export const GET = apiHandler(async (req: NextRequest) => {
           portfolioData.contactInfo = await contactInfoService.findByLanguage(lang);
           portfolioData.socialLinks = await socialLinkService.findByLanguage(lang);
           break;
+        case 'footer':
+          portfolioData.socialLinks = await socialLinkService.findByLanguage(lang);
+          break;  
         default:
           return NextResponse.json({ error: 'Invalid section' }, { status: 400 });
       }
@@ -146,6 +149,11 @@ export const POST = apiHandler(async (req: NextRequest) => {
               socialLinks: await socialLinkService.findByLanguage(lang)
             }
           };
+        case 'footer':
+          return { section: 'footer', data: {
+            contactInfo: await contactInfoService.findByLanguage(lang),
+            socialLinks: await socialLinkService.findByLanguage(lang)
+          } };
         default:
           return { section, data: null, error: 'Invalid section' };
       }

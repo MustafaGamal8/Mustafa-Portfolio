@@ -3,46 +3,77 @@ import { Mail, Phone, MessageCircle, Linkedin, Github, MapPin } from 'lucide-rea
 import { usePortfolioSection } from '@/hooks/usePortfolioSection';
 import { useLanguage } from './LanguageProvider';
 
+// Type definitions for API data
+interface ContactInfo {
+  id: string;
+  type: string;
+  label: string;
+  value: string;
+  link?: string;
+  icon?: string;
+  order: number;
+  isActive: boolean;
+  isPrimary: boolean;
+}
+
+interface SocialLink {
+  id: string;
+  name: string;
+  url: string;
+  icon?: string;
+  order: number;
+  isActive: boolean;
+}
+
+interface ContactData {
+  contactInfo?: ContactInfo[];
+  socialLinks?: SocialLink[];
+}
+
 const ContactSection = () => {
   const { language } = useLanguage();
-  const { data: contactData, loading, isStaticData } = usePortfolioSection({ sectionName: 'contact' });
+  const { data: contactData, loading, isStaticData } = usePortfolioSection({ sectionName: 'contact' }) as {
+    data: ContactData | null;
+    loading: boolean;
+    isStaticData: boolean;
+  };
 
   // Static fallback data with multi-language support
   const staticContactMethods = [
     {
       icon: <Mail size={24} />,
       label: language === 'ar' ? 'البريد الإلكتروني' : 'Email',
-      value: 'mostafa@webnest.com',
-      link: 'mailto:mostafa@webnest.com'
+      value: 'mustafa.gamal.elsayed@gmail.com',
+      link: 'mailto:mustafa.gamal.elsayed@gmail.com'
     },
     {
       icon: <Phone size={24} />,
       label: language === 'ar' ? 'رقم الهاتف' : 'Phone',
-      value: '+20 100 123 4567',
-      link: 'tel:+201001234567'
+      value: '+201093273277',
+      link: 'tel:+201093273277'
     },
     {
       icon: <MessageCircle size={24} />,
       label: language === 'ar' ? 'واتساب' : 'WhatsApp',
       value: language === 'ar' ? 'تواصل مباشر' : 'Direct Contact',
-      link: 'https://wa.me/201001234567'
+      link: 'https://wa.me/201093273277'
     },
     {
       icon: <Linkedin size={24} />,
       label: 'LinkedIn',
-      value: 'mostafa-gamal',
-      link: 'https://linkedin.com/in/mostafa-gamal'
+      value: 'mustafa-gamal-elsayed',
+      link: 'https://linkedin.com/in/mustafa-gamal-elsayed'
     },
     {
       icon: <Github size={24} />,
       label: 'GitHub',
-      value: 'mostafa-codes',
-      link: 'https://github.com/mostafa-codes'
+      value: 'MustafaGamal8',
+      link: 'https://github.com/MustafaGamal8'
     },
     {
       icon: <MapPin size={24} />,
       label: language === 'ar' ? 'الموقع' : 'Location',
-      value: language === 'ar' ? 'القاهرة، مصر' : 'Cairo, Egypt',
+      value: language === 'ar' ? 'المنصورة، مصر' : 'Mansoura, Egypt',
       link: '#'
     }
   ];
@@ -60,11 +91,59 @@ const ContactSection = () => {
     return iconMap[type] || <Mail size={24} />;
   };
 
-  // Use API data if available, otherwise use static data
-  const contactMethods = contactData?.contactMethods?.map((method: any) => ({
-    ...method,
-    icon: getIconByType(method.type)
-  })) || staticContactMethods;
+  // Transform API contact info into contact methods format
+  const apiContactMethods = contactData?.contactInfo
+    ?.filter((contact: ContactInfo) => contact.isActive)
+    ?.sort((a: ContactInfo, b: ContactInfo) => (a.order || 0) - (b.order || 0))
+    ?.map((contact: ContactInfo) => ({
+      icon: getIconByType(contact.type),
+      label: contact.label,
+      value: contact.value,
+      link: contact.link || '#',
+      type: contact.type,
+      isPrimary: contact.isPrimary
+    }));
+
+  // Transform API social links into contact methods format  
+  const apiSocialMethods = contactData?.socialLinks
+    ?.filter((social: SocialLink) => social.isActive)
+    ?.sort((a: SocialLink, b: SocialLink) => (a.order || 0) - (b.order || 0))
+    ?.map((social: SocialLink) => ({
+      icon: getIconByType(social.name.toLowerCase()),
+      label: social.name,
+      value: social.name.toLowerCase() === 'github' ? social.url.split('/').pop() || social.name : social.name,
+      link: social.url,
+      type: social.name.toLowerCase()
+    }));
+
+  // Combine API contact info and social links, or use static data as fallback
+  const contactMethods = (apiContactMethods?.length || apiSocialMethods?.length)
+    ? [...(apiContactMethods || []), ...(apiSocialMethods || [])]
+    : staticContactMethods;
+
+  // Get WhatsApp or phone number for CTA button
+  const getWhatsAppNumber = () => {
+    // First try to find WhatsApp contact
+    const whatsappContact = contactData?.contactInfo?.find((contact: ContactInfo) =>
+      contact.type.toLowerCase() === 'whatsapp' && contact.isActive
+    );
+    if (whatsappContact?.value) {
+      return whatsappContact.value.replace(/\D/g, ''); // Remove non-digits
+    }
+
+    // Fallback to phone contact
+    const phoneContact = contactData?.contactInfo?.find((contact: ContactInfo) =>
+      contact.type.toLowerCase() === 'phone' && contact.isActive
+    );
+    if (phoneContact?.value) {
+      return phoneContact.value.replace(/\D/g, ''); // Remove non-digits
+    }
+
+    // Fallback to static number
+    return '201093273277';
+  };
+
+  const whatsappNumber = getWhatsAppNumber();
 
   return (
     <section id="contact" className="py-20 px-4 bg-background">
@@ -99,8 +178,10 @@ const ContactSection = () => {
             <div className="grid gap-4">
               {contactMethods.map((method: any, index: number) => (
                 <a
-                  key={index}
+                  key={method.type ? `${method.type}-${index}` : index}
                   href={method.link}
+                  target={method.link.startsWith('http') ? '_blank' : '_self'}
+                  rel={method.link.startsWith('http') ? 'noopener noreferrer' : undefined}
                   className="flex items-center gap-4 p-4 bg-card rounded-lg shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-soft)] transition-all duration-300 hover:scale-105 group"
                 >
                   <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
@@ -114,6 +195,11 @@ const ContactSection = () => {
                     <div className="text-sm text-muted-foreground">
                       {method.value}
                     </div>
+                    {method.isPrimary && (
+                      <div className="text-xs text-primary font-medium mt-1">
+                        {language === 'ar' ? 'الأساسي' : 'Primary'}
+                      </div>
+                    )}
                   </div>
                 </a>
               ))}
@@ -138,25 +224,14 @@ const ContactSection = () => {
 
               <div className="space-y-4">
                 <a
-                  href={`https://wa.me/201001234567?text=${language === 'ar' ? 'مرحباً، أود مناقشة مشروع جديد' : 'Hello, I would like to discuss a new project'}`}
+                  href={`https://wa.me/${whatsappNumber}?text=${language === 'ar' ? 'مرحباً، أود مناقشة مشروع جديد' : 'Hello, I would like to discuss a new project'}`}
                   className="inline-flex items-center justify-center gap-3 w-full px-8 py-4 bg-white text-primary font-medium rounded-lg hover:bg-gray-50 transition-all duration-300 hover:scale-105"
                 >
                   <MessageCircle size={20} />
                   {language === 'ar' ? 'ابدأ مشروعك معي الآن 🚀' : 'Start Your Project Now 🚀'}
                 </a>
 
-                <div className="mt-6">
-                  <p className="text-xs opacity-75 mb-3">
-                    {language === 'ar' ? 'أو امسح الكود للتواصل السريع' : 'Or scan the code for quick contact'}
-                  </p>
-                  <div className="bg-white p-4 rounded-lg mx-auto w-32 h-32 flex items-center justify-center">
-                    <div className="text-xs text-gray-500 text-center">
-                      QR Code<br />
-                      WhatsApp<br />
-                      Contact
-                    </div>
-                  </div>
-                </div>
+
               </div>
             </div>
           </div>

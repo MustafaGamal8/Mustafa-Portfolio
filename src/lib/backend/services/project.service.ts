@@ -24,14 +24,14 @@ export class BackendProjectService extends BackendBaseService<Project> {
         ...processedOptions.where
       },
       include: {
-        image:  {
+        image: {
           select: {
             url: true
           }
         },
         ...processedOptions.include
       },
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'desc' }
     });
   }
 
@@ -49,7 +49,7 @@ export class BackendProjectService extends BackendBaseService<Project> {
         image: true,
         ...processedOptions.include
       },
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'desc' }
     });
   }
 
@@ -67,32 +67,32 @@ export class BackendProjectService extends BackendBaseService<Project> {
         image: true,
         ...processedOptions.include
       },
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'desc' }
     });
   }
 
   async updateById(id: string, data: UpdateProjectDto): Promise<any> {
-  const existing = await this.model.findUnique({ where: { id } });
-  if (!existing) {
-    throw ApiError.notFound('Project not found', {});
+    const existing = await this.model.findUnique({ where: { id } });
+    if (!existing) {
+      throw ApiError.notFound('Project not found', {});
+    }
+
+    // Transform `imageId` into relation-friendly syntax
+    const { imageId, ...rest } = data as any;
+    const updateData: any = { ...rest };
+
+    if (imageId !== undefined) {
+      updateData.image = imageId
+        ? { connect: { id: imageId } }
+        : { disconnect: true };
+    }
+
+    return await this.model.update({
+      where: { id },
+      data: updateData,
+      include: { image: true }
+    });
   }
-
-  // Transform `imageId` into relation-friendly syntax
-  const { imageId, ...rest } = data as any;
-  const updateData: any = { ...rest };
-
-  if (imageId !== undefined) {
-    updateData.image = imageId
-      ? { connect: { id: imageId } }
-      : { disconnect: true };
-  }
-
-  return await this.model.update({
-    where: { id },
-    data: updateData,
-    include: { image: true }
-  });
-}
 
 
   async deleteById(id: string): Promise<any> {

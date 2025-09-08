@@ -13,7 +13,7 @@ export class BackendSkillCategoryService extends BackendBaseService<SkillCategor
       data,
       include: {
         skills: {
-          orderBy: { order: 'asc' }
+          orderBy: { order: 'desc' }
         }
       }
     });
@@ -32,11 +32,11 @@ export class BackendSkillCategoryService extends BackendBaseService<SkillCategor
         skills: {
           where: { isActive: true },
 
-          orderBy: { order: 'asc' }
+          orderBy: { order: 'desc' }
         },
         ...processedOptions.include
       },
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'desc' }
     });
   }
 
@@ -52,7 +52,7 @@ export class BackendSkillCategoryService extends BackendBaseService<SkillCategor
       include: {
         skills: {
 
-          orderBy: { order: 'asc' }
+          orderBy: { order: 'desc' }
         }
       }
     });

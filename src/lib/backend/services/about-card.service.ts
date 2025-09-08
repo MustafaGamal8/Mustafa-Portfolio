@@ -27,7 +27,7 @@ export class BackendAboutCardService extends BackendBaseService<AboutCard> {
       include: {
         ...processedOptions.include
       },
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'desc' }
     });
   }
 

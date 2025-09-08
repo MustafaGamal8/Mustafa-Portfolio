@@ -37,7 +37,7 @@ export class BackendContactInfoService extends BackendBaseService<ContactInfo> {
         isActive: true,
         ...processedOptions.where
       },
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'desc' }
     });
   }
 
@@ -48,7 +48,7 @@ export class BackendContactInfoService extends BackendBaseService<ContactInfo> {
         isPrimary: true,
         isActive: true
       },
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'desc' }
     });
   }
 

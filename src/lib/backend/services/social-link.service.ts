@@ -37,7 +37,7 @@ export class BackendSocialLinkService extends BackendBaseService<SocialLink> {
         isActive: true,
         ...processedOptions.where
       },
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'desc' }
     });
   }
 

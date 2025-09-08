@@ -17,7 +17,7 @@ export class BackendSkillService extends BackendBaseService<Skill> {
       include: {
         skillCategory: true
       },
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'desc' }
     });
   }
   async create(data: CreateSkillDto): Promise<any> {
@@ -39,7 +39,7 @@ export class BackendSkillService extends BackendBaseService<Skill> {
 
         ...processedOptions.include
       },
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'desc' }
     });
   }
 
@@ -55,7 +55,7 @@ export class BackendSkillService extends BackendBaseService<Skill> {
       include: {
         ...processedOptions.include
       },
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'desc' }
     });
   }
 

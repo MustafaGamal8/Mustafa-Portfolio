@@ -26,7 +26,7 @@ export class BackendAchievementService extends BackendBaseService<Achievement> {
       include: {
         ...processedOptions.include
       },
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'desc' }
     });
   }
 
@@ -50,7 +50,7 @@ export class BackendAchievementService extends BackendBaseService<Achievement> {
 
     return await this.model.delete({
       where: { id },
-  
+
     });
   }
 

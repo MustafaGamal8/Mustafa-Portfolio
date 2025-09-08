@@ -42,7 +42,6 @@ export function usePortfolioSection<T = any>({
       if (response.success && response.data) {
         // Get the data for this specific section
         const sectionKey = getSectionKey(sectionName);
-        console.log("🚀 ~ fetchData ~ sectionKey:", sectionKey, response)
         const sectionData = (response.data as any)[sectionKey];
         if (sectionData) {
           setData(sectionData);

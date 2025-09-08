@@ -125,10 +125,10 @@ const ContactSection = () => {
   const getWhatsAppNumber = () => {
     // First try to find WhatsApp contact
     const whatsappContact = contactData?.contactInfo?.find((contact: ContactInfo) =>
-      contact.type.toLowerCase() === 'whatsapp' && contact.isActive
+      contact.type.toLowerCase() == 'whatsapp' && contact.isActive
     );
-    if (whatsappContact?.value) {
-      return whatsappContact.value.replace(/\D/g, ''); // Remove non-digits
+    if (whatsappContact?.link) {
+      return whatsappContact.link.replace(/\D/g, ''); // Remove non-digits
     }
 
     // Fallback to phone contact
@@ -144,6 +144,7 @@ const ContactSection = () => {
   };
 
   const whatsappNumber = getWhatsAppNumber();
+  console.log("🚀 ~ whatsappNumber:", whatsappNumber)
 
   return (
     <section id="contact" className="py-20 px-4 bg-background">

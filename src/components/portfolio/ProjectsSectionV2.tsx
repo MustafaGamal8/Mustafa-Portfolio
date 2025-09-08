@@ -157,7 +157,7 @@ const ProjectsSectionV2 = () => {
                     .map((project: any, index: number) => (
                       <div
                         key={`${project.title}-${slideIndex}-${index}`}
-                        className={`project-card animate-scale-in ${itemsPerSlide === 1 ? 'w-full max-w-md' : 'max-w-md flex-1'
+                        className={`project-card animate-scale-in flex flex-col ${itemsPerSlide === 1 ? 'w-full max-w-md' : 'max-w-md flex-1'
                           }`}
                         style={{
                           animationDelay: `${index * 0.1}s`
@@ -173,7 +173,7 @@ const ProjectsSectionV2 = () => {
 
                           {/* Project Status Badge */}
                           <div className="absolute top-4 right-4">
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${project.status === t('projects.completed')
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${project.status === "COMPLETED"
                               ? 'bg-green-500 text-white'
                               : 'bg-yellow-500 text-white'
                               }`}>
@@ -182,7 +182,7 @@ const ProjectsSectionV2 = () => {
                           </div>
                         </div>
 
-                        <div className="p-6">
+                        <div className="p-6 flex flex-col flex-1">
                           <h3 className="text-xl md:text-2xl font-bold text-card-foreground mb-3 line-clamp-2">
                             {project.title}
                           </h3>
@@ -221,7 +221,7 @@ const ProjectsSectionV2 = () => {
                           </div>
 
                           {/* Key Features */}
-                          <div className="mb-6">
+                          <div className="mb-6 flex-1">
                             <h4 className="text-sm font-semibold mb-2 text-card-foreground">{t('projects.features')}</h4>
                             <div className="grid grid-cols-2 gap-1">
                               {project.features.slice(0, 4).map((feature: any, featureIndex: number) => (
@@ -233,26 +233,30 @@ const ProjectsSectionV2 = () => {
                             </div>
                           </div>
 
-                          {/* Action Buttons */}
-                          <div className="flex gap-3">
-                            <a
-                              href={project.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary-dark transition-all duration-200 hover:scale-105 flex-1 justify-center"
-                            >
-                              <ExternalLink size={16} />
-                              {t('projects.view')}
-                            </a>
+                          {/* Action Buttons - Always at the bottom */}
+                          <div className="mt-auto flex gap-3">
+                            {project.projectUrl &&
+                              <a
+                                href={project.projectUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary-dark transition-all duration-200 hover:scale-105 flex-1 justify-center"
+                              >
+                                <ExternalLink size={16} />
+                                {t('projects.view')}
+                              </a>
+                            }
 
-                            <a
-                              href={project.github}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-2 px-4 py-2.5 border border-border text-card-foreground text-sm font-medium rounded-lg hover:bg-card-hover transition-all duration-200 hover:scale-105"
-                            >
-                              <Github size={16} />
-                            </a>
+                            {project.github &&
+                              <a
+                                href={project.github}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 px-4 py-2.5 border border-border text-card-foreground text-sm font-medium rounded-lg hover:bg-card-hover transition-all duration-200 hover:scale-105"
+                              >
+                                <Github size={16} />
+                              </a>
+                            }
                           </div>
                         </div>
                       </div>

@@ -18,11 +18,14 @@ export const personalInfoSchema = z.object({
 });
 
 export const createPersonalInfoSchema = personalInfoSchema.omit({
+  id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const updatePersonalInfoSchema = createPersonalInfoSchema.partial();
+export const updatePersonalInfoSchema = createPersonalInfoSchema.extend({
+  id: z.string(),
+});;
 
 // Hero Content Schema
 export const heroContentSchema = z.object({
@@ -46,11 +49,14 @@ export const heroContentSchema = z.object({
 });
 
 export const createHeroContentSchema = heroContentSchema.omit({
+  id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const updateHeroContentSchema = createHeroContentSchema.partial();
+export const updateHeroContentSchema = createHeroContentSchema.extend({
+  id: z.string(),
+});;
 
 // About Card Schema
 export const aboutCardSchema = z.object({
@@ -69,11 +75,14 @@ export const aboutCardSchema = z.object({
 });
 
 export const createAboutCardSchema = aboutCardSchema.omit({
+  id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const updateAboutCardSchema = createAboutCardSchema.partial();
+export const updateAboutCardSchema = createAboutCardSchema.extend({
+  id: z.string(),
+});;
 
 // Skill Category Schema
 export const skillCategorySchema = z.object({
@@ -93,11 +102,14 @@ export const skillCategorySchema = z.object({
 });
 
 export const createSkillCategorySchema = skillCategorySchema.omit({
+  id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const updateSkillCategorySchema = createSkillCategorySchema.partial();
+export const updateSkillCategorySchema = createSkillCategorySchema.extend({
+  id: z.string(),
+});;
 
 // Skill Schema
 export const skillLevelSchema = z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT']);
@@ -120,11 +132,14 @@ export const skillSchema = z.object({
 });
 
 export const createSkillSchema = skillSchema.omit({
+  id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const updateSkillSchema = createSkillSchema.partial();
+export const updateSkillSchema = createSkillSchema.extend({
+  id: z.string(),
+});;
 
 // Project Schema
 export const projectStatusSchema = z.enum(['DRAFT', 'IN_PROGRESS', 'COMPLETED', 'ARCHIVED']);
@@ -147,19 +162,22 @@ export const projectSchema = z.object({
   order: z.number().default(0),
   isFeatured: z.boolean().default(false),
   isActive: z.boolean().default(true),
-  startDate: z.string().datetime().optional(),
-  endDate: z.string().datetime().optional(),
+  startDate: z.preprocess((val) => new Date(val as string), z.date()).optional(),
+  endDate: z.preprocess((val) => new Date(val as string), z.date()).optional(),
   imageId: z.string().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });
 
 export const createProjectSchema = projectSchema.omit({
+  id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const updateProjectSchema = createProjectSchema.partial();
+export const updateProjectSchema = createProjectSchema.extend({
+  id: z.string(),
+});
 
 // Achievement Schema
 export const achievementSchema = z.object({
@@ -182,7 +200,9 @@ export const createAchievementSchema = achievementSchema.omit({
   updatedAt: true,
 });
 
-export const updateAchievementSchema = createAchievementSchema.partial();
+export const updateAchievementSchema = createAchievementSchema.extend({
+  id: z.string(),
+});;
 
 // Contact Info Schema
 export const contactInfoSchema = z.object({
@@ -206,7 +226,9 @@ export const createContactInfoSchema = contactInfoSchema.omit({
   updatedAt: true,
 });
 
-export const updateContactInfoSchema = createContactInfoSchema.partial();
+export const updateContactInfoSchema = createContactInfoSchema.extend({
+  id: z.string(),
+});;
 
 // Social Link Schema
 export const socialLinkSchema = z.object({
@@ -222,11 +244,14 @@ export const socialLinkSchema = z.object({
 });
 
 export const createSocialLinkSchema = socialLinkSchema.omit({
+  id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const updateSocialLinkSchema = createSocialLinkSchema.partial();
+export const updateSocialLinkSchema = createSocialLinkSchema.extend({
+  id: z.string(),
+});;
 
 // Service Schema
 export const serviceSchema = z.object({
@@ -244,11 +269,14 @@ export const serviceSchema = z.object({
 });
 
 export const createServiceSchema = serviceSchema.omit({
+  id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const updateServiceSchema = createServiceSchema.partial();
+export const updateServiceSchema = createServiceSchema.extend({
+  id: z.string(),
+});;
 
 // Quick Link Schema
 export const quickLinkSchema = z.object({
@@ -263,11 +291,14 @@ export const quickLinkSchema = z.object({
 });
 
 export const createQuickLinkSchema = quickLinkSchema.omit({
+  id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const updateQuickLinkSchema = createQuickLinkSchema.partial();
+export const updateQuickLinkSchema = createQuickLinkSchema.extend({
+  id: z.string(),
+});;
 
 // Export types
 export type PersonalInfo = z.infer<typeof personalInfoSchema>;

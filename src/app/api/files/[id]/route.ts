@@ -57,6 +57,8 @@ export const GET = apiHandler(async (request: NextRequest, params?: any) => {
   }
 });
 
+
+
 export const DELETE = apiHandler(async (request: NextRequest, params?: any) => {
   try {
     const id = params?.id;

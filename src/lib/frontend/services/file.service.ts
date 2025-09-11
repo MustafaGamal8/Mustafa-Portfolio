@@ -74,6 +74,23 @@ export class FileService extends BaseService {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
+
+  // Bulk delete files
+  async bulkDeleteFiles(ids: string[]): Promise<{ success: boolean; deleted: number; deletedIds: string[] }> {
+    const response = await this.api.delete('/files/bulk', {
+      data: { ids }
+    });
+    return response.data;
+  }
+
+  // Update file base URL
+  async updateFileBaseUrl(id: string, baseUrl: string): Promise<FileData> {
+    const response = await this.api.put('/files/bulk', {
+      id,
+      baseUrl
+    });
+    return response.data;
+  }
 }
 
 export const fileService = new FileService();

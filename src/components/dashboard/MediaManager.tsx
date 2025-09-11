@@ -19,7 +19,10 @@ import {
   Grid3X3,
   List,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  CheckSquare,
+  Square,
+  Edit3
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { fileService, type FileData } from '@/lib/frontend/services/file.service';
@@ -53,6 +56,10 @@ export const MediaManager: React.FC<MediaManagerProps> = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [editingFile, setEditingFile] = useState<string | null>(null);
+  const [newBaseUrl, setNewBaseUrl] = useState('');
   const { toast } = useToast();
 
   const filesPerPage = 12;
@@ -120,6 +127,73 @@ export const MediaManager: React.FC<MediaManagerProps> = () => {
     }
   };
 
+  const handleBulkDelete = async () => {
+    if (selectedFiles.size === 0) return;
+
+    try {
+      const result = await fileService.bulkDeleteFiles(Array.from(selectedFiles));
+      toast({
+        title: "Success",
+        description: `${result.deleted} files deleted successfully!`
+      });
+      setSelectedFiles(new Set());
+      setIsSelectionMode(false);
+      loadFiles(currentPage, searchTerm);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete files"
+      });
+    }
+  };
+
+  const handleSelectFile = (fileId: string) => {
+    const newSelection = new Set(selectedFiles);
+    if (newSelection.has(fileId)) {
+      newSelection.delete(fileId);
+    } else {
+      newSelection.add(fileId);
+    }
+    setSelectedFiles(newSelection);
+  };
+
+  const handleSelectAll = () => {
+    if (selectedFiles.size === files.length) {
+      setSelectedFiles(new Set());
+    } else {
+      setSelectedFiles(new Set(files.map(f => f.id)));
+    }
+  };
+
+  const handleUpdateFileUrl = async (fileId: string) => {
+    if (!newBaseUrl.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please enter a valid base URL"
+      });
+      return;
+    }
+
+    try {
+      await fileService.updateFileBaseUrl(fileId, newBaseUrl.trim());
+      toast({
+        title: "Success",
+        description: "File URL updated successfully!"
+      });
+      setEditingFile(null);
+      setNewBaseUrl('');
+      loadFiles(currentPage, searchTerm);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update file URL"
+      });
+    }
+  };
+
   const getFileIcon = (type: string) => {
     if (type.startsWith('image/')) return <ImageIcon className="h-4 w-4" />;
     if (type.startsWith('video/')) return <Video className="h-4 w-4" />;
@@ -158,7 +232,25 @@ export const MediaManager: React.FC<MediaManagerProps> = () => {
       {files.map((file) => (
         <Card key={file.id} className="hover:shadow-md transition-shadow">
           <CardContent className="p-4">
-            <FilePreview file={file} />
+            <div className="relative">
+              {isSelectionMode && (
+                <div className="absolute top-2 left-2 z-10">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleSelectFile(file.id)}
+                    className="p-1 h-auto w-auto bg-white/80 hover:bg-white"
+                  >
+                    {selectedFiles.has(file.id) ? (
+                      <CheckSquare className="h-4 w-4 text-primary" />
+                    ) : (
+                      <Square className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              )}
+              <FilePreview file={file} />
+            </div>
             <div className="mt-3 space-y-2">
               <h3 className="font-medium text-sm truncate" title={file.name}>
                 {file.name}
@@ -174,83 +266,127 @@ export const MediaManager: React.FC<MediaManagerProps> = () => {
                   {fileService.formatFileSize(file.size)}
                 </span>
               </div>
-              <div className="flex gap-1">
-                <Dialog>
-                  <DialogTrigger asChild>
+              
+              {/* URL Edit Section */}
+              {editingFile === file.id ? (
+                <div className="space-y-2">
+                  <Input
+                    placeholder="Enter new base URL"
+                    value={newBaseUrl}
+                    onChange={(e) => setNewBaseUrl(e.target.value)}
+                    className="text-xs"
+                  />
+                  <div className="flex gap-1">
+                    <Button
+                      size="sm"
+                      onClick={() => handleUpdateFileUrl(file.id)}
+                      className="flex-1 text-xs"
+                    >
+                      Save
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="flex-1"
+                      onClick={() => {
+                        setEditingFile(null);
+                        setNewBaseUrl('');
+                      }}
+                      className="flex-1 text-xs"
                     >
-                      <Eye className="h-3 w-3 mr-1" />
-                      View
+                      Cancel
                     </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-4xl">
-                    <DialogHeader>
-                      <DialogTitle>{file.name}</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div className="flex justify-center">
-                        {file.type.startsWith('image/') ? (
-                          <img
-                            src={`/api/files/${file.id}`}
-                            alt={file.name}
-                            className="max-h-96 object-contain"
-                          />
-                        ) : (
-                          <div className="p-8 bg-gray-100 rounded-lg text-center">
-                            {getFileIcon(file.type)}
-                            <p className="mt-2">{file.name}</p>
-                            <p className="text-sm text-gray-500">{file.type}</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex gap-1">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                      >
+                        <Eye className="h-3 w-3 mr-1" />
+                        View
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl">
+                      <DialogHeader>
+                        <DialogTitle>{file.name}</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div className="flex justify-center">
+                          {file.type.startsWith('image/') ? (
+                            <img
+                              src={`/api/files/${file.id}`}
+                              alt={file.name}
+                              className="max-h-96 object-contain"
+                            />
+                          ) : (
+                            <div className="p-8 bg-gray-100 rounded-lg text-center">
+                              {getFileIcon(file.type)}
+                              <p className="mt-2">{file.name}</p>
+                              <p className="text-sm text-gray-500">{file.type}</p>
+                            </div>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <strong>Size:</strong> {fileService.formatFileSize(file.size)}
                           </div>
-                        )}
-                      </div>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <strong>Size:</strong> {fileService.formatFileSize(file.size)}
-                        </div>
-                        <div>
-                          <strong>Type:</strong> {file.type}
-                        </div>
-                        <div>
-                          <strong>Created:</strong> {new Date(file.createdAt).toLocaleDateString()}
-                        </div>
-                        <div>
-                          <strong>URL:</strong>
-                          <code className="ml-1 text-xs bg-gray-100 px-1 rounded">
-                            <a href={file.url}>
-                              {file.url}
-                            </a>
-                          </code>
+                          <div>
+                            <strong>Type:</strong> {file.type}
+                          </div>
+                          <div>
+                            <strong>Created:</strong> {new Date(file.createdAt).toLocaleDateString()}
+                          </div>
+                          <div>
+                            <strong>URL:</strong>
+                            <code className="ml-1 text-xs bg-gray-100 px-1 rounded">
+                              <a href={file.url}>
+                                {file.url}
+                              </a>
+                            </code>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                    </DialogContent>
+                  </Dialog>
 
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete File</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you want to delete "{file.name}"? This action cannot be undone.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleDeleteFile(file.id)}>
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setEditingFile(file.id);
+                      setNewBaseUrl('');
+                    }}
+                  >
+                    <Edit3 className="h-3 w-3" />
+                  </Button>
+
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete File</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete "{file.name}"? This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleDeleteFile(file.id)}>
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -405,6 +541,56 @@ export const MediaManager: React.FC<MediaManagerProps> = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              {/* Bulk Actions */}
+              <Button
+                variant={isSelectionMode ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => {
+                  setIsSelectionMode(!isSelectionMode);
+                  setSelectedFiles(new Set());
+                }}
+              >
+                <CheckSquare className="h-4 w-4 mr-1" />
+                Select
+              </Button>
+
+              {isSelectionMode && (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSelectAll}
+                  >
+                    {selectedFiles.size === files.length ? 'Deselect All' : 'Select All'}
+                  </Button>
+
+                  {selectedFiles.size > 0 && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="sm">
+                          <Trash2 className="h-4 w-4 mr-1" />
+                          Delete ({selectedFiles.size})
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Files</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete {selectedFiles.size} selected file(s)? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleBulkDelete}>
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
+                </>
+              )}
+
               <Button
                 variant={viewMode === 'grid' ? 'default' : 'outline'}
                 size="sm"

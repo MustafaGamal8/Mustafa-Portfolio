@@ -136,4 +136,64 @@ export class BackendFileService extends BackendBaseService<File> {
     const base64Pattern = /^data:image\/(jpeg|jpg|png|gif|webp);base64,/;
     return base64Pattern.test(dataUrl);
   }
+
+  // Bulk delete files
+  async bulkDeleteFiles(ids: string[]): Promise<{ success: boolean; deleted: number; deletedIds: string[] }> {
+    // Check if all files exist
+    const existingFiles = await this.model.findMany({
+      where: { id: { in: ids } },
+      select: { id: true }
+    });
+
+    if (existingFiles.length !== ids.length) {
+      const foundIds = existingFiles.map((f: any) => f.id);
+      const missingIds = ids.filter(id => !foundIds.includes(id));
+      throw ApiError.notFound('Some files not found', { missingIds });
+    }
+
+    try {
+      // Delete all files in a transaction
+      const result = await this.prisma.$transaction([
+        this.model.deleteMany({
+          where: { id: { in: ids } }
+        })
+      ]);
+
+      return {
+        success: true,
+        deleted: result[0].count,
+        deletedIds: ids
+      };
+    } catch (error) {
+      throw ApiError.internal('Failed to delete files', {
+        reason: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  }
+
+  // Update file base URL
+  async updateFileBaseUrl(id: string, newBaseUrl: string): Promise<File> {
+    const file = await this.model.findUnique({
+      where: { id }
+    });
+
+    if (!file) {
+      throw ApiError.notFound('File not found');
+    }
+
+    try {
+      const updatedFile = await this.model.update({
+        where: { id },
+        data: {
+          url: `${newBaseUrl}/api/files/${id}`
+        }
+      });
+
+      return updatedFile;
+    } catch (error) {
+      throw ApiError.internal('Failed to update file URL', {
+        reason: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  }
 } 

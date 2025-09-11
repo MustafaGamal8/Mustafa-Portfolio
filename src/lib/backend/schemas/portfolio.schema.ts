@@ -179,6 +179,19 @@ export const updateProjectSchema = createProjectSchema.extend({
   id: z.string(),
 });
 
+// Bulk project operations schemas
+export const bulkCreateProjectsSchema = z.object({
+  projects: z.array(createProjectSchema),
+});
+
+export const bulkUpdateProjectsSchema = z.object({
+  projects: z.array(updateProjectSchema),
+});
+
+export const bulkDeleteProjectsSchema = z.object({
+  ids: z.array(z.string()),
+});
+
 // Achievement Schema
 export const achievementSchema = z.object({
   id: z.string(),
@@ -324,6 +337,9 @@ export type UpdateSkillDto = z.infer<typeof updateSkillSchema>;
 export type Project = z.infer<typeof projectSchema>;
 export type CreateProjectDto = z.infer<typeof createProjectSchema>;
 export type UpdateProjectDto = z.infer<typeof updateProjectSchema>;
+export type BulkCreateProjectsDto = z.infer<typeof bulkCreateProjectsSchema>;
+export type BulkUpdateProjectsDto = z.infer<typeof bulkUpdateProjectsSchema>;
+export type BulkDeleteProjectsDto = z.infer<typeof bulkDeleteProjectsSchema>;
 
 export type Achievement = z.infer<typeof achievementSchema>;
 export type CreateAchievementDto = z.infer<typeof createAchievementSchema>;

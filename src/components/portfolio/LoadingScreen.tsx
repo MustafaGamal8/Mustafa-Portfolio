@@ -1,10 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useLanguage } from './LanguageProvider';
 
 const LoadingScreen = () => {
   const [progress, setProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const [mounted, setMounted] = useState(false);
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     setMounted(true);
@@ -51,14 +53,14 @@ const LoadingScreen = () => {
 
         {/* Name */}
         <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-          مصطفى جمال
+        {language === 'ar' ? '  مصطفى جمال' : 'Mustafa Gamal'}
         </h1>
         <p className="text-muted-foreground mb-8">Software Engineer</p>
 
         {/* Progress Bar */}
         <div className="w-64 mx-auto">
           <div className="flex justify-between text-xs text-muted-foreground mb-2">
-            <span>جاري التحميل...</span>
+            <span>{language === 'ar' ? 'جاري التحميل...' : 'Loading...'}</span>
             <span>{progress}%</span>
           </div>
           <div className="w-full bg-muted rounded-full h-1">
@@ -72,11 +74,11 @@ const LoadingScreen = () => {
         {/* Loading Messages */}
         <div className="mt-6 h-6">
           <p className="text-sm text-muted-foreground animate-pulse">
-            {progress < 25 && 'تحضير الواجهة...'}
-            {progress >= 25 && progress < 50 && 'تحميل المشاريع...'}
-            {progress >= 50 && progress < 75 && 'إعداد المهارات...'}
-            {progress >= 75 && progress < 100 && 'اللمسات الأخيرة...'}
-            {progress >= 100 && 'مرحباً بك!'}
+            {progress < 25 && (language === 'ar' ? 'تحضير الواجهة...' : 'Preparing interface...')}
+            {progress >= 25 && progress < 50 && (language === 'ar' ? 'تحميل المشاريع...' : 'Downloading projects...') }
+            {progress >= 50 && progress < 75 && (language === 'ar' ? 'إعداد المهارات...' : 'Preparing skills...')}
+            {progress >= 75 && progress < 100 && (language === 'ar' ?  'اللمسات الأخيرة...' : 'Final touches...')}
+            {progress >= 100 && (language === 'ar' ?  'مرحباً بك!' : 'Welcome!')}
           </p>
         </div>
       </div>

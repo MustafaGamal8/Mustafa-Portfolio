@@ -1,7 +1,14 @@
 import { BackendBaseService } from '@/lib/backend/bacendBase.service';
 import { ApiError } from '@/lib/backend/exceptions/api-error';
 import { IQueryOptions } from '@/interfaces/query.interface';
-import { CreateProjectDto, UpdateProjectDto, Project } from '@/lib/backend/schemas/portfolio.schema';
+import {
+  CreateProjectDto,
+  UpdateProjectDto,
+  Project,
+  BulkCreateProjectsDto,
+  BulkUpdateProjectsDto,
+  BulkDeleteProjectsDto
+} from '@/lib/backend/schemas/portfolio.schema';
 
 export class BackendProjectService extends BackendBaseService<Project> {
   constructor() {
@@ -122,5 +129,94 @@ export class BackendProjectService extends BackendBaseService<Project> {
         image: true
       }
     });
+  }
+
+  // Bulk operations
+  async bulkCreate(data: BulkCreateProjectsDto): Promise<any> {
+    const { projects } = data;
+
+    // Create all projects in a transaction
+    const createdProjects = await this.prisma.$transaction(
+      projects.map(project => this.model.create({
+        data: project,
+        include: {
+          image: {
+            select: {
+              url: true
+            }
+          }
+        }
+      }))
+    );
+
+    return {
+      success: true,
+      created: createdProjects.length,
+      projects: createdProjects
+    };
+  }
+
+  async bulkUpdate(data: BulkUpdateProjectsDto): Promise<any> {
+    const { projects } = data;
+
+    // Update all projects in a transaction
+    const updatedProjects = await this.prisma.$transaction(
+      projects.map(project => {
+        const { id, imageId, ...rest } = project as any;
+        const updateData: any = { ...rest };
+
+        if (imageId !== undefined) {
+          updateData.image = imageId
+            ? { connect: { id: imageId } }
+            : { disconnect: true };
+        }
+
+        return this.model.update({
+          where: { id },
+          data: updateData,
+          include: {
+            image: {
+              select: {
+                url: true
+              }
+            }
+          }
+        });
+      })
+    );
+
+    return {
+      success: true,
+      updated: updatedProjects.length,
+      projects: updatedProjects
+    };
+  }
+
+  async bulkDelete(data: BulkDeleteProjectsDto): Promise<any> {
+    const { ids } = data;
+
+    // Check if all projects exist
+    const existingProjects = await this.model.findMany({
+      where: { id: { in: ids } }
+    });
+
+    if (existingProjects.length !== ids.length) {
+      const foundIds = existingProjects.map((p: any) => p.id);
+      const missingIds = ids.filter(id => !foundIds.includes(id));
+      throw ApiError.notFound('Some projects not found', { missingIds });
+    }
+
+    // Delete all projects in a transaction
+    const deletedProjects = await this.prisma.$transaction([
+      this.model.deleteMany({
+        where: { id: { in: ids } }
+      })
+    ]);
+
+    return {
+      success: true,
+      deleted: deletedProjects[0].count,
+      deletedIds: ids
+    };
   }
 }

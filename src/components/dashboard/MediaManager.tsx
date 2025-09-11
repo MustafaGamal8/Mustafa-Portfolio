@@ -266,7 +266,7 @@ export const MediaManager: React.FC<MediaManagerProps> = () => {
                   {fileService.formatFileSize(file.size)}
                 </span>
               </div>
-              
+
               {/* URL Edit Section */}
               {editingFile === file.id ? (
                 <div className="space-y-2">

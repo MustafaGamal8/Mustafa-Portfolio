@@ -111,7 +111,7 @@ const SkillsSectionV2 = () => {
             <div
               key={index}
               className={`bg-card rounded-2xl p-4 transition-all duration-300 cursor-pointer transform hover:scale-105 active:scale-95 shadow-[var(--shadow-card)] border border-border/50 animate-scale-in ${activeSkill === index
-                ? 'bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-[var(--shadow-hover)]'
+                ? `bg-gradient-to-br ${category.gradient} text-primary-foreground shadow-[var(--shadow-hover)]`
                 : 'hover:shadow-[var(--shadow-hover)] hover:bg-card-hover'
                 }`}
               style={{ animationDelay: `${index * 0.1}s` }}

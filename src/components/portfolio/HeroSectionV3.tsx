@@ -125,7 +125,7 @@ const HeroSectionV3 = () => {
 
           {/* Stats - Now dynamic from API */}
 
-          {displayData.stats && displayData.stats.length > 0 && (
+          {/* {displayData.stats && displayData.stats.length > 0 && (
             <div className="animate-fade-in-up mb-12" style={{ animationDelay: '0.9s' }}>
               <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
                 {displayData.stats.map((stat: any, index: number) => (
@@ -143,7 +143,7 @@ const HeroSectionV3 = () => {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
 
           {/* CTA Buttons */}
           <div className="animate-fade-in-up mb-16" style={{ animationDelay: '1.2s' }}>

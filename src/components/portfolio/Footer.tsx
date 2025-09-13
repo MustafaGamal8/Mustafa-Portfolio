@@ -243,17 +243,7 @@ const Footer = () => {
               {language === 'ar' ? 'تابعني' : 'Follow Me'}
             </h4>
             <div className="space-y-4">
-              <div>
-                <a
-                  href="https://webnest.com.eg"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors duration-200 group"
-                >
-                  <span>{language === 'ar' ? 'شركة Webnest' : 'Webnest Company'}</span>
-                  <ExternalLink size={14} className="group-hover:translate-x-1 transition-transform duration-200" />
-                </a>
-              </div>
+          
 
               <div className="flex gap-4">
                 {socialLinks

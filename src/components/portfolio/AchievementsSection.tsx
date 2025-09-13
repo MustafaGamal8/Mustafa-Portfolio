@@ -52,11 +52,11 @@ const AchievementsSection = () => {
           )}
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className=" flex flex-wrap justify-center gap-6">
           {achievements.map((achievement: any, index: number) => (
             <div
               key={index}
-              className="achievement-badge animate-scale-in"
+              className="achievement-badge animate-scale-in w-[350px]"
               style={{ animationDelay: `${index * 0.15}s` }}
             >
               <div className="text-center">

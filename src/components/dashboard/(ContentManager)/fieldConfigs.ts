@@ -19,15 +19,15 @@ export const getFieldsForSection = (sectionType: string): FieldConfig[] => {
       { name: 'profileImageId', label: 'Profile Image', type: 'image' },
       { name: 'resumeId', label: 'Resume (PDF)', type: 'file' },
       { name: 'dynamicTexts', label: 'Dynamic Texts', type: 'array' },
-      {
-        name: 'stats',
-        label: 'Stats',
-        type: 'object-array',
-        fields: [
-          { name: 'label', label: 'Label', required: true },
-          { name: 'value', label: 'Value', required: true },
-        ]
-      },
+      // {
+      //   name: 'stats',
+      //   label: 'Stats',
+      //   type: 'object-array',
+      //   fields: [
+      //     { name: 'label', label: 'Label', required: true },
+      //     { name: 'value', label: 'Value', required: true },
+      //   ]
+      // },
 
     ],
     about: [

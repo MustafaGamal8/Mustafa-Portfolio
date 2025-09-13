@@ -57,7 +57,7 @@ const HeroSectionV3 = () => {
         <div className="text-center max-w-5xl mx-auto">
           {/* Profile Image */}
           <div className="mb-10 animate-fade-in-up">
-            <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-8">
+            <div className="relative w-48 h-48 md:w-64 md:h-64 mx-auto mb-8">
               <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary-light rounded-full animate-pulse opacity-75"></div>
               <img
                 src={displayData?.profileImage?.url}
@@ -74,12 +74,7 @@ const HeroSectionV3 = () => {
             </div>
           </div>
 
-          {/* Greeting */}
-          <div className="animate-fade-in-up mb-6" style={{ animationDelay: '0.1s' }}>
-            <span className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm md:text-base font-medium border border-primary/20">
-              {t('hero.greeting')} ✨
-            </span>
-          </div>
+    
 
           {/* Custom Logo */}
           <div className="animate-scale-in mb-8" style={{ animationDelay: '0.2s' }}>
@@ -88,12 +83,12 @@ const HeroSectionV3 = () => {
               {displayData.name}
             </h1>
 
-            <p className="text-xl md:text-3xl text-muted-foreground mb-8 font-medium">
+            <p className="text-xl md:text-3xl text-muted-foreground mb-4 font-medium">
               {displayData.mainTitle}
             </p>
 
             {/* Dynamic Text with Better Animation */}
-            <div className="h-20 flex items-center justify-center mb-8">
+            <div className="h-20 flex items-center justify-center mb-4">
               <div className="relative">
                 <p className="text-lg md:text-2xl text-primary font-semibold transition-all duration-700 transform">
                   {dynamicTexts[currentText]}

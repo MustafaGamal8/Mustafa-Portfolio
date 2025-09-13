@@ -144,7 +144,7 @@ const ContactSection = () => {
   };
 
   const whatsappNumber = getWhatsAppNumber();
-  console.log("🚀 ~ whatsappNumber:", whatsappNumber)
+
 
   return (
     <section id="contact" className="py-20 px-4 bg-background">

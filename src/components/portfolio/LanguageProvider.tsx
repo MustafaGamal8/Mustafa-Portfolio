@@ -283,18 +283,45 @@ interface LanguageProviderProps {
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
   const [language, setLanguage] = useState<Language>(() => {
     if (typeof window !== 'undefined') {
+      // First, check URL parameters for language
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlLang = urlParams.get('lang') as Language;
+
+      if (urlLang && (urlLang === 'en' || urlLang === 'ar')) {
+        // If valid language in URL, use it and save to localStorage
+        localStorage.setItem('language', urlLang);
+        return urlLang;
+      }
+
+      // If no URL param, check localStorage
       const stored = localStorage.getItem('language') as Language;
       return stored || 'ar';
     }
     return 'ar';
   });
 
-  const toggleLanguage = () => {
-    const newLang = language === 'ar' ? 'en' : 'ar';
+  const handleLanguageChange = (newLang: Language) => {
     setLanguage(newLang);
     localStorage.setItem('language', newLang);
     document.documentElement.dir = newLang === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.lang = newLang;
+
+    // Update URL without reloading the page
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', newLang);
+      window.history.replaceState({}, '', url.toString());
+    }
+  };
+
+  const toggleLanguage = () => {
+    const newLang = language === 'ar' ? 'en' : 'ar';
+    handleLanguageChange(newLang);
+  };
+
+  // Override setLanguage to use our handler
+  const setLanguageWithUrl = (newLang: Language) => {
+    handleLanguageChange(newLang);
   };
 
   const t = (key: string): string => {
@@ -317,8 +344,26 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     }
   }, [language]);
 
+  // Listen for URL changes (back/forward browser navigation)
+  React.useEffect(() => {
+    const handlePopState = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlLang = urlParams.get('lang') as Language;
+
+      if (urlLang && (urlLang === 'en' || urlLang === 'ar') && urlLang !== language) {
+        setLanguage(urlLang);
+        localStorage.setItem('language', urlLang);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('popstate', handlePopState);
+      return () => window.removeEventListener('popstate', handlePopState);
+    }
+  }, [language]);
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, toggleLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage: setLanguageWithUrl, toggleLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );

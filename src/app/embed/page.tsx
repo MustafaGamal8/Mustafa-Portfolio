@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { Card, CardContent } from '@/components/ui/card';
@@ -46,6 +46,26 @@ const fallbackPersonalInfoEN = {
 };
 
 export default function EmbedPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-black flex items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-0">
+          <CardContent className="p-8">
+            <div className="animate-pulse space-y-4">
+              <div className="h-20 w-20 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mx-auto"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mx-auto"></div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    }>
+      <EmbedContent />
+    </Suspense>
+  );
+}
+
+function EmbedContent() {
   const searchParams = useSearchParams();
   const { theme } = useTheme();
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo | null>(null);

@@ -20,13 +20,22 @@ A modern, full-stack portfolio website built with Next.js, featuring both a publ
 - **Project Management**: Create, edit, and manage portfolio projects
 - **Contact Management**: View and respond to contact form submissions
 - **Skills Management**: Add and organize technical skills
+- **Logo Management**: Upload and manage custom logos with automatic compression
 - **Analytics**: Track portfolio performance and engagement
 
 ### API & Backend
 - **RESTful API**: Complete API for managing portfolio data
 - **Database Integration**: PostgreSQL with Prisma ORM
 - **Authentication**: Secure admin authentication
-- **File Upload**: Image upload and management
+- **File Upload**: Image upload and management with automatic compression
+- **Logo System**: Dynamic logo management with fallback support
+- **Embeddable Widget**: Standalone portfolio card for embedding in other sites
+
+### 🎴 Embeddable Portfolio Card
+- **Multi-language**: Support for Arabic and English
+- **Customizable Colors**: Dynamic primary color theming
+- **Responsive Design**: Works perfectly on any website
+- **Easy Integration**: Simple iframe embed with URL parameters
 
 ## 🛠️ Tech Stack
 
@@ -153,6 +162,76 @@ The project includes models for:
 - Update portfolio content in component files
 - Modify database schema in `prisma/schema.prisma`
 - Add new API endpoints in `src/app/api/`
+
+### Logo Management
+- Upload custom logos through the dashboard at `/dashboard`
+- Logos are automatically compressed for optimal performance
+- Supports PNG, JPG, SVG, GIF, and WebP formats (max 5MB)
+- Logos appear in the navigation bar and footer
+- Falls back to `/Icon.svg` if no custom logo is uploaded
+- Use transparent background PNG with wide aspect ratio for best results
+
+## 🔧 Key Features Explained
+
+### Image Compression
+- **Client-side compression**: Images are compressed in the browser for Vercel compatibility
+- **Multiple formats**: Supports all common image formats
+- **Automatic optimization**: Logos are resized and optimized automatically
+- **Quality control**: Maintains good quality while reducing file size
+
+### Logo System
+- **Dynamic loading**: Logos are loaded dynamically using React hooks
+- **Fallback support**: Graceful fallback to default logo if custom logo fails
+- **Real-time updates**: Logo changes appear immediately across the site
+- **Dashboard management**: Easy upload and editing through admin interface
+
+## 🎴 Embeddable Portfolio Card
+
+The portfolio includes an embeddable widget that can be integrated into any website.
+
+### Usage Examples
+
+#### Basic Embed (Arabic - Default):
+```html
+<iframe 
+  src="https://yourportfolio.com/embed?lang=AR&color=%23e11d48" 
+  width="100%" 
+  height="400" 
+  frameborder="0"
+  style="border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+</iframe>
+```
+
+#### English with Custom Color:
+```html
+<iframe 
+  src="https://yourportfolio.com/embed?lang=EN&color=%233b82f6" 
+  width="100%" 
+  height="400" 
+  frameborder="0">
+</iframe>
+```
+
+### Available Parameters
+
+| Parameter | Description | Default | Example |
+|-----------|-------------|---------|---------|
+| `lang` | Language (AR/EN) | `AR` | `lang=EN` |
+| `color` | Primary color (hex, URL encoded) | `#3b82f6` | `color=%23e11d48` |
+
+### Testing & Demo
+
+- **Live Demo**: Visit `/embed-demo` to test customizations
+- **Examples**: View `/embed-examples.html` for implementation examples
+
+### Features
+
+- ✅ **Responsive Design**: Works on all devices
+- ✅ **Multi-language**: Arabic (RTL) and English (LTR) support  
+- ✅ **Customizable**: Dynamic colors and theming
+- ✅ **Fast Loading**: Optimized for performance
+- ✅ **Secure**: Isolated from main application
+- ✅ **SEO Friendly**: Proper meta tags and structure
 
 ## 🚀 Deployment
 

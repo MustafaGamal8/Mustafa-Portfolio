@@ -15,7 +15,9 @@ export default function Home() {
     <LanguageProvider>
       <main className="min-h-screen">
         <LoadingScreen />
-        <Navbar />   
+        <Navbar /> 
+        
+  
         <HeroSectionV3 />
         <AboutSectionV2 />
         <SkillsSectionV2 />

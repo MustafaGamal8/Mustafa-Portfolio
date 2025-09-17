@@ -25,6 +25,16 @@ export const GET = apiHandler(async (request: NextRequest) => {
     const result = await fileService.findMany({
       where,
       pagination: { page, limit },
+      select: {
+        id: true,
+        name: true,
+        url: true,
+        path: true,
+        type: true,
+        size: true,
+        createdAt: true,
+        updatedAt: true,
+      },
       orderBy: { createdAt: 'desc' }
     });
 
@@ -40,6 +50,49 @@ export const GET = apiHandler(async (request: NextRequest) => {
     console.error('Files listing error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch files' },
+      { status: 500 }
+    );
+  }
+});
+
+// Upload file (including logos)
+export const POST = apiHandler(async (request: NextRequest) => {
+  try {
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
+    const logoName = formData.get('logoName') as string;
+
+    if (!file) {
+      return NextResponse.json(
+        { error: 'No file provided' },
+        { status: 400 }
+      );
+    }
+
+    // Convert File to UploadedFile format
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const uploadedFile = {
+      originalname: file.name,
+      mimetype: file.type,
+      size: file.size,
+      buffer: buffer
+    };
+
+    let result;
+
+    // If logoName is provided, use logo upload/update method
+    if (logoName) {
+      result = await fileService.uploadOrUpdateLogo(uploadedFile, logoName);
+    } else {
+      // Regular file upload
+      result = await fileService.uploadFile(uploadedFile);
+    }
+
+    return NextResponse.json(result, { status: 201 });
+  } catch (error) {
+    console.error('File upload error:', error);
+    return NextResponse.json(
+      { error: 'Failed to upload file' },
       { status: 500 }
     );
   }

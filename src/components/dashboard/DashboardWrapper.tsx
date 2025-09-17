@@ -34,6 +34,7 @@ import {
 import { authService } from '@/lib/frontend/services/auth.service';
 import { portfolioService } from '@/lib/frontend/services/portfolio.service';
 import { usePortfolioSection } from '@/hooks/usePortfolioSection';
+import LogoManager from './LogoManager';
 
 export const DashboardWrapper = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -118,6 +119,11 @@ export const DashboardWrapper = () => {
       <WelcomeTab onTabChange={handleTabChange} />
       <ContentManager />
       <MediaManager />
+
+      {/* Logos Tab */}
+      <TabsContent value="logos" className="space-y-6">
+        <LogoManager />
+      </TabsContent>
 
       {/* Settings Tab */}
       <TabsContent value="settings" className="space-y-6">

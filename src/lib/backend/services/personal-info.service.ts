@@ -22,7 +22,6 @@ export class BackendPersonalInfoService extends BackendBaseService<PersonalInfo>
       data,
       include: {
         image: true,
-        resume: true
       }
     });
   }
@@ -38,11 +37,7 @@ export class BackendPersonalInfoService extends BackendBaseService<PersonalInfo>
             url: true
           }
         },
-        resume: {
-          select: {
-            url: true
-          }
-        },
+      
         ...processedOptions.include
       }
     });
@@ -54,12 +49,23 @@ export class BackendPersonalInfoService extends BackendBaseService<PersonalInfo>
       throw ApiError.notFound('Personal info not found', {});
     }
 
+
+      // Transform `imageId` into relation-friendly syntax
+    const { imageId, ...rest } = data as any;
+    const updateData: any = { ...rest };
+
+    if (imageId !== undefined) {
+      updateData.image = imageId
+        ? { connect: { id: imageId } }
+        : { disconnect: true };
+    }
+
+
     return await this.model.update({
       where: { id },
-      data,
+      data: updateData,
       include: {
         image: true,
-        resume: true
       }
     });
   }
@@ -74,7 +80,6 @@ export class BackendPersonalInfoService extends BackendBaseService<PersonalInfo>
       where: { id },
       include: {
         image: true,
-        resume: true
       }
     });
   }

@@ -9,9 +9,9 @@ const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 // Define the file upload interface
 interface UploadedFile {
   originalname: string;
-  buffer: Buffer;
   mimetype: string;
   size: number;
+  buffer: Buffer;
 }
 
 export class BackendFileService extends BackendBaseService<File> {
@@ -192,6 +192,132 @@ export class BackendFileService extends BackendBaseService<File> {
       return updatedFile;
     } catch (error) {
       throw ApiError.internal('Failed to update file URL', {
+        reason: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  }
+
+  // Get file by name (useful for logos)
+  async getFileByName(name: string): Promise<File | null> {
+    try {
+      const file = await this.model.findFirst({
+        where: { name },
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          size: true,
+          url: true,
+          createdAt: true,
+          updatedAt: true,
+        }
+      });
+      
+
+      return file;
+    } catch (error) {
+      throw ApiError.internal('Failed to get file by name', {
+        reason: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  }
+
+  // Update file base64 content (useful for logo updates)
+  async updateFileBase64(id: string, base64Data: string): Promise<File> {
+    const file = await this.model.findUnique({
+      where: { id }
+    });
+
+    if (!file) {
+      throw ApiError.notFound('File not found');
+    }
+
+    try {
+      const updatedFile = await this.model.update({
+        where: { id },
+        data: {
+          base64: base64Data
+        }
+      });
+
+      return updatedFile;
+    } catch (error) {
+      throw ApiError.internal('Failed to update file content', {
+        reason: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  }
+
+  // Upload or update logo by name
+  async uploadOrUpdateLogo(file: UploadedFile, logoName: string = 'main-logo'): Promise<File> {
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      throw ApiError.badRequest('File too large', {
+        field: 'file',
+        reason: `File size exceeds maximum limit of ${MAX_FILE_SIZE / (1024 * 1024)}MB`
+      });
+    }
+
+    // Validate file type (images only for logos)
+    const allowedMimeTypes = [
+      'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'
+    ];
+
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      throw ApiError.badRequest('Invalid file type', {
+        field: 'file',
+        reason: 'Only image files are allowed for logos'
+      });
+    }
+
+    try {
+      // Convert file to base64
+      const base64Data = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+
+      // Check if logo with this name already exists
+      const existingLogo = await this.getFileByName(logoName);
+
+      let logoFile: File;
+
+      if (existingLogo) {
+        // Update existing logo
+        logoFile = await this.model.update({
+          where: { id: existingLogo.id },
+          data: {
+            base64: base64Data,
+            type: file.mimetype,
+            size: file.size,
+            updatedAt: new Date()
+          }
+        });
+      } else {
+        // Create new logo
+        logoFile = await this.model.create({
+          data: {
+            name: logoName,
+            path: `/api/files/`,
+            url: `/api/files/`,
+            type: file.mimetype,
+            size: file.size,
+            base64: base64Data
+          }
+        });
+
+        // Update the URL to include the file ID
+        logoFile = await this.model.update({
+          where: { id: logoFile.id },
+          data: {
+            path: `/api/files/${logoFile.id}`,
+            url: `${process.env.NEXT_PUBLIC_APP_URL}/api/files/${logoFile.id}`
+          }
+        });
+      }
+
+      return logoFile;
+    } catch (error) {
+      throw ApiError.internal('Failed to upload/update logo', {
         reason: error instanceof Error ? error.message : 'Unknown error'
       });
     }

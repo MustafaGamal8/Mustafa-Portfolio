@@ -62,9 +62,22 @@ export class BackendHeroContentService extends BackendBaseService<HeroContent> {
       throw ApiError.notFound('Hero content not found', {});
     }
 
+
+      // Transform `imageId` into relation-friendly syntax
+    const { profileImageId, resumeId, ...rest } = data as any;
+    const updateData: any = { ...rest };
+
+    if (profileImageId !== undefined) {
+      updateData.profileImage = profileImageId
+        ? { connect: { id: profileImageId } }
+        : { disconnect: true };
+    }
+
+
+
     return await this.model.update({
       where: { id },
-      data,
+      data: updateData,
       include: {
         profileImage: {
           select: {

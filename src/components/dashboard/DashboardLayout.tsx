@@ -77,7 +77,7 @@ export const DashboardLayout = ({ onLogout, children, activeTab: controlledActiv
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               Welcome
@@ -89,6 +89,10 @@ export const DashboardLayout = ({ onLogout, children, activeTab: controlledActiv
             <TabsTrigger value="media" className="flex items-center gap-2">
               <Image className="h-4 w-4" />
               Media
+            </TabsTrigger>
+            <TabsTrigger value="logos" className="flex items-center gap-2">
+              <Star className="h-4 w-4" />
+              Logos
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />

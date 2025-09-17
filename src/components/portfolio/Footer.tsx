@@ -1,7 +1,9 @@
 'use client';
 import { Mail, Phone, MapPin, Heart, ExternalLink } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import { usePortfolioSection } from '@/hooks/usePortfolioSection';
 import { useLanguage } from './LanguageProvider';
+import { useMainLogoDark, useMainLogoLight, useWordLogoDark, useWordLogoLight } from '@/hooks/useLogo';
 
 // Type definitions for API data
 interface ContactInfo {
@@ -32,6 +34,15 @@ interface FooterData {
 
 const Footer = () => {
   const { language } = useLanguage();
+  const { theme } = useTheme();
+
+  // Use theme-specific logos
+  const { logo: darkLogo } = useWordLogoDark();
+  const { logo: lightLogo } = useWordLogoLight();
+
+  // Select logo based on current theme
+  const currentLogo =darkLogo;
+
   const { data: footerData, loading, isStaticData } = usePortfolioSection({ sectionName: 'footer' }) as {
     data: FooterData | null;
     loading: boolean;
@@ -131,9 +142,21 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="lg:col-span-1">
             <div className="mb-6">
-              <h3 className="text-2xl font-bold mb-2">
-                {language === 'ar' ? 'مصطفى جمال' : 'Mostafa Gamal'}
-              </h3>
+              {/* Logo Section */}
+              <div className="mb-4">
+                {currentLogo ? (
+                  <img
+                    className="h-[60px] w-[200px]  object-cover"
+                    src={currentLogo.url}
+                    alt="Logo"
+                  />
+                ) : (
+                  <h3 className="text-2xl font-bold">
+                    {language === 'ar' ? 'مصطفى جمال' : 'Mostafa Gamal'}
+                  </h3>
+                )}
+              </div>
+
               <p className="text-primary-foreground/80 text-sm leading-relaxed">
                 {language === 'ar'
                   ? 'مهندس برمجيات، متخصص في تطوير الحلول التقنية المبتكرة التي تساعد الشركات على النمو والتطور في العصر الرقمي.'
@@ -243,7 +266,7 @@ const Footer = () => {
               {language === 'ar' ? 'تابعني' : 'Follow Me'}
             </h4>
             <div className="space-y-4">
-          
+
 
               <div className="flex gap-4">
                 {socialLinks

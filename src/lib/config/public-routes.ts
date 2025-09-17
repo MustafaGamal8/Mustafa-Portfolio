@@ -22,13 +22,23 @@ export const PUBLIC_ROUTES: PublicRoutesConfig = {
     description: 'Application initialization'
   },
 
-
   '/api/portfolio': {
     methods: ['POST'],
     description: 'Public portfolio'
   },
 
-  
+  // Personal info for embed widget
+  '/api/personal-info': {
+    methods: ['GET'],
+    description: 'Public personal info access for embed widget'
+  },
+
+  // Logo access for embed widget
+  '/api/files/logo': {
+    methods: ['GET'],
+    description: 'Public logo access for embed widget'
+  },
+
   // File access route
   '/api/files/[id]': {
     methods: ['GET'],

@@ -1,16 +1,25 @@
 'use client';
-'use client';
 import { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import { Menu, X } from 'lucide-react';
 import { useLanguage } from './LanguageProvider';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
+import { useIconLogoDark, useIconLogoLight,  } from '@/hooks/useLogo';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
+  const { theme } = useTheme();
   const { t } = useLanguage();
+
+  // Use theme-specific logos
+  const { logo: darkLogo } = useIconLogoDark();
+  const { logo: lightLogo } = useIconLogoLight();
+
+  // Select logo based on current theme
+  const currentLogo = theme === 'dark' ? darkLogo : lightLogo;
 
   const navItems = [
     { id: 'hero', name: t('nav.home') },
@@ -55,8 +64,8 @@ const Navbar = () => {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-        ? 'bg-background/95 backdrop-blur-md shadow-[var(--shadow-card)] border-b border-border/50'
-        : 'bg-transparent'
+      ? 'bg-background/95 backdrop-blur-md shadow-[var(--shadow-card)] border-b border-border/50'
+      : 'bg-transparent'
       }`}>
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
@@ -65,7 +74,17 @@ const Navbar = () => {
             onClick={() => scrollToSection('hero')}
             className="text-xl font-bold text-foreground hover:text-primary transition-colors duration-200"
           >
-            {t('hero.name')}
+            <div className='w-[200px] h-[80px] '>
+              {currentLogo ? (
+                <img
+                  className='w-full h-full object-contain'
+                  src={currentLogo.url}
+                  alt="Logo"
+                />
+              ) : (
+                <img className='w-full h-full' src="/Icon.svg" alt="Default Logo" />
+              )}
+            </div>
           </button>
 
           {/* Desktop Navigation */}
@@ -75,8 +94,8 @@ const Navbar = () => {
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
                 className={`text-sm font-medium transition-all duration-200 hover:text-primary relative ${activeSection === item.id
-                    ? 'text-primary'
-                    : 'text-foreground/80'
+                  ? 'text-primary'
+                  : 'text-foreground/80'
                   }`}
               >
                 {item.name}
@@ -119,8 +138,8 @@ const Navbar = () => {
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
                   className={`block w-full text-right py-2 font-medium transition-colors duration-200 ${activeSection === item.id
-                      ? 'text-primary'
-                      : 'text-foreground/80 hover:text-primary'
+                    ? 'text-primary'
+                    : 'text-foreground/80 hover:text-primary'
                     }`}
                 >
                   {item.name}

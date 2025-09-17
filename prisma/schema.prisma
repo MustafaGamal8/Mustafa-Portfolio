@@ -98,10 +98,8 @@ model HeroContent {
   profileImageId String?
   profileImage   File?   @relation("heroProfileImage", fields: [profileImageId], references: [id], onDelete: SetNull)
 
-  
   resumeId String?
   resume   File?   @relation("heroProfileCv", fields: [resumeId], references: [id])
-
 
   @@map("hero_content")
 }

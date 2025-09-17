@@ -1,4 +1,4 @@
-import { BaseService } from './base.service';
+import { BaseService } from '@/lib/frontend/services/base.service';
 
 export interface FileData {
   id: string;
@@ -90,6 +90,56 @@ export class FileService extends BaseService {
       baseUrl
     });
     return response.data;
+  }
+
+  // Logo management methods
+  async getLogoByName(name: string): Promise<FileData | null> {
+    try {
+      const response = await this.api.get(`/files/logo?name=${encodeURIComponent(name)}`);
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        return null;
+      }
+      throw error;
+    }
+  }
+
+  async uploadLogo(file: File, logoName: string = 'main-logo'): Promise<FileData> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('logoName', logoName);
+
+    const response = await this.api.post('/files', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return response.data;
+  }
+
+  async updateLogoBase64(logoName: string, base64Data: string): Promise<FileData> {
+    const response = await this.api.put('/files/logo', {
+      name: logoName,
+      base64: base64Data
+    });
+    return response.data;
+  }
+
+  // Get main logo (convenience method)
+  async getMainLogo(): Promise<FileData | null> {
+    return this.getLogoByName('main-logo');
+  }
+
+  // Get dark theme logo
+  async getDarkLogo(): Promise<FileData | null> {
+    return this.getLogoByName('dark-logo');
+  }
+
+  // Get light theme logo  
+  async getLightLogo(): Promise<FileData | null> {
+    return this.getLogoByName('light-logo');
   }
 }
 

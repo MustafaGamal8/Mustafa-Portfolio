@@ -36,7 +36,7 @@ const HeroSectionV3 = () => {
 
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20" id='hero'>
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5"></div>
 

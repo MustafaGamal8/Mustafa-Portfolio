@@ -34,6 +34,11 @@
       font-size: 18px;
     }
 
+    .switcher {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
     .examples {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -46,6 +51,7 @@
       border-radius: 12px;
       padding: 20px;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      
     }
 
     .example h3 {
@@ -58,22 +64,46 @@
 
     .example iframe {
       width: 100%;
-      height: 400px;
+      height: 800px;
       border: none;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 8px;
     }
 
-    .code-section {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    .url-display {
+      font-size: 14px;
+      color: #475569;
+      word-break: break-all;
+      background: #f1f5f9;
+      padding: 6px 10px;
+      border-radius: 6px;
     }
 
-    .code-section h2 {
-      color: #1e293b;
-      margin-bottom: 20px;
+    .manual-inputs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .manual-inputs input {
+      padding: 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      flex: 1;
+    }
+
+    .manual-inputs button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      background-color: #3b82f6;
+      color: white;
+      cursor: pointer;
+    }
+
+    .manual-inputs button:hover {
+      background-color: #2563eb;
     }
 
     .code-block {
@@ -85,29 +115,7 @@
       font-family: 'Fira Code', monospace;
       font-size: 14px;
       line-height: 1.5;
-    }
-
-    .params-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-
-    .params-table th,
-    .params-table td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #e2e8f0;
-    }
-
-    .params-table th {
-      background-color: #f8fafc;
-      font-weight: 600;
-      color: #1e293b;
-    }
-
-    .flag {
-      font-size: 20px;
+      margin-top: 15px;
     }
   </style>
 </head>
@@ -119,92 +127,93 @@
       <p>Embeddable portfolio card widget with customizable language and colors</p>
     </div>
 
+    <!-- Base URL Switch -->
+    <div class="switcher">
+      <label for="baseUrl">🌐 Select Base URL:</label>
+      <select id="baseUrl">
+        <option value="http://localhost:3000">http://localhost:3000</option>
+        <option value="https://mustafa-gamal.vercel.app">https://mustafa-gamal.vercel.app</option>
+      </select>
+    </div>
+
     <div class="examples">
       <div class="example">
         <h3><span class="flag">🇸🇦</span> Arabic Version (Default)</h3>
-        <iframe src="http://localhost:3000/embed?lang=AR&color=%23e11d48"></iframe>
+        <iframe data-path="/embed?lang=AR&color=%23e11d48"></iframe>
+        <div class="url-display"></div>
       </div>
 
       <div class="example">
         <h3><span class="flag">🇺🇸</span> English Version</h3>
-        <iframe src="http://localhost:3000/embed?lang=EN&color=%233b82f6"></iframe>
+        <iframe data-path="/embed?lang=EN&color=%233b82f6"></iframe>
+        <div class="url-display"></div>
       </div>
 
       <div class="example">
         <h3>🎨 Custom Purple Color</h3>
-        <iframe src="http://localhost:3000/embed?lang=EN&color=%238b5cf6"></iframe>
+        <iframe data-path="/embed?lang=EN&color=%238b5cf6"></iframe>
+        <div class="url-display"></div>
       </div>
 
       <div class="example">
         <h3>🌿 Custom Green Color</h3>
-        <iframe src="http://localhost:3000/embed?lang=AR&color=%2310b981"></iframe>
-      </div>
-    </div>
-
-    <div class="code-section">
-      <h2>📝 How to Embed</h2>
-
-      <h3>Basic HTML Embed:</h3>
-      <div class="code-block">
-        &lt;iframe
-        src="http://localhost:3000/embed?lang=AR&amp;color=%23e11d48"
-        width="100%"
-        height="400"
-        frameborder="0"
-        style="border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);"&gt;
-        &lt;/iframe&gt;
+        <iframe data-path="/embed?lang=AR&color=%2310b981"></iframe>
+        <div class="url-display"></div>
       </div>
 
-      <h3>Responsive Embed:</h3>
-      <div class="code-block">
-        &lt;div style="position: relative; width: 100%; max-width: 400px; height: 400px;"&gt;
-        &lt;iframe
-        src="http://localhost:3000/embed?lang=EN&amp;color=%233b82f6"
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 8px;"&gt;
-        &lt;/iframe&gt;
-        &lt;/div&gt;
+      <!-- Manual Example -->
+      <div class="example">
+        <h3>🛠 Manual Parameters</h3>
+        <div class="manual-inputs">
+          <input type="text" id="langInput" placeholder="Lang (AR/EN)" value="EN">
+          <input type="text" id="colorInput" placeholder="Color (#hex)" value="#f59e0b">
+          <button onclick="updateManualIframe()">Apply</button>
+        </div>
+        <iframe id="manualIframe"></iframe>
+        <div class="url-display" id="manualUrl"></div>
+
+        <h4>📋 How to Embed:</h4>
+        <div class="code-block" id="embedCode"></div>
       </div>
-
-      <h3>WordPress Shortcode Style:</h3>
-      <div class="code-block">
-        [portfolio_card lang="AR" color="#10b981"]
-      </div>
-
-      <h3>Available Parameters:</h3>
-      <table class="params-table">
-        <thead>
-          <tr>
-            <th>Parameter</th>
-            <th>Description</th>
-            <th>Default Value</th>
-            <th>Example</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>lang</code></td>
-            <td>Language (AR for Arabic, EN for English)</td>
-            <td>AR</td>
-            <td><code>lang=EN</code></td>
-          </tr>
-          <tr>
-            <td><code>color</code></td>
-            <td>Primary color (hex code, URL encoded)</td>
-            <td>#3b82f6</td>
-            <td><code>color=%23e11d48</code></td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3>Color Encoding:</h3>
-      <p>Remember to URL encode the # symbol in hex colors:</p>
-      <ul>
-        <li><strong>#3b82f6</strong> becomes <code>%233b82f6</code></li>
-        <li><strong>#e11d48</strong> becomes <code>%23e11d48</code></li>
-        <li><strong>#10b981</strong> becomes <code>%2310b981</code></li>
-      </ul>
     </div>
   </div>
+
+  <script>
+    const baseUrlSelect = document.getElementById("baseUrl");
+    const iframeWrappers = document.querySelectorAll(".example");
+
+    function updateIframes() {
+      const base = baseUrlSelect.value.replace(/\/$/, "");
+      iframeWrappers.forEach(wrapper => {
+        const iframe = wrapper.querySelector("iframe[data-path]");
+        if (iframe) {
+          const url = base + iframe.getAttribute("data-path");
+          iframe.src = url;
+          wrapper.querySelector(".url-display").textContent = url;
+        }
+      });
+      updateManualIframe(); // sync manual one too
+    }
+
+    function updateManualIframe() {
+      const base = baseUrlSelect.value.replace(/\/$/, "");
+      const lang = document.getElementById("langInput").value || "EN";
+      const color = encodeURIComponent(document.getElementById("colorInput").value || "#3b82f6");
+      const url = `${base}/embed?lang=${lang}&color=${color}`;
+      document.getElementById("manualIframe").src = url;
+      document.getElementById("manualUrl").textContent = url;
+
+      // update embed code block
+      document.getElementById("embedCode").textContent =
+        `<iframe src="${url}" width="100%" height="400" frameborder="0" style="border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1);"></iframe>`;
+    }
+
+    // event listener for select change
+    baseUrlSelect.addEventListener("change", updateIframes);
+
+    // init
+    updateIframes();
+  </script>
 </body>
 
 </html>

@@ -24,6 +24,47 @@ const ProjectsSectionV2 = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const swiperRef = useRef<SwiperType | null>(null);
 
+  // Helper function to format project dates
+  const formatProjectDuration = (project: any) => {
+    const parts = [];
+
+    // Add duration if available
+    if (project.duration && project.duration.trim()) {
+      parts.push(project.duration);
+    }
+
+    // Add date range if available
+    if (project.startDate || project.endDate) {
+      try {
+        const formatDate = (dateStr: string | Date) => {
+          if (!dateStr) return null;
+          const date = new Date(dateStr);
+          if (isNaN(date.getTime())) return null;
+          return date.toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US', {
+            year: 'numeric',
+            month: 'short'
+          });
+        };
+
+        const startFormatted = formatDate(project.startDate);
+        const endFormatted = formatDate(project.endDate);
+
+        if (startFormatted && endFormatted) {
+          parts.push(`${startFormatted} - ${endFormatted}`);
+        } else if (startFormatted) {
+          parts.push(startFormatted);
+        } else if (endFormatted) {
+          parts.push(`${t('projects.until')} ${endFormatted}`);
+        }
+      } catch (error) {
+        console.error('Error formatting dates:', error);
+      }
+    }
+
+    // Return combined parts or fallback
+    return parts.length > 0 ? parts.join(' • ') : t('projects.durationNotSpecified');
+  };
+
   // Fetch projects data from API
   const { data: projectsData, loading, error, isStaticData } = usePortfolioSection({
     sectionName: 'projects'
@@ -57,7 +98,7 @@ const ProjectsSectionV2 = () => {
       { id: 'all', name: t('projects.all'), count: projects.length },
       ...uniqueCategories.map((cat) => ({
         id: cat,
-        name: t(`projects.${cat}`) || cat,
+        name: cat || cat,
         count: projects.filter((p: any) => p.category === cat).length
       }))
     ];
@@ -189,7 +230,7 @@ const ProjectsSectionV2 = () => {
                         <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
                           <div className="flex items-center gap-1">
                             <Calendar size={14} />
-                            {project.duration}
+                            {formatProjectDuration(project)}
                           </div>
                           <div className="flex items-center gap-1">
                             <Users size={14} />
@@ -215,18 +256,18 @@ const ProjectsSectionV2 = () => {
                         </div>
 
                         {/* Key Features */}
-                        { project.features.length > 0 &&
+                        {project.features.length > 0 &&
                           <div className="mb-6 flex-1">
-                          <h4 className="text-sm font-semibold mb-2 text-card-foreground">{t('projects.features')}</h4>
-                          <div className=" flex flex-col flex-wrap gap-1">
-                            {project.features.slice(0, 4).map((feature: any, featureIndex: number) => (
-                              <div key={featureIndex} className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <Star size={12} className="text-primary flex-shrink-0" />
-                                {feature}
-                              </div>
-                            ))}
+                            <h4 className="text-sm font-semibold mb-2 text-card-foreground">{t('projects.features')}</h4>
+                            <div className=" flex flex-col flex-wrap gap-1">
+                              {project.features.slice(0, 4).map((feature: any, featureIndex: number) => (
+                                <div key={featureIndex} className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <Star size={12} className="text-primary flex-shrink-0" />
+                                  {feature}
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
                         }
 
                         {/* Action Buttons - Always at the bottom */}
@@ -243,9 +284,9 @@ const ProjectsSectionV2 = () => {
                             </a>
                           }
 
-                          {project.github &&
+                          {project.githubUrl &&
                             <a
-                              href={project.github}
+                              href={project.githubUrl}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="flex items-center gap-2 px-4 py-2.5 border border-border text-card-foreground text-sm font-medium rounded-lg hover:bg-card-hover transition-all duration-200 hover:scale-105"

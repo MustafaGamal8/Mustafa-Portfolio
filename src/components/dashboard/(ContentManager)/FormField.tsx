@@ -250,6 +250,44 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, ed
       );
     }
 
+    // Handle date fields properly
+    if (field.type === 'datetime-local' || field.type === 'date') {
+      // Format the date for the input field
+      const formattedValue = value ?
+        (value instanceof Date ?
+          value.toISOString().slice(0, 16) :
+          (() => {
+            try {
+              return new Date(value).toISOString().slice(0, 16);
+            } catch {
+              return '';
+            }
+          })()
+        ) : '';
+
+      return (
+        <Input
+          {...commonProps}
+          type="datetime-local"
+          value={formattedValue}
+          onChange={(e) => {
+            // Convert the string back to Date object for storage
+            if (e.target.value) {
+              try {
+                const dateValue = new Date(e.target.value);
+                onChange(dateValue);
+              } catch {
+                onChange(null);
+              }
+            } else {
+              onChange(null);
+            }
+          }}
+          placeholder={field.label}
+        />
+      );
+    }
+
     return (
       <Input
         {...commonProps}

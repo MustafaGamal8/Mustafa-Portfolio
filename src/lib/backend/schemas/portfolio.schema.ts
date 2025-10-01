@@ -162,8 +162,16 @@ export const projectSchema = z.object({
   order: z.number().default(0),
   isFeatured: z.boolean().default(false),
   isActive: z.boolean().default(true),
-  startDate: z.preprocess((val) => new Date(val as string), z.date()).optional(),
-  endDate: z.preprocess((val) => new Date(val as string), z.date()).optional(),
+  startDate: z.preprocess((val) => {
+    if (!val) return undefined;
+    if (val instanceof Date) return val;
+    return new Date(val as string);
+  }, z.date()).optional(),
+  endDate: z.preprocess((val) => {
+    if (!val) return undefined;
+    if (val instanceof Date) return val;
+    return new Date(val as string);
+  }, z.date()).optional(),
   imageId: z.string().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),

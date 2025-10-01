@@ -3,6 +3,8 @@ export interface PaginationOptions {
   limit?: number;
 }
 
+export type SortOrder = 'asc' | 'desc';
+
 export interface IncludeOptions {
   [key: string]: any;
 }
@@ -12,7 +14,7 @@ export interface WhereOptions {
 }
 
 export interface OrderByOptions {
-  [key: string]: 'asc' | 'desc';
+  [key: string]: SortOrder;
 }
 
 export interface SelectOptions {

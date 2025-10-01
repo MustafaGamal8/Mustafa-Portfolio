@@ -218,7 +218,12 @@ export const ContentManagerProvider: React.FC<{
     if (typeof obj === 'object') {
       const cleaned: any = {};
       for (const [key, value] of Object.entries(obj)) {
-        if (value !== null && value !== undefined && value !== '') {
+        // Handle Date objects specially
+        if (value instanceof Date) {
+          cleaned[key] = value;
+        }
+        // Keep values that are not null, undefined, or empty string
+        else if (value !== null && value !== undefined && value !== '') {
           cleaned[key] = cleanFormData(value);
         }
       }
@@ -237,6 +242,13 @@ export const ContentManagerProvider: React.FC<{
       // Clean the item data to remove null/undefined/empty values
       const cleanedItem = cleanFormData(item);
       const itemWithLang = { ...cleanedItem, lang: editLanguage };
+
+      // Debug logging for date fields
+      if (activeSection === 'projects') {
+        console.log('Original item:', item);
+        console.log('Cleaned item:', cleanedItem);
+        console.log('Item with lang:', itemWithLang);
+      }
 
       if (item.id) {
         await currentSection.service.update(itemWithLang);

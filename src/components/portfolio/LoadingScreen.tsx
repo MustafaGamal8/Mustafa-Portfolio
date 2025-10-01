@@ -24,7 +24,7 @@ const LoadingScreen = () => {
         }
         return prev + 2;
       });
-    }, 30);
+    }, 50);
 
     return () => clearInterval(timer);
   }, [mounted]);
@@ -32,7 +32,7 @@ const LoadingScreen = () => {
   if (!mounted || !isVisible) return null;
 
   return (
-    <div className={`fixed inset-0 bg-background z-50 flex items-center justify-center transition-opacity duration-500 ${progress >= 100 ? 'opacity-0' : 'opacity-100'}`}>
+    <div className={`fixed inset-0 bg-background z-[100] flex items-center justify-center transition-opacity duration-500 ${progress >= 100 ? 'opacity-0' : 'opacity-100'}`}>
       <div className="text-center">
         {/* Logo Animation */}
         <div className="relative mb-8">

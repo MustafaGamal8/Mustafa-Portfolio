@@ -23,7 +23,7 @@ export const PUBLIC_ROUTES: PublicRoutesConfig = {
   },
 
   '/api/portfolio': {
-    methods: ['POST'],
+    methods: ['POST', 'GET'],
     description: 'Public portfolio'
   },
 

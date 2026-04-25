@@ -1,94 +1,112 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { apiHandler } from '@/lib/backend/api-handler';
-import { BackendBaseService } from '@/lib/backend/bacendBase.service';
+import { prisma } from '@/lib/backend/prisma';
 
 export const GET = apiHandler(async (request: NextRequest) => {
   try {
-    // Initialize services for different models
-    const projectService = new BackendBaseService('project');
-    const skillService = new BackendBaseService('skill');
-    const skillCategoryService = new BackendBaseService('skillCategory');
-    const aboutCardService = new BackendBaseService('aboutCard');
-    const achievementService = new BackendBaseService('achievement');
-    const heroContentService = new BackendBaseService('heroContent');
-    const personalInfoService = new BackendBaseService('personalInfo');
-    const contactInfoService = new BackendBaseService('contactInfo');
-    const socialLinkService = new BackendBaseService('socialLink');
-    const fileService = new BackendBaseService('file');
-
-    // Get counts for all content types
+    // Use lightweight count queries instead of loading full tables.
     const [
-      projects,
-      skills,
-      skillCategories,
-      aboutCards,
-      achievements,
-      heroContent,
-      personalInfo,
-      contactInfo,
-      socialLinks,
-      files
+      projectTotal,
+      projectActive,
+      projectFeatured,
+      projectDraft,
+      skillTotal,
+      skillActive,
+      skillCategoriesTotal,
+      aboutCardsTotal,
+      achievementsTotal,
+      heroContentTotal,
+      personalInfoTotal,
+      contactInfoTotal,
+      socialLinksTotal,
+      filesTotal,
+      imagesTotal,
+      documentsTotal,
+      recentProjects,
+      recentSkills,
+      recentAchievements,
     ] = await Promise.all([
-      projectService.findMany({ meta: false }),
-      skillService.findMany({ meta: false }),
-      skillCategoryService.findMany({ meta: false }),
-      aboutCardService.findMany({ meta: false }),
-      achievementService.findMany({ meta: false }),
-      heroContentService.findMany({ meta: false }),
-      personalInfoService.findMany({ meta: false }),
-      contactInfoService.findMany({ meta: false }),
-      socialLinkService.findMany({ meta: false }),
-      fileService.findMany({ meta: false })
+      prisma.project.count(),
+      prisma.project.count({ where: { isActive: true } }),
+      prisma.project.count({ where: { isFeatured: true } }),
+      prisma.project.count({ where: { status: 'DRAFT' } }),
+      prisma.skill.count(),
+      prisma.skill.count({ where: { isActive: true } }),
+      prisma.skillCategory.count(),
+      prisma.aboutCard.count(),
+      prisma.achievement.count(),
+      prisma.heroContent.count(),
+      prisma.personalInfo.count(),
+      prisma.contactInfo.count(),
+      prisma.socialLink.count(),
+      prisma.file.count(),
+      prisma.file.count({ where: { type: { startsWith: 'image/' } } }),
+      prisma.file.count({ where: { type: 'application/pdf' } }),
+      prisma.project.findMany({
+        select: { id: true, title: true, createdAt: true, updatedAt: true },
+        orderBy: { updatedAt: 'desc' },
+        take: 3,
+      }),
+      prisma.skill.findMany({
+        select: { id: true, name: true, createdAt: true, updatedAt: true },
+        orderBy: { updatedAt: 'desc' },
+        take: 2,
+      }),
+      prisma.achievement.findMany({
+        select: { id: true, title: true, createdAt: true, updatedAt: true },
+        orderBy: { updatedAt: 'desc' },
+        take: 2,
+      }),
     ]);
 
     // Calculate counters
     const counters = {
       projects: {
-        total: projects.data.length,
-        active: projects.data.filter((p: any) => p.isActive).length,
-        featured: projects.data.filter((p: any) => p.isFeatured).length,
-        draft: projects.data.filter((p: any) => p.status === 'DRAFT').length
+        total: projectTotal,
+        active: projectActive,
+        featured: projectFeatured,
+        draft: projectDraft,
       },
       skills: {
-        total: skills.data.length,
-        active: skills.data.filter((s: any) => s.isActive).length,
-        categories: skillCategories.data.length
+        total: skillTotal,
+        active: skillActive,
+        categories: skillCategoriesTotal,
       },
       content: {
-        aboutCards: aboutCards.data.length,
-        achievements: achievements.data.length,
-        heroContent: heroContent.data.length,
-        personalInfo: personalInfo.data.length,
-        contactInfo: contactInfo.data.length,
-        socialLinks: socialLinks.data.length
+        aboutCards: aboutCardsTotal,
+        achievements: achievementsTotal,
+        heroContent: heroContentTotal,
+        personalInfo: personalInfoTotal,
+        contactInfo: contactInfoTotal,
+        socialLinks: socialLinksTotal,
       },
       media: {
-        totalFiles: files.data.length,
-        images: files.data.filter((f: any) => f.type.startsWith('image/')).length,
-        documents: files.data.filter((f: any) => f.type === 'application/pdf').length
-      }
+        totalFiles: filesTotal,
+        images: imagesTotal,
+        documents: documentsTotal,
+      },
     };
 
     // Get latest updates (recent creations/modifications)
     const recentUpdates = [
-      ...projects.data.slice(0, 3).map((item: any) => ({
+      ...recentProjects.map((item) => ({
         type: 'project',
         title: item.title,
-        action: item.createdAt === item.updatedAt ? 'created' : 'updated',
+        action: item.createdAt?.getTime() === item.updatedAt?.getTime() ? 'created' : 'updated',
         timestamp: item.updatedAt || item.createdAt,
         id: item.id
       })),
-      ...skills.data.slice(0, 2).map((item: any) => ({
+      ...recentSkills.map((item) => ({
         type: 'skill',
         title: item.name,
-        action: item.createdAt === item.updatedAt ? 'created' : 'updated',
+        action: item.createdAt?.getTime() === item.updatedAt?.getTime() ? 'created' : 'updated',
         timestamp: item.updatedAt || item.createdAt,
         id: item.id
       })),
-      ...achievements.data.slice(0, 2).map((item: any) => ({
+      ...recentAchievements.map((item) => ({
         type: 'achievement',
         title: item.title,
-        action: item.createdAt === item.updatedAt ? 'created' : 'updated',
+        action: item.createdAt?.getTime() === item.updatedAt?.getTime() ? 'created' : 'updated',
         timestamp: item.updatedAt || item.createdAt,
         id: item.id
       }))
@@ -99,7 +117,7 @@ export const GET = apiHandler(async (request: NextRequest) => {
     // Quick stats for overview
     const overviewStats = {
       totalViews: 0, // This would come from analytics if implemented
-      totalMessages: contactInfo.data.length,
+      totalMessages: contactInfoTotal,
       completionRate: Math.round((counters.projects.active / Math.max(counters.projects.total, 1)) * 100)
     };
 

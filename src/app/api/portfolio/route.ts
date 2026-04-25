@@ -44,8 +44,8 @@ export const GET = apiHandler(async (req: NextRequest) => {
           portfolioData.skills = await skillService.findByLanguage(lang);
           break;
         case 'skillCategories':
-          portfolioData.skillCategories = await skillService.findByLanguage(lang);
-          break;    
+          portfolioData.skillCategories = await skillCategoryService.findByLanguage(lang);
+          break;
         case 'projects':
           portfolioData.projects = await projectService.findByLanguage(lang);
           portfolioData.featuredProjects = await projectService.findFeaturedByLanguage(lang);
@@ -59,7 +59,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
           break;
         case 'footer':
           portfolioData.socialLinks = await socialLinkService.findByLanguage(lang);
-          break;  
+          break;
         default:
           return NextResponse.json({ error: 'Invalid section' }, { status: 400 });
       }
@@ -150,10 +150,12 @@ export const POST = apiHandler(async (req: NextRequest) => {
             }
           };
         case 'footer':
-          return { section: 'footer', data: {
-            contactInfo: await contactInfoService.findByLanguage(lang),
-            socialLinks: await socialLinkService.findByLanguage(lang)
-          } };
+          return {
+            section: 'footer', data: {
+              contactInfo: await contactInfoService.findByLanguage(lang),
+              socialLinks: await socialLinkService.findByLanguage(lang)
+            }
+          };
         default:
           return { section, data: null, error: 'Invalid section' };
       }

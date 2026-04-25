@@ -299,7 +299,8 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, ed
         placeholder={field.label}
       />
     );
-  }; const isDescriptionField = field.name.includes('description') || field.name === 'answer' || field.name === 'longDescription';
+  };
+  const isFullRowField = field.type === 'textarea' || field.name.includes('description') || field.name === 'answer' || field.name === 'longDescription';
 
   if (field.type === 'checkbox') {
     return (
@@ -310,7 +311,7 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, ed
   }
 
   return (
-    <div key={`${field.name}-${editLanguage}`} className={`space-y-2 ${isDescriptionField ? 'col-span-2' : ''}`}>
+    <div key={`${field.name}-${editLanguage}`} className={`space-y-2 ${isFullRowField ? 'md:col-span-2' : ''}`}>
       <Label htmlFor={field.name} className="text-sm font-medium">
         {field.label} {field.required && <span className="text-red-500">*</span>}
       </Label>

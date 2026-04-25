@@ -38,7 +38,7 @@ export class BackendHeroContentService extends BackendBaseService<HeroContent> {
   async findByLanguage(lang: string, options: IQueryOptions = {}): Promise<any> {
     const processedOptions = this.processQueryOptions(options, true);
 
-    return await this.model.findFirst({
+    return await this.model.findUnique({
       where: { lang },
       include: {
         profileImage: {
@@ -63,7 +63,7 @@ export class BackendHeroContentService extends BackendBaseService<HeroContent> {
     }
 
 
-      // Transform `imageId` into relation-friendly syntax
+    // Transform `imageId` into relation-friendly syntax
     const { profileImageId, resumeId, ...rest } = data as any;
     const updateData: any = { ...rest };
 

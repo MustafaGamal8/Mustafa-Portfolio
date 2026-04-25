@@ -29,7 +29,7 @@ export class BackendPersonalInfoService extends BackendBaseService<PersonalInfo>
   async findByLanguage(lang: string, options: IQueryOptions = {}): Promise<any> {
     const processedOptions = this.processQueryOptions(options, true);
 
-    return await this.model.findFirst({
+    return await this.model.findUnique({
       where: { lang },
       include: {
         image: {
@@ -37,7 +37,7 @@ export class BackendPersonalInfoService extends BackendBaseService<PersonalInfo>
             url: true
           }
         },
-      
+
         ...processedOptions.include
       }
     });
@@ -50,7 +50,7 @@ export class BackendPersonalInfoService extends BackendBaseService<PersonalInfo>
     }
 
 
-      // Transform `imageId` into relation-friendly syntax
+    // Transform `imageId` into relation-friendly syntax
     const { imageId, ...rest } = data as any;
     const updateData: any = { ...rest };
 

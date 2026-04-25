@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -78,6 +78,7 @@ model PersonalInfo {
   imageId String?
   image   File?   @relation("profileImage", fields: [imageId], references: [id])
 
+  @@unique([lang])
   @@map("personal_info")
 }
 
@@ -101,6 +102,7 @@ model HeroContent {
   resumeId String?
   resume   File?   @relation("heroProfileCv", fields: [resumeId], references: [id])
 
+  @@unique([lang])
   @@map("hero_content")
 }
 
@@ -117,6 +119,7 @@ model AboutCard {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([lang, isActive, order])
   @@map("about_cards")
 }
 
@@ -135,6 +138,7 @@ model SkillCategory {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  @@index([lang, isActive, order])
   @@map("skill_categories")
 }
 
@@ -154,6 +158,7 @@ model Skill {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
+  @@index([lang, isActive, skillCategoryId, order])
   @@map("skills")
 }
 
@@ -184,6 +189,8 @@ model Project {
   imageId String?
   image   File?   @relation("projectImage", fields: [imageId], references: [id], onDelete: SetNull)
 
+  @@index([lang, isActive, isFeatured, order])
+  @@index([lang, category])
   @@map("projects")
 }
 
@@ -204,6 +211,7 @@ model Achievement {
   File   File?   @relation(fields: [fileId], references: [id])
   fileId String?
 
+  @@index([lang, isActive, order])
   @@map("achievements")
 }
 
@@ -222,6 +230,7 @@ model ContactInfo {
   updatedAt DateTime @updatedAt
 
   @@unique([lang, type])
+  @@index([lang, isActive, isPrimary, order])
   @@map("contact_info")
 }
 
@@ -237,6 +246,7 @@ model SocialLink {
   updatedAt DateTime @updatedAt
 
   @@unique([lang, name])
+  @@index([lang, isActive, order])
   @@map("social_links")
 }
 
@@ -253,6 +263,7 @@ model Service {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([lang, isActive, order])
   @@map("services")
 }
 
@@ -266,5 +277,6 @@ model QuickLink {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([lang, isActive, order])
   @@map("quick_links")
 }

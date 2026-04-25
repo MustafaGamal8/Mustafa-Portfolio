@@ -13,6 +13,7 @@ import {
   socialLinkService
 } from '@/lib/frontend/services';
 import { ContentSection, ContentData, ContentManagerState, ContentManagerActions } from './types';
+import { findPairedItem } from './bilingualContent';
 import {
   User,
   Award,
@@ -56,6 +57,7 @@ export const ContentManagerProvider: React.FC<{
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [editLanguage, setEditLanguage] = useState<'EN' | 'AR'>('EN');
   const [showBothLanguages, setShowBothLanguages] = useState(false);
+  const [loadedSectionKeys, setLoadedSectionKeys] = useState<Set<string>>(new Set());
 
   const sections: ContentSection[] = [
     {
@@ -172,10 +174,17 @@ export const ContentManagerProvider: React.FC<{
   };
 
   // Optimized function to reload only the current section
-  const loadCurrentSectionItems = async () => {
+  const loadCurrentSectionItems = async (targetSectionType?: string, forceReload = false) => {
     try {
-      const currentSection = getCurrentSection();
+      const currentSection = targetSectionType
+        ? sections.find((section) => section.type === targetSectionType)
+        : getCurrentSection();
+
       if (!currentSection) return;
+
+      if (!forceReload && loadedSectionKeys.has(currentSection.type)) {
+        return;
+      }
 
       setIsLoading(true);
 
@@ -194,8 +203,12 @@ export const ContentManagerProvider: React.FC<{
           AR: arItems
         }
       }));
+
+      setLoadedSectionKeys((prev) => new Set([...prev, currentSection.type]));
     } catch (error) {
-      const currentSection = getCurrentSection();
+      const currentSection = targetSectionType
+        ? sections.find((section) => section.type === targetSectionType)
+        : getCurrentSection();
       console.error(`Failed to load ${currentSection?.type || 'section'} items:`, error);
       showToast({
         variant: "destructive",
@@ -264,7 +277,7 @@ export const ContentManagerProvider: React.FC<{
         });
       }
 
-      await loadCurrentSectionItems();
+      await loadCurrentSectionItems(undefined, true);
       setEditingItem(null);
       setIsModalOpen(false);
       setSelectedImage(null);
@@ -286,12 +299,17 @@ export const ContentManagerProvider: React.FC<{
         const currentSection = getCurrentSection();
         if (!currentSection) throw new Error('Invalid section');
 
-        await currentSection.service.delete(id);
+        const currentSectionData = contentData[currentSection.dataKey] || { EN: [], AR: [] };
+        const existingItem = [...(currentSectionData.EN || []), ...(currentSectionData.AR || [])].find((item: any) => item.id === id);
+        const pairedItem = existingItem ? findPairedItem(currentSection.type, existingItem, currentSectionData) : undefined;
+        const idsToDelete = Array.from(new Set([id, pairedItem?.id].filter(Boolean) as string[]));
+
+        await Promise.all(idsToDelete.map(itemId => currentSection.service.delete(itemId)));
         setContentData((prev) => ({
           ...prev,
           [currentSection.dataKey]: {
-            EN: prev[currentSection.dataKey]?.EN?.filter((item: any) => item.id !== id) || [],
-            AR: prev[currentSection.dataKey]?.AR?.filter((item: any) => item.id !== id) || []
+            EN: prev[currentSection.dataKey]?.EN?.filter((item: any) => !idsToDelete.includes(item.id)) || [],
+            AR: prev[currentSection.dataKey]?.AR?.filter((item: any) => !idsToDelete.includes(item.id)) || []
           }
         }));
         showToast({
@@ -310,8 +328,8 @@ export const ContentManagerProvider: React.FC<{
   };
 
   useEffect(() => {
-    loadContentItems();
-  }, []);
+    void loadCurrentSectionItems(activeSection);
+  }, [activeSection]);
 
   return (
     <ContentManagerContext.Provider

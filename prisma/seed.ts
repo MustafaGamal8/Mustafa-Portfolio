@@ -3,6 +3,26 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
+const languages = ['AR', 'EN'] as const;
+type SupportedLanguage = (typeof languages)[number];
+
+type LocalizedRecord<T extends Record<string, any>> = {
+  AR: T;
+  EN: T;
+} & Record<string, any>;
+
+const createLocalizedRows = <T extends Record<string, any>>(records: Array<LocalizedRecord<T>>) =>
+  records.flatMap(({ AR, EN, ...shared }) =>
+    languages.map((lang) => ({
+      lang,
+      ...(lang === 'AR' ? AR : EN),
+      ...shared,
+    }))
+  );
+
+const duplicateRows = <T extends Record<string, any>>(records: Array<T>) =>
+  records.flatMap((record) => languages.map((lang) => ({ lang, ...record })));
+
 async function main() {
   console.log('🌱 Starting database seed...');
 
@@ -22,33 +42,40 @@ async function main() {
 
   // Create Personal Info
   console.log('👤 Creating personal info...');
-  await prisma.personalInfo.createMany({
-    data: [
-      {
-        lang: 'AR',
-        firstName: 'مصطفى',
-        lastName: 'جمال',
-        title: 'مهندس برمجيات ومؤسس Webnest',
-        description: 'مهندس برمجيات متخصص في تطوير الحلول التقنية المبتكرة، مؤسس شركة Webnest لحلول الويب والتطبيقات الذكية.',
-        bio: 'أجمع بين الخبرة التقنية والفهم العميق لاحتياجات السوق المحلي والعالمي. أركز على بناء حلول تقنية مبتكرة تساعد الشركات والأفراد على تحقيق أهدافهم.',
+  const personalInfoData = createLocalizedRows([
+    {
+      AR: {
+        firstName: "مصطفى",
+        lastName: "جمال",
+        title: "مهندس برمجيات ومطور Full-Stack",
+        description:
+          "مهندس برمجيات متخصص في تطوير تطبيقات الويب ومنصات رقمية للشركات والأعمال.",
+        bio:
+          "مطور Full-Stack أعمل على بناء مواقع ومنصات مختلفة تشمل أنظمة إدارة، منصات تعليم، وعقارات وحلول شركات باستخدام تقنيات حديثة.",
       },
-      {
-        lang: 'EN',
-        firstName: 'Mostafa',
-        lastName: 'Gamal',
-        title: 'Software Engineer & Webnest Founder',
-        description: 'Software engineer specialized in developing innovative technical solutions, founder of Webnest company for web and smart applications solutions.',
-        bio: 'I combine technical expertise with deep understanding of local and global market needs. I focus on building innovative technical solutions that help companies and individuals achieve their goals.',
-      }
-    ]
+
+      EN: {
+        firstName: "Mostafa",
+        lastName: "Gamal",
+        title: "Software Engineer & Full-Stack Developer",
+        description:
+          "Software engineer specialized in building web applications and digital platforms for businesses.",
+        bio:
+          "Full-Stack developer building web platforms including management systems, educational platforms, real estate solutions, and corporate websites using modern technologies.",
+      },
+    },
+  ]);
+
+
+  await prisma.personalInfo.createMany({
+    data: personalInfoData,
   });
 
   // Create Hero Content
   console.log('🦸 Creating hero content...');
-  await prisma.heroContent.createMany({
-    data: [
-      {
-        lang: 'AR',
+  const heroContentData = createLocalizedRows([
+    {
+      AR: {
         name: 'مصطفى جمال',
         mainTitle: 'مهندس برمجيات ومبتكر حلول',
         subTitle: 'أحول الأفكار إلى واقع رقمي',
@@ -56,222 +83,188 @@ async function main() {
         dynamicTexts: ['مطور ويب', 'مطور Flutter', 'خبير DevOps', 'مؤسس شركة', 'مطور AI', 'مبتكر حلول'],
         ctaText: 'تواصل معي',
       },
-      {
-        lang: 'EN',
-        name: 'Mostafa Gamal',
+      EN: {
+        name: 'Mustafa Gamal',
         mainTitle: 'Software Engineer & Solution Innovator',
         subTitle: 'Turning ideas into digital reality',
         description: 'Welcome! I\'m Mostafa, a passionate software engineer dedicated to developing innovative technical solutions. I specialize in web and mobile app development, and work on AI and automation projects.',
         dynamicTexts: ['Web Developer', 'Flutter Expert', 'DevOps Expert', 'Company Founder', 'AI Developer', 'Solution Innovator'],
         ctaText: 'Contact Me',
-      }
-    ]
+      },
+    },
+  ]);
+
+  await prisma.heroContent.createMany({
+    data: heroContentData,
   });
 
   // Create About Cards
   console.log('📋 Creating about cards...');
-  const aboutCardsAr = [
+  const aboutCardsData = createLocalizedRows([
     {
-      lang: 'AR' as const,
-      title: 'مين أنا؟',
-      question: 'مين أنا؟',
-      answer: 'مهندس برمجيات متخصص في تطوير الحلول التقنية المبتكرة، مؤسس شركة Webnest لحلول الويب والتطبيقات الذكية. أجمع بين الخبرة التقنية والفهم العميق لاحتياجات السوق المحلي والعالمي.',
       gradient: 'from-blue-500 to-purple-600',
-      order: 0
+      order: 0,
+      AR: {
+        title: 'مين أنا؟',
+        question: 'مين أنا؟',
+        answer: 'مهندس برمجيات متخصص في تطوير الحلول التقنية المبتكرة، مؤسس شركة Webnest لحلول الويب والتطبيقات الذكية. أجمع بين الخبرة التقنية والفهم العميق لاحتياجات السوق المحلي والعالمي.',
+      },
+      EN: {
+        title: 'Who am I?',
+        question: 'Who am I?',
+        answer: 'A software engineer specialized in developing innovative technical solutions, founder of Webnest company for web and smart applications solutions. I combine technical expertise with deep understanding of local and global market needs.',
+      },
     },
     {
-      lang: 'AR' as const,
-      title: 'بدأت منين؟',
-      question: 'بدأت منين؟',
-      answer: 'بدأت رحلتي في WE School for Applied Technology حيث تعلمت أساسيات هندسة البرمجيات. ثم طورت مهاراتي من خلال العمل على مشاريع حقيقية ومتنوعة في مجالات مختلفة من تطوير الويب إلى الذكاء الاصطناعي.',
       gradient: 'from-green-500 to-teal-600',
-      order: 1
+      order: 1,
+      AR: {
+        title: 'بدأت منين؟',
+        question: 'بدأت منين؟',
+        answer: 'بدأت رحلتي في WE School for Applied Technology حيث تعلمت أساسيات هندسة البرمجيات. ثم طورت مهاراتي من خلال العمل على مشاريع حقيقية ومتنوعة في مجالات مختلفة من تطوير الويب إلى الذكاء الاصطناعي.',
+      },
+      EN: {
+        title: 'Where did I start?',
+        question: 'Where did I start?',
+        answer: 'I started my journey at WE School for Applied Technology where I learned the fundamentals of software engineering. Then I developed my skills by working on real and diverse projects in different fields from web development to artificial intelligence.',
+      },
     },
     {
-      lang: 'AR' as const,
-      title: 'بعمل إيه دلوقتي؟',
-      question: 'بعمل إيه دلوقتي؟',
-      answer: 'حالياً طالب في Delta Higher Institute وأعمل كمهندس برمجيات في مشاريع متنوعة. أركز على تطوير تطبيقات الويب بـ React، تطبيقات الموبايل بـ Flutter، وأنظمة DevOps مع خبرة في الذكاء الاصطناعي وتقنيات الطائرات المسيرة.',
       gradient: 'from-orange-500 to-red-600',
-      order: 2
+      order: 2,
+      AR: {
+        title: 'بعمل إيه دلوقتي؟',
+        question: 'بعمل إيه دلوقتي؟',
+        answer: 'حالياً طالب في Delta Higher Institute وأعمل كمهندس برمجيات في مشاريع متنوعة. أركز على تطوير تطبيقات الويب بـ React، تطبيقات الموبايل بـ Flutter، وأنظمة DevOps مع خبرة في الذكاء الاصطناعي وتقنيات الطائرات المسيرة.',
+      },
+      EN: {
+        title: 'What do I do now?',
+        question: 'What do I do now?',
+        answer: 'Currently a student at Delta Higher Institute and working as a software engineer on various projects. I focus on developing web applications with React, mobile applications with Flutter, and DevOps systems with experience in AI and drone technologies.',
+      },
     },
     {
-      lang: 'AR' as const,
-      title: 'إيه تخصصي؟',
-      question: 'إيه تخصصي؟',
-      answer: 'متخصص في Full Stack Development مع خبرة عميقة في React.js, Next.js, Laravel, Flutter, وأنظمة DevOps. كما أعمل مع تقنيات الذكاء الاصطناعي، معالجة الصور، وتطوير حلول مبتكرة للشركات والمؤسسات.',
       gradient: 'from-purple-500 to-pink-600',
-      order: 3
+      order: 3,
+      AR: {
+        title: 'إيه تخصصي؟',
+        question: 'إيه تخصصي؟',
+        answer: 'متخصص في Full Stack Development مع خبرة عميقة في React.js, Next.js, Laravel, Flutter, وأنظمة DevOps. كما أعمل مع تقنيات الذكاء الاصطناعي، معالجة الصور، وتطوير حلول مبتكرة للشركات والمؤسسات.',
+      },
+      EN: {
+        title: "What's my specialty?",
+        question: "What's my specialty?",
+        answer: 'Specialized in Full Stack Development with deep experience in React.js, Next.js, Laravel, Flutter, and DevOps systems. I also work with AI technologies, image processing, and developing innovative solutions for companies and institutions.',
+      },
     },
     {
-      lang: 'AR' as const,
-      title: 'إيه هدفي؟',
-      question: 'إيه هدفي؟',
-      answer: 'هدفي بناء حلول تقنية مبتكرة تساعد الشركات والأفراد على تحقيق أهدافهم وتطوير أعمالهم. أسعى لتوفير تجربة مستخدم استثنائية وحلول تقنية فعالة تواكب التطور التكنولوجي السريع.',
       gradient: 'from-indigo-500 to-blue-600',
-      order: 4
+      order: 4,
+      AR: {
+        title: 'إيه هدفي؟',
+        question: 'إيه هدفي؟',
+        answer: 'هدفي بناء حلول تقنية مبتكرة تساعد الشركات والأفراد على تحقيق أهدافهم وتطوير أعمالهم. أسعى لتوفير تجربة مستخدم استثنائية وحلول تقنية فعالة تواكب التطور التكنولوجي السريع.',
+      },
+      EN: {
+        title: "What's my goal?",
+        question: "What's my goal?",
+        answer: 'My goal is to build innovative technical solutions that help companies and individuals achieve their goals and develop their businesses. I strive to provide exceptional user experience and effective technical solutions that keep up with rapid technological development.',
+      },
     },
     {
-      lang: 'AR' as const,
-      title: 'إيه اللي يميزني؟',
-      question: 'إيه اللي يميزني؟',
-      answer: 'يميزني الجمع بين الخبرة التقنية العميقة والفهم الواضح لاحتياجات السوق. أركز على كتابة كود نظيف وقابل للصيانة، مع اتباع أفضل الممارسات في التطوير والتصميم لضمان تقديم منتجات عالية الجودة.',
       gradient: 'from-yellow-500 to-orange-600',
-      order: 5
-    }
-  ];
-
-  const aboutCardsEn = [
-    {
-      lang: 'EN' as const,
-      title: 'Who am I?',
-      question: 'Who am I?',
-      answer: 'A software engineer specialized in developing innovative technical solutions, founder of Webnest company for web and smart applications solutions. I combine technical expertise with deep understanding of local and global market needs.',
-      gradient: 'from-blue-500 to-purple-600',
-      order: 0
+      order: 5,
+      AR: {
+        title: 'إيه اللي يميزني؟',
+        question: 'إيه اللي يميزني؟',
+        answer: 'يميزني الجمع بين الخبرة التقنية العميقة والفهم الواضح لاحتياجات السوق. أركز على كتابة كود نظيف وقابل للصيانة، مع اتباع أفضل الممارسات في التطوير والتصميم لضمان تقديم منتجات عالية الجودة.',
+      },
+      EN: {
+        title: 'What makes me unique?',
+        question: 'What makes me unique?',
+        answer: 'What distinguishes me is combining deep technical expertise with clear understanding of market needs. I focus on writing clean and maintainable code, following best practices in development and design to ensure delivering high-quality products.',
+      },
     },
-    {
-      lang: 'EN' as const,
-      title: 'Where did I start?',
-      question: 'Where did I start?',
-      answer: 'I started my journey at WE School for Applied Technology where I learned the fundamentals of software engineering. Then I developed my skills by working on real and diverse projects in different fields from web development to artificial intelligence.',
-      gradient: 'from-green-500 to-teal-600',
-      order: 1
-    },
-    {
-      lang: 'EN' as const,
-      title: 'What do I do now?',
-      question: 'What do I do now?',
-      answer: 'Currently a student at Delta Higher Institute and working as a software engineer on various projects. I focus on developing web applications with React, mobile applications with Flutter, and DevOps systems with experience in AI and drone technologies.',
-      gradient: 'from-orange-500 to-red-600',
-      order: 2
-    },
-    {
-      lang: 'EN' as const,
-      title: 'What\'s my specialty?',
-      question: 'What\'s my specialty?',
-      answer: 'Specialized in Full Stack Development with deep experience in React.js, Next.js, Laravel, Flutter, and DevOps systems. I also work with AI technologies, image processing, and developing innovative solutions for companies and institutions.',
-      gradient: 'from-purple-500 to-pink-600',
-      order: 3
-    },
-    {
-      lang: 'EN' as const,
-      title: 'What\'s my goal?',
-      question: 'What\'s my goal?',
-      answer: 'My goal is to build innovative technical solutions that help companies and individuals achieve their goals and develop their businesses. I strive to provide exceptional user experience and effective technical solutions that keep up with rapid technological development.',
-      gradient: 'from-indigo-500 to-blue-600',
-      order: 4
-    },
-    {
-      lang: 'EN' as const,
-      title: 'What makes me unique?',
-      question: 'What makes me unique?',
-      answer: 'What distinguishes me is combining deep technical expertise with clear understanding of market needs. I focus on writing clean and maintainable code, following best practices in development and design to ensure delivering high-quality products.',
-      gradient: 'from-yellow-500 to-orange-600',
-      order: 5
-    }
-  ];
+  ]);
 
   await prisma.aboutCard.createMany({
-    data: [...aboutCardsAr, ...aboutCardsEn]
+    data: aboutCardsData,
   });
 
   // Create Skill Categories
   console.log('💪 Creating skill categories...');
-  const skillCategoriesData = [
-    // Arabic
+  const skillCategoriesData = createLocalizedRows([
     {
-      lang: 'AR' as const,
-      title: 'تطوير الويب',
-      description: 'بناء مواقع وتطبيقات ويب حديثة وسريعة باستخدام أحدث التقنيات والأطر البرمجية.',
       gradient: 'from-blue-500 to-cyan-600',
       experience: '5+ سنوات خبرة',
       projectCount: 15,
-      order: 0
+      order: 0,
+      AR: {
+        title: 'تطوير الويب',
+        description: 'بناء أنظمة ويب حديثة مثل SaaS Platforms ولوحات التحكم (Dashboards) باستخدام React.js وNext.js مع تركيز على الأداء وتجربة المستخدم.',
+      },
+      EN: {
+        title: 'Web Development',
+        description: 'Building modern web systems such as SaaS platforms and dashboards using React.js and Next.js with focus on performance and UX.',
+      },
     },
     {
-      lang: 'AR' as const,
-      title: 'تطوير التطبيقات',
-      description: 'تطوير تطبيقات موبايل متعددة المنصات بواجهات مستخدم جميلة وأداء عالي.',
       gradient: 'from-green-500 to-emerald-600',
-      experience: '3+ سنوات خبرة',
-      projectCount: 8,
-      order: 1
-    },
-    {
-      lang: 'AR' as const,
-      title: 'DevOps والسحابة',
-      description: 'إدارة وأتمتة البنية التحتية السحابية لضمان الأداء العالي والموثوقية.',
-      gradient: 'from-purple-500 to-violet-600',
-      experience: '3+ سنوات خبرة',
+      experience: '5+ سنوات خبرة',
       projectCount: 10,
-      order: 2
+      order: 1,
+      AR: {
+        title: 'الـ Backend وواجهات البرمجة',
+        description: 'تطوير APIs قوية وقابلة للتوسع باستخدام Node.js وExpress مع خبرة في Laravel، وبناء أنظمة Authentication وRBAC وSubscriptions.',
+      },
+      EN: {
+        title: 'Backend & APIs',
+        description: 'Building scalable APIs using Node.js and Express with Laravel experience, including authentication, RBAC, and subscription systems.',
+      },
     },
     {
-      lang: 'AR' as const,
-      title: 'الذكاء الاصطناعي',
-      description: 'تطوير حلول ذكية باستخدام الذكاء الاصطناعي وتعلم الآلة لمعالجة البيانات.',
-      gradient: 'from-orange-500 to-red-600',
-      experience: '2+ سنوات خبرة',
-      projectCount: 6,
-      order: 3
-    },
-    {
-      lang: 'AR' as const,
-      title: 'قواعد البيانات',
-      description: 'تصميم وإدارة قواعد البيانات المحسنة للأداء العالي والأمان.',
-      gradient: 'from-indigo-500 to-blue-600',
+      gradient: 'from-purple-500 to-violet-600',
       experience: '4+ سنوات خبرة',
-      projectCount: 20,
-      order: 4
-    },
-    // English
-    {
-      lang: 'EN' as const,
-      title: 'Web Development',
-      description: 'Building modern and fast websites and web applications using the latest technologies and frameworks.',
-      gradient: 'from-blue-500 to-cyan-600',
-      experience: '5+ years experience',
-      projectCount: 15,
-      order: 0
+      projectCount: 12,
+      order: 2,
+      AR: {
+        title: 'DevOps والنشر',
+        description: 'إدارة ونشر التطبيقات باستخدام Vercel وDocker وVPS Linux، مع إعداد CI/CD pipelines لضمان الاستقرار وسهولة التحديث.',
+      },
+      EN: {
+        title: 'DevOps & Deployment',
+        description: 'Deploying and managing applications using Vercel, Docker, and Linux VPS with CI/CD pipelines for stability and smooth releases.',
+      },
     },
     {
-      lang: 'EN' as const,
-      title: 'Mobile Development',
-      description: 'Developing cross-platform mobile applications with beautiful user interfaces and high performance.',
-      gradient: 'from-green-500 to-emerald-600',
-      experience: '3+ years experience',
-      projectCount: 8,
-      order: 1
-    },
-    {
-      lang: 'EN' as const,
-      title: 'DevOps & Cloud',
-      description: 'Managing and automating cloud infrastructure to ensure high performance and reliability.',
-      gradient: 'from-purple-500 to-violet-600',
-      experience: '3+ years experience',
-      projectCount: 10,
-      order: 2
-    },
-    {
-      lang: 'EN' as const,
-      title: 'Artificial Intelligence',
-      description: 'Developing intelligent solutions using artificial intelligence and machine learning for data processing.',
-      gradient: 'from-orange-500 to-red-600',
-      experience: '2+ years experience',
-      projectCount: 6,
-      order: 3
-    },
-    {
-      lang: 'EN' as const,
-      title: 'Database',
-      description: 'Designing and managing optimized databases for high performance and security.',
       gradient: 'from-indigo-500 to-blue-600',
-      experience: '4+ years experience',
+      experience: '5+ سنوات خبرة',
       projectCount: 20,
-      order: 4
-    }
-  ];
+      order: 3,
+      AR: {
+        title: 'قواعد البيانات',
+        description: 'تصميم وإدارة قواعد بيانات PostgreSQL وMySQL وMongoDB باستخدام Prisma وRedis مع تحسين الأداء وكتابة استعلامات فعالة.',
+      },
+      EN: {
+        title: 'Databases',
+        description: 'Designing and managing PostgreSQL, MySQL, and MongoDB using Prisma and Redis with performance optimization and efficient queries.',
+      },
+    },
+    {
+      gradient: 'from-orange-500 to-red-600',
+      experience: '4+ سنوات خبرة',
+      projectCount: 12,
+      order: 4,
+      AR: {
+        title: 'هندسة الأنظمة (SaaS)',
+        description: 'تصميم معماريات SaaS قابلة للتوسع تشمل multi-tenancy، أنظمة الاشتراكات، RBAC، وإدارة البنية الكاملة للمنتجات الرقمية.',
+      },
+      EN: {
+        title: 'System Architecture (SaaS)',
+        description: 'Designing scalable SaaS architectures including multi-tenancy, subscription systems, RBAC, and full product infrastructure.',
+      },
+    },
+  ]);
 
   const skillCategories = await Promise.all(
     skillCategoriesData.map(category =>
@@ -283,81 +276,48 @@ async function main() {
 
   // Create Skills
   console.log('🛠️ Creating skills...');
-  const skillsData = [
-    // Web Development Skills - Arabic
-    { lang: 'AR', name: 'React.js & Next.js', level: 'EXPERT', categoryIndex: 0, order: 0 },
-    { lang: 'AR', name: 'Laravel & PHP', level: 'ADVANCED', categoryIndex: 0, order: 1 },
-    { lang: 'AR', name: 'Node.js & Express', level: 'ADVANCED', categoryIndex: 0, order: 2 },
-    { lang: 'AR', name: 'TypeScript', level: 'ADVANCED', categoryIndex: 0, order: 3 },
-    { lang: 'AR', name: 'Tailwind CSS', level: 'EXPERT', categoryIndex: 0, order: 4 },
-    { lang: 'AR', name: 'REST & GraphQL APIs', level: 'ADVANCED', categoryIndex: 0, order: 5 },
+  const skillsData = createLocalizedRows([
+    // Frontend
+    { categoryIndex: 0, level: 'EXPERT', order: 0, AR: { name: 'React.js & Next.js' }, EN: { name: 'React.js & Next.js' } },
+    { categoryIndex: 0, level: 'EXPERT', order: 1, AR: { name: 'Tailwind CSS' }, EN: { name: 'Tailwind CSS' } },
+    { categoryIndex: 0, level: 'ADVANCED', order: 2, AR: { name: 'TypeScript' }, EN: { name: 'TypeScript' } },
+    { categoryIndex: 0, level: 'ADVANCED', order: 3, AR: { name: 'UI Architecture & Component Design' }, EN: { name: 'UI Architecture & Component Design' } },
 
-    // Mobile Development Skills - Arabic
-    { lang: 'AR', name: 'Flutter & Dart', level: 'ADVANCED', categoryIndex: 1, order: 0 },
-    { lang: 'AR', name: 'React Native', level: 'INTERMEDIATE', categoryIndex: 1, order: 1 },
-    { lang: 'AR', name: 'iOS & Android Native', level: 'INTERMEDIATE', categoryIndex: 1, order: 2 },
-    { lang: 'AR', name: 'Firebase Integration', level: 'ADVANCED', categoryIndex: 1, order: 3 },
+    // Backend
+    { categoryIndex: 1, level: 'EXPERT', order: 0, AR: { name: 'Node.js & Express' }, EN: { name: 'Node.js & Express' } },
+    { categoryIndex: 1, level: 'ADVANCED', order: 1, AR: { name: 'REST API Design' }, EN: { name: 'REST API Design' } },
+    { categoryIndex: 1, level: 'ADVANCED', order: 2, AR: { name: 'GraphQL APIs' }, EN: { name: 'GraphQL APIs' } },
+    { categoryIndex: 1, level: 'ADVANCED', order: 3, AR: { name: 'Laravel & PHP ' }, EN: { name: 'Laravel & PHP' } },
 
-    // DevOps Skills - Arabic
-    { lang: 'AR', name: 'AWS & Azure', level: 'ADVANCED', categoryIndex: 2, order: 0 },
-    { lang: 'AR', name: 'Docker & Kubernetes', level: 'ADVANCED', categoryIndex: 2, order: 1 },
-    { lang: 'AR', name: 'CI/CD Pipelines', level: 'ADVANCED', categoryIndex: 2, order: 2 },
-    { lang: 'AR', name: 'Linux Administration', level: 'ADVANCED', categoryIndex: 2, order: 3 },
+    // Databases
+    { categoryIndex: 2, level: 'EXPERT', order: 0, AR: { name: 'PostgreSQL & MySQL' }, EN: { name: 'PostgreSQL & MySQL' } },
+    { categoryIndex: 2, level: 'ADVANCED', order: 1, AR: { name: 'Prisma ORM' }, EN: { name: 'Prisma ORM' } },
+    { categoryIndex: 2, level: 'ADVANCED', order: 2, AR: { name: 'MongoDB' }, EN: { name: 'MongoDB' } },
+    { categoryIndex: 2, level: 'INTERMEDIATE', order: 3, AR: { name: 'Redis Caching' }, EN: { name: 'Redis Caching' } },
+    { categoryIndex: 2, level: 'EXPERT', order: 4, AR: { name: 'Database Design & Schema Modeling' }, EN: { name: 'Database Design & Schema Modeling' } },
 
-    // AI Skills - Arabic
-    { lang: 'AR', name: 'Python & TensorFlow', level: 'ADVANCED', categoryIndex: 3, order: 0 },
-    { lang: 'AR', name: 'Natural Language Processing', level: 'INTERMEDIATE', categoryIndex: 3, order: 1 },
-    { lang: 'AR', name: 'Computer Vision', level: 'INTERMEDIATE', categoryIndex: 3, order: 2 },
-    { lang: 'AR', name: 'Machine Learning', level: 'ADVANCED', categoryIndex: 3, order: 3 },
+    // DevOps & Deployment
+    { categoryIndex: 3, level: 'ADVANCED', order: 0, AR: { name: 'Vercel Deployment & Serverless' }, EN: { name: 'Vercel Deployment & Serverless' } },
+    { categoryIndex: 3, level: 'INTERMEDIATE', order: 1, AR: { name: 'Docker' }, EN: { name: 'Docker' } },
+    { categoryIndex: 3, level: 'ADVANCED', order: 2, AR: { name: 'Linux & VPS Administration' }, EN: { name: 'Linux & VPS Administration' } },
+    { categoryIndex: 3, level: 'ADVANCED', order: 3, AR: { name: 'CI/CD Pipelines' }, EN: { name: 'CI/CD Pipelines' } },
 
-    // Database Skills - Arabic
-    { lang: 'AR', name: 'MySQL & PostgreSQL', level: 'EXPERT', categoryIndex: 4, order: 0 },
-    { lang: 'AR', name: 'MongoDB & Redis', level: 'ADVANCED', categoryIndex: 4, order: 1 },
-    { lang: 'AR', name: 'Database Design', level: 'EXPERT', categoryIndex: 4, order: 2 },
-    { lang: 'AR', name: 'Query Optimization', level: 'ADVANCED', categoryIndex: 4, order: 3 },
-
-    // Web Development Skills - English
-    { lang: 'EN', name: 'React.js & Next.js', level: 'EXPERT', categoryIndex: 5, order: 0 },
-    { lang: 'EN', name: 'Laravel & PHP', level: 'ADVANCED', categoryIndex: 5, order: 1 },
-    { lang: 'EN', name: 'Node.js & Express', level: 'ADVANCED', categoryIndex: 5, order: 2 },
-    { lang: 'EN', name: 'TypeScript', level: 'ADVANCED', categoryIndex: 5, order: 3 },
-    { lang: 'EN', name: 'Tailwind CSS', level: 'EXPERT', categoryIndex: 5, order: 4 },
-    { lang: 'EN', name: 'REST & GraphQL APIs', level: 'ADVANCED', categoryIndex: 5, order: 5 },
-
-    // Mobile Development Skills - English
-    { lang: 'EN', name: 'Flutter & Dart', level: 'ADVANCED', categoryIndex: 6, order: 0 },
-    { lang: 'EN', name: 'React Native', level: 'INTERMEDIATE', categoryIndex: 6, order: 1 },
-    { lang: 'EN', name: 'iOS & Android Native', level: 'INTERMEDIATE', categoryIndex: 6, order: 2 },
-    { lang: 'EN', name: 'Firebase Integration', level: 'ADVANCED', categoryIndex: 6, order: 3 },
-
-    // DevOps Skills - English
-    { lang: 'EN', name: 'AWS & Azure', level: 'ADVANCED', categoryIndex: 7, order: 0 },
-    { lang: 'EN', name: 'Docker & Kubernetes', level: 'ADVANCED', categoryIndex: 7, order: 1 },
-    { lang: 'EN', name: 'CI/CD Pipelines', level: 'ADVANCED', categoryIndex: 7, order: 2 },
-    { lang: 'EN', name: 'Linux Administration', level: 'ADVANCED', categoryIndex: 7, order: 3 },
-
-    // AI Skills - English
-    { lang: 'EN', name: 'Python & TensorFlow', level: 'ADVANCED', categoryIndex: 8, order: 0 },
-    { lang: 'EN', name: 'Natural Language Processing', level: 'INTERMEDIATE', categoryIndex: 8, order: 1 },
-    { lang: 'EN', name: 'Computer Vision', level: 'INTERMEDIATE', categoryIndex: 8, order: 2 },
-    { lang: 'EN', name: 'Machine Learning', level: 'ADVANCED', categoryIndex: 8, order: 3 },
-
-    // Database Skills - English
-    { lang: 'EN', name: 'MySQL & PostgreSQL', level: 'EXPERT', categoryIndex: 9, order: 0 },
-    { lang: 'EN', name: 'MongoDB & Redis', level: 'ADVANCED', categoryIndex: 9, order: 1 },
-    { lang: 'EN', name: 'Database Design', level: 'EXPERT', categoryIndex: 9, order: 2 },
-    { lang: 'EN', name: 'Query Optimization', level: 'ADVANCED', categoryIndex: 9, order: 3 }
-  ];
+    // System Design & Architecture
+    { categoryIndex: 4, level: 'ADVANCED', order: 0, AR: { name: 'SaaS Architecture Design' }, EN: { name: 'SaaS Architecture Design' } },
+    { categoryIndex: 4, level: 'ADVANCED', order: 1, AR: { name: 'Admin Dashboards & RBAC Systems' }, EN: { name: 'Admin Dashboards & RBAC Systems' } },
+    { categoryIndex: 4, level: 'ADVANCED', order: 2, AR: { name: 'Subscription & Billing Systems' }, EN: { name: 'Subscription & Billing Systems' } },
+    { categoryIndex: 4, level: 'ADVANCED', order: 3, AR: { name: 'System Performance & Optimization' }, EN: { name: 'System Performance & Optimization' } },
+  ]);
 
   await Promise.all(
     skillsData.map(skill =>
       prisma.skill.create({
         data: {
-          lang: skill.lang as 'AR' | 'EN',
+          lang: skill.lang,
           name: skill.name,
           level: skill.level as any,
           order: skill.order,
-          skillCategoryId: skillCategories[skill.categoryIndex].id
+          skillCategoryId: skillCategories[skill.categoryIndex].id,
         }
       })
     )
@@ -365,247 +325,424 @@ async function main() {
 
   // Create Projects
   console.log('🚀 Creating projects...');
-  const projectsData = [
-    // Arabic Projects
+  const projectsData = createLocalizedRows([
     {
-      lang: 'AR' as const,
-      title: 'منصة Webnest الشاملة',
-      description: 'موقع شركة متقدم يقدم خدمات تطوير الويب والتطبيقات مع نظام إدارة محتوى متطور ولوحة تحكم شاملة للعملاء والمشاريع.',
-      longDescription: 'منصة شاملة تضم موقع الشركة، نظام CRM متطور، لوحة تحكم للمشاريع، وسائل الدفع المتعددة، وتقارير تفصيلية. المنصة تدعم عدة لغات ومحسنة للسيو.',
-      status: 'COMPLETED' as const,
-      category: 'web',
-      projectUrl: 'https://webnest.com.eg',
-      githubUrl: 'https://github.com/mostafa/webnest',
-      duration: '4 أشهر',
-      teamSize: '3 مطورين',
-      technologies: ['React', 'Next.js', 'TypeScript', 'Tailwind', 'Laravel API'],
-      features: ['نظام إدارة محتوى', 'متعدد اللغات', 'محسن للسيو', 'لوحة تحكم شاملة'],
-      order: 0,
-      isFeatured: true
-    },
-    {
-      lang: 'AR' as const,
-      title: 'نظام ChatBot AI المتطور',
-      description: 'chatbot ذكي للشركات مع معالجة اللغة الطبيعية، تعلم آلي، ودمج مع أنظمة CRM لخدمة عملاء متفوقة على مدار الساعة.',
-      longDescription: 'نظام ذكاء اصطناعي متقدم يدعم المحادثات باللغة العربية والإنجليزية، مع قدرات تعلم مستمر وتحليل للمشاعر، ودمج مع أنظمة الشركة المختلفة.',
-      status: 'COMPLETED' as const,
-      category: 'ai',
-      projectUrl: 'https://demo.chatbot-ai.com',
-      githubUrl: 'https://github.com/mostafa/ai-chatbot',
-      duration: '6 أشهر',
-      teamSize: '2 مطورين',
-      technologies: ['Python', 'TensorFlow', 'NLP', 'FastAPI', 'Redis'],
-      features: ['معالجة اللغة الطبيعية', 'تعلم آلي', 'دعم متعدد اللغات', 'تحليل المشاعر'],
-      order: 1,
-      isFeatured: true
-    },
-    {
-      lang: 'AR' as const,
-      title: 'منصة الزراعة الذكية',
-      description: 'نظام متكامل لمراقبة المحاصيل باستخدام طائرة DJI Mavic 3M مع معالجة الصور بالذكاء الاصطناعي وتحليل البيانات الزراعية.',
-      longDescription: 'منصة شاملة تجمع بين تقنيات الطائرات المسيرة والذكاء الاصطناعي لمراقبة المحاصيل، تحليل التربة، كشف الآفات، وتوفير توصيات زراعية مخصصة للمزارعين.',
-      status: 'COMPLETED' as const,
-      category: 'iot',
-      projectUrl: 'https://smart-agriculture.com',
-      githubUrl: 'https://github.com/mostafa/smart-agriculture',
-      duration: '8 أشهر',
-      teamSize: '4 مطورين',
-      technologies: ['Python', 'OpenCV', 'Machine Learning', 'IoT', 'React Dashboard'],
-      features: ['تحليل الصور الجوية', 'كشف الآفات', 'تحليل التربة', 'تقارير مفصلة'],
-      order: 2,
-      isFeatured: false
-    },
-    {
-      lang: 'AR' as const,
-      title: 'تطبيق EcoLife Mobile',
-      description: 'تطبيق Flutter متعدد المنصات للحياة الصحية والبيئية مع تتبع الأنشطة، نصائح بيئية، ونظام مكافآت تفاعلي.',
-      longDescription: 'تطبيق شامل يساعد المستخدمين على تبني نمط حياة صحي وصديق للبيئة، مع ميزات تتبع الأنشطة، حساب البصمة الكربونية، ومجتمع تفاعلي للمستخدمين.',
-      status: 'COMPLETED' as const,
-      category: 'mobile',
-      projectUrl: 'https://apps.apple.com/ecolife',
-      githubUrl: 'https://github.com/mostafa/ecolife-app',
-      duration: '5 أشهر',
-      teamSize: '2 مطورين',
-      technologies: ['Flutter', 'Dart', 'Firebase', 'Google Maps API', 'Push Notifications'],
-      features: ['تتبع الأنشطة', 'حساب البصمة الكربونية', 'نظام مكافآت', 'مجتمع تفاعلي'],
-      order: 3,
-      isFeatured: true
+      status: "COMPLETED",
+      category: "web",
+      projectUrl: "https://resume4-ebon.vercel.app/",
+      githubUrl: null,
+      order: 7,
+      isFeatured: false,
+      image: "https://mustafa-gamal.vercel.app/api/files/cmfb0w0rm0000l504duwti1ud",
+      AR: {
+        title: "Resume4me",
+        description:
+          "تصميم وتطوير صفحة هبوط حديثة لموقع سيرة ذاتية مع تحسين تجربة المستخدم والشكل البصري.",
+        longDescription:
+          "تم تصميم وتطوير صفحة هبوط حديثة باستخدام تقنيات Front-end متقدمة، مع تحسين الألوان، إضافة شعار بسيط، تحسين الخطوط، وتعديل الأزرار والـ footer. الهدف كان واجهة نظيفة ومركزة على التحويل تعمل على جميع الأجهزة.",
+        duration: "2 أيام",
+        teamSize: "فردي",
+        technologies: ["React.js", "Tailwind CSS", "Framer"],
+        features: [
+          "تصميم متجاوب لكل الأجهزة",
+          "ألوان احترافية حديثة",
+          "واجهة مركزة على التحويل",
+          "Footer بتصميم حديث",
+        ],
+      },
+      EN: {
+        title: "Resume4me",
+        description:
+          "Design and development of a modern responsive landing page for a resume website with improved UX and visuals.",
+        longDescription:
+          "A modern landing page built using advanced frontend technologies. Improvements included color palette updates, logo design, typography enhancement, and UI refinements focused on conversion and responsiveness.",
+        duration: "2 days",
+        teamSize: "Individual",
+        technologies: ["React.js", "Tailwind CSS", "Framer"],
+        features: [
+          "Responsive design for all devices",
+          "Modern professional color scheme",
+          "Conversion-focused UI",
+          "Modern footer redesign",
+        ],
+      },
     },
 
-    // English Projects
     {
-      lang: 'EN' as const,
-      title: 'Webnest Comprehensive Platform',
-      description: 'Advanced company website providing web and application development services with sophisticated content management system and comprehensive dashboard for clients and projects.',
-      longDescription: 'Comprehensive platform including company website, advanced CRM system, project control dashboard, multiple payment methods, and detailed reports. The platform supports multiple languages and is SEO optimized.',
-      status: 'COMPLETED' as const,
-      category: 'web',
-      projectUrl: 'https://webnest.com.eg',
-      githubUrl: 'https://github.com/mostafa/webnest',
-      duration: '4 months',
-      teamSize: '3 developers',
-      technologies: ['React', 'Next.js', 'TypeScript', 'Tailwind', 'Laravel API'],
-      features: ['Content Management System', 'Multi-language', 'SEO Optimized', 'Comprehensive Dashboard'],
-      order: 0,
-      isFeatured: true
+      status: "COMPLETED",
+      category: "web",
+      projectUrl: "https://americanhouseonline.com",
+      githubUrl: null,
+      order: 6,
+      isFeatured: true,
+      image: "https://mustafa-gamal.vercel.app/api/files/cmfazq55f0002unesrf4iewfr",
+      AR: {
+        title: "American House",
+        description:
+          "منصة تعليم إنجليزي أونلاين لحجز الدروس، عرض المدرسين، ولوحة تحكم مع شات مباشر.",
+        longDescription:
+          "منصة تعليم حديثة تحتوي على نظام حجز دروس، بروفايلات للمدرسين، داشبورد للطلاب والمدرسين، ودعم مباشر. خلال أسبوعين تم تسجيل أكثر من 100 حجز بنسبة رضا 95%.",
+        duration: "3 شهور",
+        teamSize: "مطورين 2",
+        technologies: ["React", "Tailwind", "Nest.js", "Prisma"],
+        features: [
+          "نظام حجز الدروس",
+          "بروفايلات المدرسين",
+          "لوحات تحكم",
+          "شات مباشر",
+        ],
+      },
+      EN: {
+        title: "American House",
+        description:
+          "Online English learning platform for booking lessons, teacher profiles, and interactive dashboards with live chat.",
+        longDescription:
+          "A modern education platform featuring lesson booking, teacher profiles, dashboards, and live chat. It achieved 100+ bookings within two weeks with 95% satisfaction.",
+        duration: "3 months",
+        teamSize: "2 developers",
+        technologies: ["React", "Tailwind", "Nest.js", "Prisma"],
+        features: [
+          "Lesson booking system",
+          "Teacher profiles",
+          "Student dashboards",
+          "Live chat support",
+        ],
+      },
     },
+
     {
-      lang: 'EN' as const,
-      title: 'Advanced ChatBot AI System',
-      description: 'Smart chatbot for businesses with natural language processing, machine learning, and CRM integration for superior 24/7 customer service.',
-      longDescription: 'Advanced AI system supporting conversations in Arabic and English, with continuous learning capabilities and sentiment analysis, integrated with various company systems.',
-      status: 'COMPLETED' as const,
-      category: 'ai',
-      projectUrl: 'https://demo.chatbot-ai.com',
-      githubUrl: 'https://github.com/mostafa/ai-chatbot',
-      duration: '6 months',
-      teamSize: '2 developers',
-      technologies: ['Python', 'TensorFlow', 'NLP', 'FastAPI', 'Redis'],
-      features: ['Natural Language Processing', 'Machine Learning', 'Multi-language Support', 'Sentiment Analysis'],
-      order: 1,
-      isFeatured: true
+      status: "COMPLETED",
+      category: "web",
+      projectUrl: "https://router-plus.com",
+      githubUrl: null,
+      order: 5,
+      isFeatured: true,
+      image: "https://mustafa-gamal.vercel.app/api/files/cmfb07lqt0003unesyhq8avcs",
+      AR: {
+        title: "Router+",
+        description:
+          "نظام إدارة إنترنت بالكروت (Vouchers) مع تحكم في الوقت والسرعة وإحصائيات استخدام.",
+        longDescription:
+          "نظام لإدارة الإنترنت عبر أكواد مخصصة مع تحكم كامل في الوقت والسرعة لكل مستخدم، وتتبع دقيق للاستخدام. النظام أثبت استقراره مع أكثر من 1000 كارت أسبوعياً بدون توقف.",
+        duration: "11 شهر",
+        teamSize: "مطورين 2",
+        technologies: ["React", "Tailwind", "PHP", "Node.js"],
+        features: [
+          "إدارة كروت الإنترنت",
+          "تحكم في السرعة والوقت",
+          "تقارير استخدام",
+          "داشبورد بسيط",
+        ],
+      },
+      EN: {
+        title: "Router+",
+        description:
+          "Internet voucher management system with control over time, speed, and usage analytics.",
+        longDescription:
+          "A smart ISP system for managing internet vouchers with speed/time control and detailed usage tracking. It handled 1000+ vouchers weekly with high stability.",
+        duration: "11 months",
+        teamSize: "2 developers",
+        technologies: ["React", "Tailwind", "PHP", "Node.js"],
+        features: [
+          "Voucher management",
+          "Speed/time control",
+          "Usage analytics",
+          "Admin dashboard",
+        ],
+      },
     },
+
     {
-      lang: 'EN' as const,
-      title: 'Smart Agriculture Platform',
-      description: 'Integrated system for crop monitoring using DJI Mavic 3M drone with AI image processing and agricultural data analysis.',
-      longDescription: 'Comprehensive platform combining drone technology and artificial intelligence for crop monitoring, soil analysis, pest detection, and providing customized agricultural recommendations for farmers.',
-      status: 'COMPLETED' as const,
-      category: 'iot',
-      projectUrl: 'https://smart-agriculture.com',
-      githubUrl: 'https://github.com/mostafa/smart-agriculture',
-      duration: '8 months',
-      teamSize: '4 developers',
-      technologies: ['Python', 'OpenCV', 'Machine Learning', 'IoT', 'React Dashboard'],
-      features: ['Aerial Image Analysis', 'Pest Detection', 'Soil Analysis', 'Detailed Reports'],
+      status: "COMPLETED",
+      category: "web",
+      projectUrl: "https://we-school.vercel.app",
+      githubUrl: null,
       order: 2,
-      isFeatured: false
+      isFeatured: false,
+      image: "https://mustafa-gamal.vercel.app/api/files/cmfb0q0si0003lb04vy5sfvqw",
+      AR: {
+        title: "We-School",
+        description:
+          "منصة تعليم تفاعلية باستخدام MERN مع دعم لغات ووضع داكن وتجربة مستخدم حديثة.",
+        longDescription:
+          "منصة تعليم حديثة مبنية بـ MERN و Tailwind تدعم تعدد اللغات والوضع الداكن والتسجيل بالبريد. تحتوي على أكثر من 500 منشور و200 مستخدم نشط.",
+        duration: "شهرين",
+        teamSize: "مطورين 2",
+        technologies: ["React.js", "Express.js", "Tailwind CSS", "MongoDB"],
+        features: [
+          "دعم لغات متعددة",
+          "Dark/Light mode",
+          "تسجيل بالبريد",
+          "نظام مستخدمين تفاعلي",
+        ],
+      },
+      EN: {
+        title: "We-School",
+        description:
+          "Interactive learning platform built with MERN and Tailwind with multi-language and modern UX.",
+        longDescription:
+          "A modern learning platform using MERN stack with multi-language support, dark mode, and email verification. It reached 200+ active users and 500+ posts.",
+        duration: "2 months",
+        teamSize: "2 developers",
+        technologies: ["React.js", "Express.js", "Tailwind CSS", "MongoDB"],
+        features: [
+          "Multi-language support",
+          "Dark/Light mode",
+          "Email verification",
+          "Interactive content system",
+        ],
+      },
     },
     {
-      lang: 'EN' as const,
-      title: 'EcoLife Mobile App',
-      description: 'Cross-platform Flutter app for healthy and environmental living with activity tracking, environmental tips, and interactive rewards system.',
-      longDescription: 'Comprehensive app helping users adopt a healthy and eco-friendly lifestyle, with features for activity tracking, carbon footprint calculation, and interactive user community.',
-      status: 'COMPLETED' as const,
-      category: 'mobile',
-      projectUrl: 'https://apps.apple.com/ecolife',
-      githubUrl: 'https://github.com/mostafa/ecolife-app',
-      duration: '5 months',
-      teamSize: '2 developers',
-      technologies: ['Flutter', 'Dart', 'Firebase', 'Google Maps API', 'Push Notifications'],
-      features: ['Activity Tracking', 'Carbon Footprint Calculation', 'Rewards System', 'Interactive Community'],
+      status: "COMPLETED",
+      category: "web",
+      projectUrl: "https://solar.guessitt.com",
+      demoUrl: "https://gomaacompany.vercel.app/",
+      githubUrl: null,
+      order: 4,
+      isFeatured: false,
+      image: "https://mustafa-gamal.vercel.app/api/files/cmfb0ik940000lb04ptn9c7id",
+      AR: {
+        title: "Gomaa Company - حلول الطاقة المتجددة",
+        description:
+          "منصة رقمية لشركة متخصصة في حلول الطاقة الشمسية وطاقة الرياح والطاقة الهجينة.",
+        longDescription:
+          "منصة تعرض خدمات الشركة في مجال الطاقة المتجددة مثل الطاقة الشمسية وطاقة الرياح والحلول الهجينة، مع واجهة تفاعلية تساعد العملاء على اختيار الأنسب لهم، ودعم التحول للطاقة النظيفة.",
+        duration: "شهر",
+        teamSize: "فردي",
+        technologies: ["React.js", "Tailwind CSS", "Animate CSS"],
+        features: [
+          "عرض أنظمة الطاقة الشمسية",
+          "تصميم متجاوب",
+          "تحسين تجربة المستخدم",
+          "سرعة تصفح عالية",
+        ],
+      },
+      EN: {
+        title: "Gomaa Company - Renewable Energy Solutions",
+        description:
+          "A digital platform for a company specialized in solar, wind, and hybrid energy systems.",
+        longDescription:
+          "A platform showcasing renewable energy solutions including solar, wind, and hybrid systems with an interactive interface helping clients choose the best solution and promoting clean energy transition.",
+        duration: "1 month",
+        teamSize: "Individual",
+        technologies: ["React.js", "Tailwind CSS", "Animate CSS"],
+        features: [
+          "Solar systems showcase",
+          "Responsive design",
+          "Improved UX",
+          "Fast performance",
+        ],
+      },
+    },
+
+    {
+      status: "COMPLETED",
+      category: "web",
+      projectUrl: "https://jawharat-alhejaz.vercel.app",
+      demoUrl: null,
+      githubUrl: null,
       order: 3,
-      isFeatured: true
-    }
-  ];
+      isFeatured: false,
+      image: "https://mustafa-gamal.vercel.app/api/files/cmfb1gbal0000la04rl2ijzep",
+      AR: {
+        title: "جوهرة الحجاز - شركة تجارية",
+        description:
+          "موقع لشركة سعودية متخصصة في تصميم المطابخ وغرف الملابس والديكور الداخلي.",
+        longDescription:
+          "شركة تأسست عام 2011 تقدم حلول تصميم داخلي فاخرة للمطابخ وغرف الملابس والديكور. الموقع يعرض أكثر من 250 مشروع مع إبراز الهوية السعودية في التصميم.",
+        duration: "15 يوم",
+        teamSize: "فردي",
+        technologies: ["React.js", "Tailwind CSS"],
+        features: [
+          "عرض خدمات التصميم الداخلي",
+          "عرض المشاريع",
+          "آراء العملاء",
+          "تصميم متجاوب",
+        ],
+      },
+      EN: {
+        title: "Jawharat Al-Hejaz - Trading Company",
+        description:
+          "A Saudi company website specializing in kitchens, dressing rooms, and interior design solutions.",
+        longDescription:
+          "Founded in 2011, the company delivers luxury interior design solutions. The website showcases 250+ projects and highlights Saudi-inspired branding combining tradition and modern design.",
+        duration: "15 days",
+        teamSize: "Individual",
+        technologies: ["React.js", "Tailwind CSS"],
+        features: [
+          "Interior services showcase",
+          "Projects gallery",
+          "Client testimonials",
+          "Responsive UI",
+        ],
+      },
+    },
+
+    {
+      status: "COMPLETED",
+      category: "web",
+      projectUrl: "https://max-llc.vercel.app/",
+      demoUrl: null,
+      githubUrl: null,
+      order: 1,
+      isFeatured: false,
+      image: "https://mustafa-gamal.vercel.app/api/files/cmfb1igat0000la042g1hg1j5",
+      AR: {
+        title: "Max LLC - أنظمة كاميرات المراقبة",
+        description:
+          "موقع لشركة إماراتية متخصصة في تركيب أنظمة المراقبة والكاميرات الأمنية.",
+        longDescription:
+          "موقع تعريفي لشركة متخصصة في أنظمة الأمن والمراقبة، يعرض خدمات تركيب الكاميرات وحلول الأمان الحديثة للشركات والمنازل.",
+        duration: "3 أيام",
+        teamSize: "فردي",
+        technologies: ["React.js", "Tailwind CSS"],
+        features: [
+          "عرض خدمات المراقبة",
+          "تصميم سريع وبسيط",
+          "متجاوب مع جميع الأجهزة",
+        ],
+      },
+      EN: {
+        title: "Max LLC - Security Camera Systems",
+        description:
+          "A UAE-based company website specializing in security camera installation and surveillance systems.",
+        longDescription:
+          "A corporate website for a security systems company showcasing camera installation services and modern surveillance solutions for homes and businesses.",
+        duration: "3 days",
+        teamSize: "Individual",
+        technologies: ["React.js", "Tailwind CSS"],
+        features: [
+          "Security services showcase",
+          "Simple fast UI",
+          "Fully responsive design",
+        ],
+      },
+    },
+
+    {
+      status: "COMPLETED",
+      category: "web",
+      projectUrl: "https://zaman-web.vercel.app",
+      demoUrl: null,
+      githubUrl: null,
+      order: 1,
+      isFeatured: false,
+      image: "https://mustafa-gamal.vercel.app/api/files/cmfdwk8xb0000jj048cqk2l42",
+      AR: {
+        title: "Zaman - منصة عقارات",
+        description:
+          "منصة سعودية لبيع وشراء وتأجير العقارات مع دعم المزادات والعروض العقارية.",
+        longDescription:
+          "منصة عقارية سعودية مرخصة تربط بين البائعين والمشترين، وتدعم العقارات السكنية والاستثمارية والمزادات، مع تجربة استخدام سهلة وسريعة.",
+        duration: "أسبوعين",
+        teamSize: "مطورين 2",
+        technologies: ["HTML", "CSS", "JavaScript"],
+        features: [
+          "مزادات عقارية",
+          "بحث عن العقارات",
+          "إضافة عقار للبيع أو الإيجار",
+          "تواصل مباشر مع الوسطاء",
+        ],
+      },
+      EN: {
+        title: "Zaman - Real Estate Platform",
+        description:
+          "A Saudi real estate platform for buying, selling, and renting properties with auctions support.",
+        longDescription:
+          "A licensed Saudi real estate platform connecting buyers and sellers, offering listings, auctions, and property management features with a simple user experience.",
+        duration: "2 weeks",
+        teamSize: "2 developers",
+        technologies: ["HTML", "CSS", "JavaScript"],
+        features: [
+          "Real estate auctions",
+          "Property search",
+          "Add listings for sale/rent",
+          "Agent communication",
+        ],
+      },
+    },
+  ]);
 
   await prisma.project.createMany({
-    data: projectsData
+    data: projectsData as any
   });
 
   // Create Achievements
   console.log('🏆 Creating achievements...');
-  const achievementsData = [
-    // Arabic
+  const achievementsData = createLocalizedRows([
     {
-      lang: 'AR' as const,
-      title: '+20 مشروع',
-      subtitle: 'مشروع مكتمل',
-      description: 'مشاريع متنوعة من مواقع الويب إلى تطبيقات الموبايل',
       value: '+20',
-      order: 0
+      order: 0,
+      AR: {
+        title: '+20 مشروع',
+        subtitle: 'مشروع مكتمل',
+        description: 'مشاريع متنوعة من مواقع الويب إلى تطبيقات الموبايل',
+      },
+      EN: {
+        title: '+20 Projects',
+        subtitle: 'Completed projects',
+        description: 'Diverse projects from websites to mobile applications',
+      },
     },
     {
-      lang: 'AR' as const,
-      title: '+15 عميل سعيد',
-      subtitle: 'عميل راضي',
-      description: 'عملاء من مختلف القطاعات حققوا أهدافهم معنا',
       value: '+15',
-      order: 1
+      order: 1,
+      AR: {
+        title: '+15 عميل سعيد',
+        subtitle: 'عميل راضي',
+        description: 'عملاء من مختلف القطاعات حققوا أهدافهم معنا',
+      },
+      EN: {
+        title: '+15 Happy Clients',
+        subtitle: 'Satisfied clients',
+        description: 'Clients from various sectors achieved their goals with us',
+      },
     },
     {
-      lang: 'AR' as const,
-      title: '+5 سنوات خبرة',
-      subtitle: 'في المجال',
-      description: 'خبرة متراكمة في تقنيات البرمجة الحديثة',
       value: '+5',
-      order: 2
+      order: 2,
+      AR: {
+        title: '+5 سنوات خبرة',
+        subtitle: 'في المجال',
+        description: 'خبرة متراكمة في تقنيات البرمجة الحديثة',
+      },
+      EN: {
+        title: '+5 Years Experience',
+        subtitle: 'In the field',
+        description: 'Accumulated experience in modern programming technologies',
+      },
     },
     {
-      lang: 'AR' as const,
-      title: '3 منتجات مبتكرة',
-      subtitle: 'حلول فريدة',
-      description: 'أنظمة ذكية ومتطورة تلبي احتياجات السوق',
-      value: '3',
-      order: 3
+      value: 'Top Rated',
+      order: 3,
+      AR: {
+        title: 'Top Rated على Upwork',
+        subtitle: 'تصنيف احترافي',
+        description: 'تصنيف يعكس جودة التنفيذ، الالتزام، والتواصل الاحترافي مع العملاء.',
+      },
+      EN: {
+        title: 'Top Rated on Upwork',
+        subtitle: 'Professional badge',
+        description: 'Recognition for consistent delivery quality, reliability, and professional communication.',
+      },
     },
     {
-      lang: 'AR' as const,
-      title: '98% معدل نجاح',
-      subtitle: 'في المشاريع',
-      description: 'التزام بالجودة والمواعيد المحددة',
       value: '98%',
-      order: 4
-    },
-    {
-      lang: 'AR' as const,
-      title: 'شركة Webnest',
-      subtitle: 'مؤسس الشركة',
-      description: 'شركة متخصصة في حلول الويب والتطبيقات الذكية',
-      value: '2024',
-      order: 5
+      order: 4,
+      AR: {
+        title: '98% معدل نجاح',
+        subtitle: 'في المشاريع',
+        description: 'التزام بالجودة والمواعيد المحددة',
+      },
+      EN: {
+        title: '98% Success Rate',
+        subtitle: 'In projects',
+        description: 'Commitment to quality and specified deadlines',
+      },
     },
 
-    // English
-    {
-      lang: 'EN' as const,
-      title: '+20 Projects',
-      subtitle: 'Completed projects',
-      description: 'Diverse projects from websites to mobile applications',
-      value: '+20',
-      order: 0
-    },
-    {
-      lang: 'EN' as const,
-      title: '+15 Happy Clients',
-      subtitle: 'Satisfied clients',
-      description: 'Clients from various sectors achieved their goals with us',
-      value: '+15',
-      order: 1
-    },
-    {
-      lang: 'EN' as const,
-      title: '+5 Years Experience',
-      subtitle: 'In the field',
-      description: 'Accumulated experience in modern programming technologies',
-      value: '+5',
-      order: 2
-    },
-    {
-      lang: 'EN' as const,
-      title: '3 Innovative Products',
-      subtitle: 'Unique solutions',
-      description: 'Smart and advanced systems meeting market needs',
-      value: '3',
-      order: 3
-    },
-    {
-      lang: 'EN' as const,
-      title: '98% Success Rate',
-      subtitle: 'In projects',
-      description: 'Commitment to quality and specified deadlines',
-      value: '98%',
-      order: 4
-    },
-    {
-      lang: 'EN' as const,
-      title: 'Webnest Company',
-      subtitle: 'Company founder',
-      description: 'Company specialized in web solutions and smart applications',
-      value: '2024',
-      order: 5
-    }
-  ];
+  ]);
 
   await prisma.achievement.createMany({
     data: achievementsData
@@ -613,159 +750,82 @@ async function main() {
 
   // Create Contact Info
   console.log('📞 Creating contact info...');
-  const contactInfoData = [
-    // Arabic
+  const contactInfoData = createLocalizedRows([
     {
-      lang: 'AR' as const,
       type: 'email',
-      label: 'البريد الإلكتروني',
-      value: 'mostafa@webnest.com',
-      link: 'mailto:mostafa@webnest.com',
+      value: 'mustafa.gamal.elsayed@gmail.com',
+      link: 'mailto:mustafa.gamal.elsayed@gmail.com',
       icon: 'Mail',
       order: 0,
-      isPrimary: true
+      isPrimary: true,
+      AR: { label: 'البريد الإلكتروني' },
+      EN: { label: 'Email' },
     },
     {
-      lang: 'AR' as const,
       type: 'phone',
-      label: 'رقم الهاتف',
-      value: '+20 100 123 4567',
-      link: 'tel:+201001234567',
+      value: '+201093273277',
+      link: 'tel:+201093273277',
       icon: 'Phone',
       order: 1,
-      isPrimary: true
+      isPrimary: true,
+      AR: { label: 'رقم الهاتف' },
+      EN: { label: 'Phone' },
     },
     {
-      lang: 'AR' as const,
       type: 'whatsapp',
-      label: 'واتساب',
       value: 'تواصل مباشر',
-      link: 'https://wa.me/201001234567',
+      link: 'https://wa.me/201093273277',
       icon: 'MessageCircle',
       order: 2,
-      isPrimary: false
+      isPrimary: false,
+      AR: { label: 'واتساب' },
+      EN: { label: 'WhatsApp' },
     },
     {
-      lang: 'AR' as const,
       type: 'location',
-      label: 'الموقع',
-      value: 'القاهرة، مصر',
+      value: 'المنصورة، مصر',
       link: '#',
       icon: 'MapPin',
       order: 3,
-      isPrimary: false
+      isPrimary: false,
+      AR: { label: 'الموقع' },
+      EN: { label: 'Location' },
     },
-
-    // English
-    {
-      lang: 'EN' as const,
-      type: 'email',
-      label: 'Email',
-      value: 'mostafa@webnest.com',
-      link: 'mailto:mostafa@webnest.com',
-      icon: 'Mail',
-      order: 0,
-      isPrimary: true
-    },
-    {
-      lang: 'EN' as const,
-      type: 'phone',
-      label: 'Phone',
-      value: '+20 100 123 4567',
-      link: 'tel:+201001234567',
-      icon: 'Phone',
-      order: 1,
-      isPrimary: true
-    },
-    {
-      lang: 'EN' as const,
-      type: 'whatsapp',
-      label: 'WhatsApp',
-      value: 'Direct contact',
-      link: 'https://wa.me/201001234567',
-      icon: 'MessageCircle',
-      order: 2,
-      isPrimary: false
-    },
-    {
-      lang: 'EN' as const,
-      type: 'location',
-      label: 'Location',
-      value: 'Cairo, Egypt',
-      link: '#',
-      icon: 'MapPin',
-      order: 3,
-      isPrimary: false
-    }
-  ];
+  ]);
 
   await prisma.contactInfo.createMany({
-    data: contactInfoData
+    data: contactInfoData as any
   });
 
   // Create Social Links
   console.log('🔗 Creating social links...');
-  const socialLinksData = [
-    // Arabic
+  const socialLinksData = duplicateRows([
     {
-      lang: 'AR' as const,
       name: 'LinkedIn',
-      url: 'https://linkedin.com/in/mostafa-gamal',
+      url: 'https://www.linkedin.com/in/mustafa-gamal-elsayed/',
       icon: 'LinkedIn',
-      order: 0
+      order: 0,
     },
     {
-      lang: 'AR' as const,
       name: 'GitHub',
-      url: 'https://github.com/mostafa-codes',
+      url: 'https://github.com/MustafaGamal8',
       icon: 'GitHub',
-      order: 1
+      order: 1,
     },
     {
-      lang: 'AR' as const,
-      name: 'Twitter',
-      url: 'https://twitter.com/mostafa_codes',
-      icon: 'Twitter',
-      order: 2
-    },
-    {
-      lang: 'AR' as const,
-      name: 'Instagram',
-      url: 'https://instagram.com/mostafa.codes',
-      icon: 'Instagram',
-      order: 3
+      name: 'Facebook',
+      url: 'https://www.facebook.com/profile.php?id=61577139765079',
+      icon: 'Facebook',
+      order: 2,
     },
 
-    // English
     {
-      lang: 'EN' as const,
-      name: 'LinkedIn',
-      url: 'https://linkedin.com/in/mostafa-gamal',
-      icon: 'LinkedIn',
-      order: 0
+      name: 'Upwork',
+      url: 'https://www.upwork.com/freelancers/~01ab6d0e217ab25778',
+      icon: 'Upwork',
+      order: 3,
     },
-    {
-      lang: 'EN' as const,
-      name: 'GitHub',
-      url: 'https://github.com/mostafa-codes',
-      icon: 'GitHub',
-      order: 1
-    },
-    {
-      lang: 'EN' as const,
-      name: 'Twitter',
-      url: 'https://twitter.com/mostafa_codes',
-      icon: 'Twitter',
-      order: 2
-    },
-    {
-      lang: 'EN' as const,
-      name: 'Instagram',
-      url: 'https://instagram.com/mostafa.codes',
-      icon: 'Instagram',
-      order: 3
-    }
-  ];
+  ]);
 
   await prisma.socialLink.createMany({
     data: socialLinksData
@@ -795,7 +855,7 @@ async function main() {
   console.log('- Achievements: 12 records (6 AR, 6 EN)');
   console.log('- Contact Info: 8 records (4 AR, 4 EN)');
   console.log('- Social Links: 8 records (4 AR, 4 EN)');
-  console.log('- Files: 7 records (images)');
+  console.log('- Files: managed separately');
   console.log('- Users: 1 admin user');
   console.log('');
   console.log('🔑 Admin credentials:');

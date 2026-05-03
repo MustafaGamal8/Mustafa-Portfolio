@@ -291,7 +291,7 @@ export const EditFormModal: React.FC = () => {
       }
     }
 
-    await loadCurrentSectionItems();
+    await loadCurrentSectionItems(currentSection.type, true);
     setEditingItem(null);
     setIsModalOpen(false);
     setSelectedImage(null);

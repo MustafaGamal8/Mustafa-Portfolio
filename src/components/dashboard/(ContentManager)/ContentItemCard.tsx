@@ -4,7 +4,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit3, Trash2, Globe } from 'lucide-react';
+import { Edit3, Trash2, Globe, ArrowUp, ArrowDown } from 'lucide-react';
 import { useContentManager } from './ContentManagerContext';
 import * as LucideIcons from 'lucide-react';
 import renderLucideIcon from '@/lib/frontend/utils/renderLucideIcon';
@@ -19,7 +19,9 @@ export const ContentItemCard: React.FC<ContentItemCardProps> = ({ item }) => {
     editLanguage,
     setEditingItem,
     setIsModalOpen,
-    handleDelete
+    handleDelete,
+    moveItemUp,
+    moveItemDown
   } = useContentManager();
 
   const handleEdit = () => {
@@ -121,6 +123,24 @@ export const ContentItemCard: React.FC<ContentItemCardProps> = ({ item }) => {
           </div>
 
           <div className="flex gap-2 ml-4">
+            <div className="flex items-center gap-1 mr-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => moveItemUp(item.id)}
+                title="Move up"
+              >
+                <ArrowUp className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => moveItemDown(item.id)}
+                title="Move down"
+              >
+                <ArrowDown className="h-4 w-4" />
+              </Button>
+            </div>
             <Button
               variant="outline"
               size="sm"

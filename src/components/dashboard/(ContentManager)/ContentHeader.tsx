@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Plus, Languages, LayoutGrid, Type, RefreshCw } from 'lucide-react';
 import { useContentManager } from './ContentManagerContext';
+import { BulkImportModal } from './BulkImportModal';
+import { useState } from 'react';
 
 export const ContentHeader: React.FC = () => {
   const {
@@ -35,6 +37,8 @@ export const ContentHeader: React.FC = () => {
       setIsModalOpen(true);
     }
   };
+
+  const [isBulkOpen, setIsBulkOpen] = useState(false);
 
   return (
     <Card className="overflow-hidden border-slate-200 bg-gradient-to-br from-background via-background to-muted/20 shadow-sm">
@@ -99,6 +103,15 @@ export const ContentHeader: React.FC = () => {
             <Plus className="h-4 w-4" />
             Add New
           </Button>
+
+          {activeSection === 'projects' && (
+            <>
+              <Button onClick={() => setIsBulkOpen(true)} className="gap-2" variant="outline">
+                Bulk Import
+              </Button>
+              <BulkImportModal open={isBulkOpen} onOpenChange={setIsBulkOpen} />
+            </>
+          )}
 
           <Button
             type="button"

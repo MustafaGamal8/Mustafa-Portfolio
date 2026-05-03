@@ -30,6 +30,13 @@ export class ProjectService extends BaseService {
     return this.post<Project>('', data);
   }
 
+  public async bulkCreate(data: { projects: CreateProjectDto[] } | CreateProjectDto[]): Promise<any> {
+    // Accept either { projects: [...] } or raw array
+    const body = Array.isArray(data) ? data : data.projects;
+    const response = await this.api.post('', body);
+    return response.data;
+  }
+
   public async update(data: UpdateProjectDto & { id: string }): Promise<Project> {
     return this.put<Project>('', data);
   }

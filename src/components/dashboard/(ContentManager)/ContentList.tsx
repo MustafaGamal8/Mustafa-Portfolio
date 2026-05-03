@@ -4,7 +4,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRightLeft, Edit3, Languages, Plus, Trash2 } from 'lucide-react';
+import { ArrowRightLeft, Edit3, Languages, Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react';
 import { useContentManager } from './ContentManagerContext';
 import { ContentItemCard } from './ContentItemCard';
 import { getBilingualPairs } from './bilingualContent';
@@ -21,6 +21,8 @@ export const ContentList: React.FC = () => {
     getCurrentSection,
     showBothLanguages,
     handleDelete,
+    moveItemUp,
+    moveItemDown,
   } = useContentManager();
 
   const items = showBothLanguages
@@ -122,6 +124,14 @@ export const ContentList: React.FC = () => {
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <ArrowRightLeft className="h-4 w-4" />
                 Paired bilingual item
+              </div>
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="ghost" onClick={() => pair.EN?.id && moveItemUp(pair.EN.id)}>
+                  <ArrowUp className="h-4 w-4" />
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => pair.EN?.id && moveItemDown(pair.EN.id)}>
+                  <ArrowDown className="h-4 w-4" />
+                </Button>
               </div>
               <h3 className="text-lg font-semibold">
                 {pair.EN?.title || pair.AR?.title || pair.EN?.name || pair.AR?.name || 'Bilingual entry'}

@@ -21,7 +21,16 @@ export class BackendPersonalInfoService extends BackendBaseService<PersonalInfo>
     return await this.model.create({
       data,
       include: {
-        image: true,
+        image: {
+          select: {
+            id: true,
+            name: true,
+            url: true,
+            type: true,
+            size: true,
+            createdAt: true
+          }
+        }
       }
     });
   }
@@ -34,7 +43,12 @@ export class BackendPersonalInfoService extends BackendBaseService<PersonalInfo>
       include: {
         image: {
           select: {
-            url: true
+            id: true,
+            name: true,
+            url: true,
+            type: true,
+            size: true,
+            createdAt: true
           }
         },
 
@@ -65,7 +79,16 @@ export class BackendPersonalInfoService extends BackendBaseService<PersonalInfo>
       where: { id },
       data: updateData,
       include: {
-        image: true,
+        image: {
+          select: {
+            id: true,
+            name: true,
+            url: true,
+            type: true,
+            size: true,
+            createdAt: true
+          }
+        }
       }
     });
   }
@@ -79,7 +102,16 @@ export class BackendPersonalInfoService extends BackendBaseService<PersonalInfo>
     return await this.model.delete({
       where: { id },
       include: {
-        image: true,
+        image: {
+          select: {
+            id: true,
+            name: true,
+            url: true,
+            type: true,
+            size: true,
+            createdAt: true
+          }
+        }
       }
     });
   }

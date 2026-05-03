@@ -224,6 +224,31 @@ export const getBilingualPairs = (
   const seenIds = new Set<string>();
   const pairs: BilingualPair[] = [];
 
+  // Special handling for projects: group by stable match key to avoid duplicates
+  if (sectionType === 'projects') {
+    const map = new Map<string, { EN?: any; AR?: any; order?: number }>();
+
+    const addToMap = (item: any, lang: SupportedLanguage) => {
+      if (!item) return;
+      const key = getProjectMatchKey(item) || item.id || `${lang}-${item.order || 0}`;
+      const entry = map.get(key) || {};
+      entry[lang] = item;
+      entry.order = entry.order ?? item.order ?? 0;
+      map.set(key, entry);
+    };
+
+    englishItems.forEach((it) => addToMap(it, 'EN'));
+    arabicItems.forEach((it) => addToMap(it, 'AR'));
+
+    for (const [key, entry] of map.entries()) {
+      if (entry.EN?.id) seenIds.add(entry.EN.id);
+      if (entry.AR?.id) seenIds.add(entry.AR.id);
+      pairs.push({ key, order: entry.order ?? 0, EN: entry.EN, AR: entry.AR });
+    }
+
+    return pairs.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  }
+
   const addPair = (item: any, language: SupportedLanguage) => {
     if (!item?.id || seenIds.has(item.id)) return;
 
@@ -236,8 +261,11 @@ export const getBilingualPairs = (
 
     const projectMatchKey = sectionType === 'projects' ? getProjectMatchKey(englishItem || arabicItem || item) : '';
 
+    const key = projectMatchKey || englishItem?.id || arabicItem?.id || `${language}-${item.order || 0}`;
+    if (pairs.find(p => p.key === key)) return; // defensive: avoid duplicate keys
+
     pairs.push({
-      key: projectMatchKey || englishItem?.id || arabicItem?.id || `${language}-${item.order || 0}`,
+      key,
       order: englishItem?.order ?? arabicItem?.order ?? item.order ?? 0,
       EN: englishItem,
       AR: arabicItem

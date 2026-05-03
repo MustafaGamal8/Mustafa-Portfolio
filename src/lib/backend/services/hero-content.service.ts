@@ -88,11 +88,21 @@ export class BackendHeroContentService extends BackendBaseService<HeroContent> {
         profileImage: {
           select: {
             id: true,
+            name: true,
+            url: true,
+            type: true,
+            size: true,
+            createdAt: true
           }
         },
         resume: {
           select: {
             id: true,
+            name: true,
+            url: true,
+            type: true,
+            size: true,
+            createdAt: true
           }
         },
       }
@@ -108,7 +118,16 @@ export class BackendHeroContentService extends BackendBaseService<HeroContent> {
     return await this.model.delete({
       where: { id },
       include: {
-        profileImage: true,
+        profileImage: {
+          select: {
+            id: true,
+            name: true,
+            url: true,
+            type: true,
+            size: true,
+            createdAt: true
+          }
+        }
       }
     });
   }

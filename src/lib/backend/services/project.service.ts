@@ -33,7 +33,12 @@ export class BackendProjectService extends BackendBaseService<Project> {
       include: {
         image: {
           select: {
-            url: true
+            id: true,
+            name: true,
+            url: true,
+            type: true,
+            size: true,
+            createdAt: true
           }
         },
         ...processedOptions.include
@@ -53,7 +58,16 @@ export class BackendProjectService extends BackendBaseService<Project> {
         ...processedOptions.where
       },
       include: {
-        image: true,
+        image: {
+          select: {
+            id: true,
+            name: true,
+            url: true,
+            type: true,
+            size: true,
+            createdAt: true
+          }
+        },
         ...processedOptions.include
       },
       orderBy: { order: 'desc' }
@@ -71,7 +85,16 @@ export class BackendProjectService extends BackendBaseService<Project> {
         ...processedOptions.where
       },
       include: {
-        image: true,
+        image: {
+          select: {
+            id: true,
+            name: true,
+            url: true,
+            type: true,
+            size: true,
+            createdAt: true
+          }
+        },
         ...processedOptions.include
       },
       orderBy: { order: 'desc' }
@@ -97,7 +120,18 @@ export class BackendProjectService extends BackendBaseService<Project> {
     return await this.model.update({
       where: { id },
       data: updateData,
-      include: { image: true }
+      include: {
+        image: {
+          select: {
+            id: true,
+            name: true,
+            url: true,
+            type: true,
+            size: true,
+            createdAt: true
+          }
+        }
+      }
     });
   }
 
@@ -111,7 +145,16 @@ export class BackendProjectService extends BackendBaseService<Project> {
     return await this.model.delete({
       where: { id },
       include: {
-        image: true
+        image: {
+          select: {
+            id: true,
+            name: true,
+            url: true,
+            type: true,
+            size: true,
+            createdAt: true
+          }
+        }
       }
     });
   }
@@ -126,23 +169,42 @@ export class BackendProjectService extends BackendBaseService<Project> {
       where: { id },
       data: { isFeatured: !existing.isFeatured },
       include: {
-        image: true
+        image: {
+          select: {
+            id: true,
+            name: true,
+            url: true,
+            type: true,
+            size: true,
+            createdAt: true
+          }
+        }
       }
     });
   }
 
   // Bulk operations
-  async bulkCreate(data: BulkCreateProjectsDto): Promise<any> {
-    const { projects } = data;
+  async bulkCreate(data: BulkCreateProjectsDto | any[]): Promise<any> {
+    // Accept either { projects: [...] } or raw array
+    const projects = Array.isArray(data) ? data : data?.projects;
+
+    if (!Array.isArray(projects)) {
+      throw ApiError.badRequest('Invalid payload for bulk create', {});
+    }
 
     // Create all projects in a transaction
     const createdProjects = await this.prisma.$transaction(
-      projects.map(project => this.model.create({
+      projects.map((project: any) => this.model.create({
         data: project,
         include: {
           image: {
             select: {
-              url: true
+              id: true,
+              name: true,
+              url: true,
+              type: true,
+              size: true,
+              createdAt: true
             }
           }
         }
@@ -177,7 +239,12 @@ export class BackendProjectService extends BackendBaseService<Project> {
           include: {
             image: {
               select: {
-                url: true
+                id: true,
+                name: true,
+                url: true,
+                type: true,
+                size: true,
+                createdAt: true
               }
             }
           }

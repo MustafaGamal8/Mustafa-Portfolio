@@ -33,6 +33,8 @@ interface ContentManagerContextType extends ContentManagerState, ContentManagerA
   refetchCurrentSection: () => Promise<void>;
   handleSave: (item: any) => Promise<void>;
   handleDelete: (id: string) => Promise<void>;
+  moveItemUp: (id: string) => Promise<void>;
+  moveItemDown: (id: string) => Promise<void>;
   showToast: (toast: { title: string; description: string; variant?: 'default' | 'destructive' }) => void;
 }
 
@@ -332,6 +334,97 @@ export const ContentManagerProvider: React.FC<{
     }
   };
 
+  const swapOrders = async (sectionType: string, lang: 'EN' | 'AR', idA: string, idB: string) => {
+    const section = sections.find(s => s.type === sectionType);
+    if (!section) return;
+
+    const sectionData = contentData[section.dataKey] || { EN: [], AR: [] };
+    // Stable sort by order then id to ensure consistent positions
+    const items = (sectionData[lang] || []).slice().sort((a: any, b: any) => {
+      const oa = a.order ?? 0;
+      const ob = b.order ?? 0;
+      if (oa !== ob) return oa - ob;
+      return (a.id || '').localeCompare(b.id || '');
+    });
+
+    const idxA = items.findIndex((it: any) => it.id === idA);
+    const idxB = items.findIndex((it: any) => it.id === idB);
+    if (idxA === -1 || idxB === -1) return;
+
+    // Reindex all items to sequential 1..N to eliminate duplicates
+    const reindexed = items.map((it: any, idx: number) => ({ ...it, order: idx + 1 }));
+
+    // Swap positions
+    const newReindexed = reindexed.slice();
+    newReindexed[idxA] = { ...reindexed[idxA], order: idxB + 1 };
+    newReindexed[idxB] = { ...reindexed[idxB], order: idxA + 1 };
+
+    // Persist updates for the two swapped items and their paired counterparts in the other language
+    const toUpdate = [newReindexed[idxA], newReindexed[idxB]];
+
+    const updates: Promise<any>[] = [];
+    for (const upd of toUpdate) {
+      updates.push(section.service.update({ id: upd.id, order: upd.order, lang }));
+
+      // sync to paired item in the other language
+      const otherLang: 'EN' | 'AR' = lang === 'EN' ? 'AR' : 'EN';
+      const otherItems = sectionData[otherLang] || [];
+      const paired = findPairedItem(section.type, upd, { [lang]: items, [otherLang]: otherItems });
+      if (paired?.id) {
+        updates.push(section.service.update({ id: paired.id, order: upd.order, lang: otherLang }));
+      }
+    }
+
+    await Promise.all(updates);
+
+    // Update local state with new orders
+    setContentData(prev => {
+      const prevSection = prev[section.dataKey] || { EN: [], AR: [] };
+      const updatedLangItems = (prevSection[lang] || []).map((it: any) => {
+        const found = newReindexed.find((nr: any) => nr.id === it.id);
+        return found ? { ...it, order: found.order } : it;
+      });
+
+      // also update paired items in other language
+      const otherLang: 'EN' | 'AR' = lang === 'EN' ? 'AR' : 'EN';
+      const updatedOtherItems = (prevSection[otherLang] || []).map((it: any) => {
+        const pair = toUpdate.find((t: any) => t.id === (findPairedItem(section.type, it, { [lang]: items, [otherLang]: prevSection[otherLang] })?.id));
+        return pair ? { ...it, order: pair.order } : it;
+      });
+
+      return {
+        ...prev,
+        [section.dataKey]: {
+          ...prevSection,
+          [lang]: updatedLangItems,
+          [otherLang]: updatedOtherItems
+        }
+      };
+    });
+  };
+
+  const moveItemUp = async (id: string) => {
+    const section = getCurrentSection();
+    if (!section) return;
+    const lang = editLanguage;
+    const items = getSectionItems(section.type, lang);
+    const idx = items.findIndex((it: any) => it.id === id);
+    if (idx <= 0) return;
+    const prevItem = items[idx - 1];
+    await swapOrders(section.type, lang, id, prevItem.id);
+  };
+
+  const moveItemDown = async (id: string) => {
+    const section = getCurrentSection();
+    if (!section) return;
+    const lang = editLanguage;
+    const items = getSectionItems(section.type, lang);
+    const idx = items.findIndex((it: any) => it.id === id);
+    if (idx === -1 || idx >= items.length - 1) return;
+    const nextItem = items[idx + 1];
+    await swapOrders(section.type, lang, id, nextItem.id);
+  };
+
   useEffect(() => {
     void loadCurrentSectionItems(activeSection);
   }, [activeSection]);
@@ -340,6 +433,8 @@ export const ContentManagerProvider: React.FC<{
     <ContentManagerContext.Provider
       value={{
         contentData,
+        moveItemUp,
+        moveItemDown,
         editingItem,
         activeSection,
         isLoading,

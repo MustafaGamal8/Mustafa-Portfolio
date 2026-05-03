@@ -111,28 +111,62 @@ export class BackendProjectService extends BackendBaseService<Project> {
     const { imageId, ...rest } = data as any;
     const updateData: any = { ...rest };
 
-    if (imageId !== undefined) {
-      updateData.image = imageId
-        ? { connect: { id: imageId } }
-        : { disconnect: true };
-    }
+    const updateResult = await this.prisma.$transaction(async (tx) => {
+      if (imageId !== undefined) {
+        updateData.image = imageId
+          ? { connect: { id: imageId } }
+          : { disconnect: true };
+      }
 
-    return await this.model.update({
-      where: { id },
-      data: updateData,
-      include: {
-        image: {
-          select: {
-            id: true,
-            name: true,
-            url: true,
-            type: true,
-            size: true,
-            createdAt: true
+      const updated = await tx.project.update({
+        where: { id },
+        data: updateData,
+        include: {
+          image: {
+            select: {
+              id: true,
+              name: true,
+              url: true,
+              type: true,
+              size: true,
+              createdAt: true
+            }
+          }
+        }
+      });
+
+      // Keep paired EN/AR project order in sync when one side changes.
+      if (updateData.order !== undefined) {
+        const projectKey = [existing.projectUrl, existing.githubUrl, existing.demoUrl]
+          .filter((value) => typeof value === 'string' && value.trim().length > 0)
+          .join('|');
+
+        if (projectKey) {
+          const pairedProject = await tx.project.findFirst({
+            where: {
+              id: { not: id },
+              lang: existing.lang === 'EN' ? 'AR' : 'EN',
+              OR: [
+                { projectUrl: existing.projectUrl },
+                { githubUrl: existing.githubUrl },
+                { demoUrl: existing.demoUrl },
+              ]
+            },
+          });
+
+          if (pairedProject?.id) {
+            await tx.project.update({
+              where: { id: pairedProject.id },
+              data: { order: updateData.order },
+            });
           }
         }
       }
+
+      return updated;
     });
+
+    return updateResult;
   }
 
 

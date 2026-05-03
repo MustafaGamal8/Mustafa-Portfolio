@@ -183,29 +183,36 @@ export const createProjectSchema = projectSchema.omit({
   updatedAt: true,
 });
 
-export const updateProjectSchema = createProjectSchema.extend({
+export const updateProjectSchema = z.object({
   id: z.string(),
-}).partial({
-  title: true,
-  description: true,
-  longDescription: true,
-  status: true,
-  category: true,
-  projectUrl: true,
-  githubUrl: true,
-  demoUrl: true,
-  duration: true,
-  teamSize: true,
-  technologies: true,
-  features: true,
-  order: true,
-  isFeatured: true,
-  isActive: true,
-  startDate: true,
-  endDate: true,
-  imageId: true,
-  lang: true,
-});;
+  lang: languageSchema.optional(),
+  title: z.string().min(1, 'Title is required').optional(),
+  description: z.string().min(1, 'Description is required').optional(),
+  longDescription: z.string().optional(),
+  status: projectStatusSchema.optional(),
+  category: z.string().min(1, 'Category is required').optional(),
+  projectUrl: z.string().nullable().optional(),
+  githubUrl: z.string().nullable().optional(),
+  demoUrl: z.string().nullable().optional(),
+  duration: z.string().optional(),
+  teamSize: z.string().optional(),
+  technologies: z.array(z.string()).optional(),
+  features: z.array(z.string()).optional(),
+  order: z.number().optional(),
+  isFeatured: z.boolean().optional(),
+  isActive: z.boolean().optional(),
+  startDate: z.preprocess((val) => {
+    if (!val) return undefined;
+    if (val instanceof Date) return val;
+    return new Date(val as string);
+  }, z.date()).optional(),
+  endDate: z.preprocess((val) => {
+    if (!val) return undefined;
+    if (val instanceof Date) return val;
+    return new Date(val as string);
+  }, z.date()).optional(),
+  imageId: z.string().optional(),
+});
 
 // Bulk project operations schemas
 export const bulkCreateProjectsSchema = z.object({

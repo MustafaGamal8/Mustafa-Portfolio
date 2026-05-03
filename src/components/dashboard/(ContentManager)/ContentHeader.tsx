@@ -4,7 +4,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { Plus, Languages, LayoutGrid, Type } from 'lucide-react';
+import { Plus, Languages, LayoutGrid, Type, RefreshCw } from 'lucide-react';
 import { useContentManager } from './ContentManagerContext';
 
 export const ContentHeader: React.FC = () => {
@@ -19,6 +19,8 @@ export const ContentHeader: React.FC = () => {
     getCurrentSection,
     showBothLanguages,
     setShowBothLanguages,
+    isLoading,
+    refetchCurrentSection,
   } = useContentManager();
 
   const handleAddNew = () => {
@@ -96,6 +98,17 @@ export const ContentHeader: React.FC = () => {
           <Button onClick={handleAddNew} className="gap-2">
             <Plus className="h-4 w-4" />
             Add New
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={refetchCurrentSection}
+            disabled={isLoading}
+            className="gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+            Refetch
           </Button>
         </div>
       </div>

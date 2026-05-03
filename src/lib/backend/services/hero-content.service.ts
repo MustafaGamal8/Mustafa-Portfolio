@@ -73,6 +73,12 @@ export class BackendHeroContentService extends BackendBaseService<HeroContent> {
         : { disconnect: true };
     }
 
+    if (resumeId !== undefined) {
+      updateData.resume = resumeId
+        ? { connect: { id: resumeId } }
+        : { disconnect: true };
+    }
+
 
 
     return await this.model.update({

@@ -48,7 +48,7 @@ export class BackendBaseService<T extends { id: string }> {
     if (orderBy && Object.keys(orderBy).length > 0) {
       queryOptions.orderBy = orderBy;
     }else{
-      queryOptions.orderBy = { id: 'desc', };
+      queryOptions.orderBy = { id: 'asc', };
     }
     if (select && Object.keys(select).length > 0) {
       queryOptions.select = select;

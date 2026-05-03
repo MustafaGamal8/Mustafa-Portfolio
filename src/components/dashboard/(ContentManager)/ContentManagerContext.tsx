@@ -30,6 +30,7 @@ interface ContentManagerContextType extends ContentManagerState, ContentManagerA
   getSectionItems: (sectionType: string, language?: 'EN' | 'AR') => any[];
   loadContentItems: () => Promise<void>;
   loadCurrentSectionItems: () => Promise<void>;
+  refetchCurrentSection: () => Promise<void>;
   handleSave: (item: any) => Promise<void>;
   handleDelete: (id: string) => Promise<void>;
   showToast: (toast: { title: string; description: string; variant?: 'default' | 'destructive' }) => void;
@@ -220,6 +221,10 @@ export const ContentManagerProvider: React.FC<{
     }
   };
 
+  const refetchCurrentSection = async () => {
+    await loadCurrentSectionItems(activeSection, true);
+  };
+
   // Utility function to remove null/undefined values from an object
   const cleanFormData = (obj: any): any => {
     if (obj === null || obj === undefined) return undefined;
@@ -355,6 +360,7 @@ export const ContentManagerProvider: React.FC<{
         getSectionItems,
         loadContentItems,
         loadCurrentSectionItems,
+        refetchCurrentSection,
         handleSave,
         handleDelete,
         showToast,

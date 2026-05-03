@@ -333,7 +333,6 @@ async function main() {
       githubUrl: null,
       order: 7,
       isFeatured: false,
-      image: "https://mustafa-gamal.vercel.app/api/files/cmfb0w0rm0000l504duwti1ud",
       AR: {
         title: "Resume4me",
         description:
@@ -375,7 +374,6 @@ async function main() {
       githubUrl: null,
       order: 6,
       isFeatured: true,
-      image: "https://mustafa-gamal.vercel.app/api/files/cmfazq55f0002unesrf4iewfr",
       AR: {
         title: "American House",
         description:
@@ -417,7 +415,6 @@ async function main() {
       githubUrl: null,
       order: 5,
       isFeatured: true,
-      image: "https://mustafa-gamal.vercel.app/api/files/cmfb07lqt0003unesyhq8avcs",
       AR: {
         title: "Router+",
         description:
@@ -459,7 +456,6 @@ async function main() {
       githubUrl: null,
       order: 2,
       isFeatured: false,
-      image: "https://mustafa-gamal.vercel.app/api/files/cmfb0q0si0003lb04vy5sfvqw",
       AR: {
         title: "We-School",
         description:
@@ -501,7 +497,6 @@ async function main() {
       githubUrl: null,
       order: 4,
       isFeatured: false,
-      image: "https://mustafa-gamal.vercel.app/api/files/cmfb0ik940000lb04ptn9c7id",
       AR: {
         title: "Gomaa Company - حلول الطاقة المتجددة",
         description:
@@ -544,7 +539,6 @@ async function main() {
       githubUrl: null,
       order: 3,
       isFeatured: false,
-      image: "https://mustafa-gamal.vercel.app/api/files/cmfb1gbal0000la04rl2ijzep",
       AR: {
         title: "جوهرة الحجاز - شركة تجارية",
         description:
@@ -587,7 +581,6 @@ async function main() {
       githubUrl: null,
       order: 1,
       isFeatured: false,
-      image: "https://mustafa-gamal.vercel.app/api/files/cmfb1igat0000la042g1hg1j5",
       AR: {
         title: "Max LLC - أنظمة كاميرات المراقبة",
         description:
@@ -628,7 +621,6 @@ async function main() {
       githubUrl: null,
       order: 1,
       isFeatured: false,
-      image: "https://mustafa-gamal.vercel.app/api/files/cmfdwk8xb0000jj048cqk2l42",
       AR: {
         title: "Zaman - منصة عقارات",
         description:

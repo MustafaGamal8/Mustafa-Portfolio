@@ -233,6 +233,35 @@ export const EditFormModal: React.FC = () => {
     handleSharedChange(fieldName, uploadedFileId);
   };
 
+  const normalizeForDiff = (value: any): string => {
+    if (value instanceof Date) return value.toISOString();
+    if (Array.isArray(value)) return JSON.stringify(value.map(normalizeForDiff));
+    if (value && typeof value === 'object') {
+      const normalized: Record<string, any> = {};
+      Object.entries(value).forEach(([key, nestedValue]) => {
+        normalized[key] = normalizeForDiff(nestedValue);
+      });
+      return JSON.stringify(normalized);
+    }
+    return JSON.stringify(value ?? null);
+  };
+
+  const buildProjectUpdatePayload = (language: SupportedLanguage, nextPayload: Record<string, any>) => {
+    const original = draft.originals?.[language] || {};
+    const diff: Record<string, any> = { id: draft.ids?.[language] };
+
+    Object.entries(nextPayload).forEach(([key, nextValue]) => {
+      if (key === 'id' || key === 'lang') return;
+
+      const currentValue = original?.[key];
+      if (normalizeForDiff(currentValue) !== normalizeForDiff(nextValue)) {
+        diff[key] = nextValue;
+      }
+    });
+
+    return diff;
+  };
+
   const saveBilingualDraft = async () => {
     if (!currentSection) return;
 
@@ -250,7 +279,13 @@ export const EditFormModal: React.FC = () => {
       };
 
       if (existingId) {
-        await currentSection.service.update({ id: existingId, ...payload });
+        const updatePayload = currentSection.type === 'projects'
+          ? buildProjectUpdatePayload(language, { ...payload, id: existingId })
+          : { id: existingId, ...payload };
+
+        if (Object.keys(updatePayload).length > 1) {
+          await currentSection.service.update(updatePayload as any);
+        }
       } else {
         await currentSection.service.create(payload);
       }

@@ -9,6 +9,13 @@ export interface BilingualPair {
   AR?: any;
 }
 
+const getProjectMatchKey = (item: any) => {
+  if (!item) return '';
+  return [item.projectUrl, item.githubUrl, item.demoUrl]
+    .filter((value) => typeof value === 'string' && value.trim().length > 0)
+    .join('|');
+};
+
 const sharedFieldNamesBySection: Record<string, string[]> = {
   personal: ['imageId'],
   hero: ['profileImageId', 'resumeId'],
@@ -120,6 +127,14 @@ export const findPairedItem = (
     if (byGroup) return byGroup;
   }
 
+  if (sectionType === 'projects') {
+    const projectMatchKey = getProjectMatchKey(item);
+    if (projectMatchKey) {
+      const byProjectKey = candidates.find((candidate) => getProjectMatchKey(candidate) === projectMatchKey);
+      if (byProjectKey) return byProjectKey;
+    }
+  }
+
   const matchers: Array<(candidate: any) => boolean> = [
     (candidate) => candidate.order === item.order && candidate.type === item.type,
     (candidate) => candidate.order === item.order && candidate.category === item.category,
@@ -170,6 +185,10 @@ export const buildBilingualDraft = (
       EN: itemsByLanguage.EN?.find(item => item.id === currentItem?.id)?.id || itemsByLanguage.EN?.find(item => item.id === pairedItem?.id)?.id,
       AR: itemsByLanguage.AR?.find(item => item.id === currentItem?.id)?.id || itemsByLanguage.AR?.find(item => item.id === pairedItem?.id)?.id
     },
+    originals: {
+      EN: itemsByLanguage.EN?.find(item => item.id === currentItem?.id) || itemsByLanguage.EN?.find(item => item.id === pairedItem?.id) || undefined,
+      AR: itemsByLanguage.AR?.find(item => item.id === currentItem?.id) || itemsByLanguage.AR?.find(item => item.id === pairedItem?.id) || undefined,
+    },
     fallbackLanguage: currentItem?.lang || 'EN',
     sharedFieldNames: sharedFields.map(field => field.name),
     localizedFieldNames: localizedFields.map(field => field.name)
@@ -216,8 +235,10 @@ export const getBilingualPairs = (
     if (englishItem?.id) seenIds.add(englishItem.id);
     if (arabicItem?.id) seenIds.add(arabicItem.id);
 
+    const projectMatchKey = sectionType === 'projects' ? getProjectMatchKey(englishItem || arabicItem || item) : '';
+
     pairs.push({
-      key: englishItem?.id || arabicItem?.id || `${language}-${item.order || 0}`,
+      key: projectMatchKey || englishItem?.id || arabicItem?.id || `${language}-${item.order || 0}`,
       order: englishItem?.order ?? arabicItem?.order ?? item.order ?? 0,
       EN: englishItem,
       AR: arabicItem

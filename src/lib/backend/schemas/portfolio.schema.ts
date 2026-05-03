@@ -185,7 +185,27 @@ export const createProjectSchema = projectSchema.omit({
 
 export const updateProjectSchema = createProjectSchema.extend({
   id: z.string(),
-});
+}).partial({
+  title: true,
+  description: true,
+  longDescription: true,
+  status: true,
+  category: true,
+  projectUrl: true,
+  githubUrl: true,
+  demoUrl: true,
+  duration: true,
+  teamSize: true,
+  technologies: true,
+  features: true,
+  order: true,
+  isFeatured: true,
+  isActive: true,
+  startDate: true,
+  endDate: true,
+  imageId: true,
+  lang: true,
+});;
 
 // Bulk project operations schemas
 export const bulkCreateProjectsSchema = z.object({

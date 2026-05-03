@@ -23,6 +23,15 @@ export const DynamicArrayField: React.FC<DynamicArrayFieldProps> = ({
   editLanguage,
   required = false
 }) => {
+  const normalizeArrayText = (text: string) => {
+    return text
+      .split(/\r?\n|,/) 
+      .map(item => item.trim())
+      .map(item => item.replace(/^[-*•]\s*/, ''))
+      .map(item => item.replace(/^['"]|['"]$/g, ''))
+      .filter(Boolean);
+  };
+
   const handleAddItem = () => {
     onChange([...value, '']);
   };
@@ -38,6 +47,10 @@ export const DynamicArrayField: React.FC<DynamicArrayFieldProps> = ({
     onChange(updatedValue);
   };
 
+  const handlePasteAreaChange = (text: string) => {
+    onChange(normalizeArrayText(text));
+  };
+
   return (
     <div className="col-span-2 space-y-2">
       <Label className="text-sm font-medium">
@@ -45,6 +58,15 @@ export const DynamicArrayField: React.FC<DynamicArrayFieldProps> = ({
       </Label>
 
       <div className="space-y-2">
+        <textarea
+          value={value.filter(Boolean).join('\n')}
+          onChange={(e) => handlePasteAreaChange(e.target.value)}
+          placeholder={`Paste ${label.toLowerCase()} one per line or comma-separated`}
+          dir={editLanguage === 'AR' ? 'rtl' : 'ltr'}
+          rows={Math.max(4, Math.min(8, value.length + 1))}
+          className="w-full rounded-md border border-gray-300 bg-background px-3 py-2 text-sm shadow-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+        />
+
         {value.map((item, index) => (
           <div key={index} className="flex items-center gap-2">
             <Input

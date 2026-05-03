@@ -32,7 +32,6 @@ const sharedFieldNamesBySection: Record<string, string[]> = {
     'duration',
     'teamSize',
     'technologies',
-    'features',
     'startDate',
     'endDate',
     'isFeatured',
@@ -49,7 +48,7 @@ const primaryIdentityFieldsBySection: Record<string, string[]> = {
   about: ['title', 'question', 'answer'],
   'skill-categories': ['title', 'description'],
   skills: ['name', 'description'],
-  projects: ['title', 'description', 'longDescription'],
+  projects: ['title', 'description', 'longDescription', 'features'],
   achievements: ['title', 'subtitle', 'description'],
   contact: ['label', 'value'],
   social: []
